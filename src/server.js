@@ -16,10 +16,9 @@ const handleListen = () => console.log('Listening on http://localhost:3000');
 const server = http.createServer(app);  //express 서버랑 http 합치기
 const wss = new WebSocket.Server({server}); //  http서버위에 웹소켓 서버 합치기
 
-function handleConnection(socket){
-    console.log(socket)
-}
+wss.on("connection", (socket)=>{
+    socket.send("hello");
+})
 
-wss.on("connection", handleConnection)
 server.listen(3000,handleListen);
 
