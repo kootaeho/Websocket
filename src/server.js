@@ -17,7 +17,13 @@ const server = http.createServer(app);  //express 서버랑 http 합치기
 const wss = new WebSocket.Server({server}); //  http서버위에 웹소켓 서버 합치기
 
 wss.on("connection", (socket)=>{
-    console.log("Connected to Browser!")
+    console.log("Connected to Browser!");
+    socket.on("close", ()=>{
+        console.log("Disconnected from Browser");
+    })
+    socket.on("message", (message)=>{
+        console.log(message.toString('utf8'))
+    })
     socket.send("hello");
 })
 
