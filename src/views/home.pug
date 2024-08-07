@@ -9,8 +9,11 @@ html(lang="en")
         header 
             h1 It works!
         main
+            form#nickname
+                input(type = "text", placeholder = "Write nickname", required)
+                button Save
             ul
-            form
+            form#msgchat
                 input(type = "text", placeholder = "write a msg", required)
                 button Send
         script(src="/public/js/app.js")
