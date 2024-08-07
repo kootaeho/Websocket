@@ -21,15 +21,21 @@ const sockets = [];
 
 wss.on("connection", (socket)=>{
     sockets.push(socket);
+    socket["nickname"] = "Anonymous";
     console.log("Connected to Browser!");
     socket.on("close", ()=>{
         console.log("Disconnected from Browser");
     })
     socket.on("message", (message)=>{
-        sockets.forEach((aSocket) => {
-            const messageString = message.toString('utf8');
-            aSocket.send(messageString)
-        });
+        const parsed = JSON.parse(message);
+        if(parsed.type === "msg"){
+            sockets.forEach((aSocket) => {
+                const messageString = parsed.payload;
+                aSocket.send(messageString)
+            });
+        } else if(parsed.type === "nickname"){
+            socket["nickname"] = message.payload;
+        }
     })
 })
 

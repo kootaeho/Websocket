@@ -3,17 +3,20 @@ const messageList = document.querySelector("ul");
 const nicknameForm = document.querySelector("#nickname");
 const messageForm = document.querySelector("#msgchat");
 
+function makeMessage(type, payload, ){
+    const msg = {type, payload};
+    return JSON.stringify(msg);
+}
+
 
 socket.addEventListener("open", () =>{
     console.log("Connected to Server!")
-    socket.send("Hello from browser")
 });
 
 socket.addEventListener("message", (message)=>{
     const li = document.createElement("li")
     li.innerText = message.data;
     messageList.append(li);
-
 });
 
 socket.addEventListener("close", ()=>{
@@ -23,17 +26,14 @@ socket.addEventListener("close", ()=>{
 function handleSubmit(event){
     event.preventDefault();
     const input = messageForm.querySelector("input");
-    socket.send(input.value)
+    socket.send(makeMessage("msg",input.value))
     input.value = "";
 }
 
 function handleNickSubmit(event){
     event.preventDefault();
     const input = nicknameForm.querySelector("input");
-    socket.send({
-        type:"nickname",
-        patload:input.value,
-    });
+    socket.send(makeMessage("nickname", input.value));
 }
 
 
