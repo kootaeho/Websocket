@@ -30,11 +30,11 @@ wss.on("connection", (socket)=>{
         const parsed = JSON.parse(message);
         if(parsed.type === "msg"){
             sockets.forEach((aSocket) => {
-                const messageString = parsed.payload;
+                const messageString = (`${socket.nickname}: ${parsed.payload}`);
                 aSocket.send(messageString)
             });
         } else if(parsed.type === "nickname"){
-            socket["nickname"] = message.payload;
+            socket["nickname"] = parsed.payload;
         }
     })
 })
