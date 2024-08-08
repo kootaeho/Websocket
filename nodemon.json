@@ -1,4 +1,4 @@
 {
-    "ignore" : ["src/public/*"],
+    "ignore" : [""],
     "exec" : "babel-node src/server.js"
 }
