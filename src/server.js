@@ -18,8 +18,9 @@ const httpServer = http.createServer(app);  //express 서버랑 http 합치기
 const io = SocketIO(httpServer);
 
 io.on("connection", socket => {
-    socket.on("enter_room", (msg, done) => {
-        console.log(msg);
+    socket.on("enter_room", (roomName, done) => {
+        console.log(roomName);
+        socket.join(roomName);
         setTimeout(() => {
             done("response from server");
         }, 3000);
