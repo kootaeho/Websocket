@@ -15,14 +15,14 @@ app.get("/*", (req,res) => res.render("home"));
 const handleListen = () => console.log('Listening on http://localhost:3000');
 
 const httpServer = http.createServer(app);  //express 서버랑 http 합치기
-const io = SocketIO(server);
+const io = SocketIO(httpServer);
 
 io.on("connection", socket => {
     socket.on("enter_room", (msg, done) => {
         console.log(msg);
         setTimeout(() => {
-            done();
-        }, 10000);
+            done("response from server");
+        }, 3000);
     })
 })
 
