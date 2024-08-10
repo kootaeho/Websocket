@@ -17,7 +17,7 @@ const handleListen = () => console.log('Listening on http://localhost:3000');
 const httpServer = http.createServer(app);  //express 서버랑 http 합치기
 const io = SocketIO(httpServer);
 
-io.on("connection", socket => {
+io.on("connection", (socket) => {
     socket["nickname"] = "Annonymous";
     socket.onAny((event) => {
         console.log(`Socket Event: ${event}`);
@@ -25,13 +25,14 @@ io.on("connection", socket => {
     socket.on("enter_room", (roomName, done) => {
         socket.join(roomName);
         done();
-        socket.to(roomName).emit("welcome");
+        console.log(roomName)
+        socket.to(roomName).emit("welcome", socket.nickname);
     })
     socket.on("disconnecting", ()=> {
-        socket.rooms.forEach((room) => socket.to(room).emit("by"));
+        socket.rooms.forEach((room) => socket.to(room).emit("bye",socket.nickname));
     });
     socket.on("new_message", (msg, room, done)=>{
-        socket.to(room).emit("new_message", msg)
+        socket.to(room).emit("new_message", `${socket.nickname} : ${msg}`)
         done();
     })
     socket.on("nickname", (nickname)=> (socket["nickname"] = nickname));

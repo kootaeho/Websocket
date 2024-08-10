@@ -9,9 +9,9 @@ room.hidden = true
 let roomName;
 
 function addMessage(message){
-    const ul = chat.querySelector("ul")
+    const ul = room.querySelector("ul")
     const li = document.createElement("li")
-    innerText = message;
+    li.innerText = message;
     ul.appendChild(li);
 }
 
@@ -46,19 +46,20 @@ function showRoom(){
 function handleRoomsubmit(event){
     event.preventDefault();
     const input = form.querySelector("input");
-    socket.emit("enter_room", {payload: input.value}, showRoom);
+    socket.emit("enter_room", input.value, showRoom);
     roomName = input.value;
     input.value = "";
 }
 
 form.addEventListener("submit", handleRoomsubmit)
 
-socket.on("welcome",()=>{
-    addMessage("Someone joined!");
+socket.on("welcome",(user)=>{
+    console.log(user)
+    addMessage(`${user} joined!`);
 })
 
-socket.on("bye", ()=>{
-    addMessage("someone left!");
+socket.on("bye", (user)=>{
+    addMessage(`${user} left!`);
 })
 
 
