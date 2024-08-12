@@ -23,6 +23,7 @@ io.on("connection", (socket) => {
         console.log(`Socket Event: ${event}`);
     })
     socket.on("enter_room", (roomName, done) => {
+        console.log("room submit!");
         socket.join(roomName);
         done();
         console.log(roomName)
@@ -35,7 +36,10 @@ io.on("connection", (socket) => {
         socket.to(room).emit("new_message", `${socket.nickname} : ${msg}`)
         done();
     })
-    socket.on("nickname", (nickname)=> (socket["nickname"] = nickname));
+    socket.on("nickname", (nickname)=> {
+        console.log("nickname submit!");
+        socket["nickname"] = nickname
+    });
 })
 
 
