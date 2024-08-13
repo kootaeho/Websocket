@@ -18,7 +18,8 @@ const httpServer = http.createServer(app);  //express 서버랑 http 합치기
 const io = SocketIO(httpServer);
 
 function publicRooms(){
-   const {sockets: {adapter: {sids,rooms}}} = io;
+   const {sockets: {adapter: {sids,rooms}}} = io;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
+   // == const {sockets: {adapter: {sids : mysids ,rooms : myrooms }}} = io; 이렇게 하면 다른이름의 변수에 저장가능.
    const publicRooms = [];
    rooms.forEach((_, key) => {
     if(sids.get(key) === undefined){
