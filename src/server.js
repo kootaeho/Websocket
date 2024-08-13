@@ -17,10 +17,21 @@ const handleListen = () => console.log('Listening on http://localhost:3000');
 const httpServer = http.createServer(app);  //express 서버랑 http 합치기
 const io = SocketIO(httpServer);
 
+function publicRooms(){
+   const {sockets: {adapter: {sids,rooms}}} = io;
+   const publicRooms = [];
+   rooms.forEach((_, key) => {
+    if(sids.get(key) === undefined){
+        publicRooms.push(key)
+    }
+   })
+   return publicRooms;
+}
+
+
 io.on("connection", (socket) => {
     socket["nickname"] = "Annonymous";
     socket.onAny((event) => {
-        console.log(io.sockets.adapter)
         console.log(`Socket Event: ${event}`);
     })
     socket.on("enter_room", (roomName, done) => {
