@@ -36,21 +36,22 @@ io.on("connection", (socket) => {
         console.log(`Socket Event: ${event}`);
     })
     socket.on("enter_room", (roomName, done) => {
-        console.log("room submit!");
         socket.join(roomName);
         done();
-        console.log(roomName)
         socket.to(roomName).emit("welcome", socket.nickname);
+        io.sockets.emit("room_change", publicRooms());
     })
     socket.on("disconnecting", ()=> {
         socket.rooms.forEach((room) => socket.to(room).emit("bye",socket.nickname));
     });
+    socket.on("disconnect", () => {
+        io.sockets.emit("room_change", publicRooms());
+    })
     socket.on("new_message", (msg, room, done)=>{
         socket.to(room).emit("new_message", `${socket.nickname} : ${msg}`)
         done();
     })
     socket.on("nickname", (nickname)=> {
-        console.log("nickname submit!");
         socket["nickname"] = nickname
     });
 })

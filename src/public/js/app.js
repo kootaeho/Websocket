@@ -45,7 +45,6 @@ function showRoom(){
 }
 
 function showRoomenter(){
-    console.log("showRoomenter")
     nickform.hidden = true;
     rnform.hidden = false;
     rnform.addEventListener("submit", handleRoomsubmit);
@@ -65,7 +64,6 @@ function handleRoomsubmit(event){
 nickform.addEventListener("submit", handleNicknameSubmit);
 
 socket.on("welcome",(user)=>{
-    console.log(user)
     addMessage(`${user} joined!`);
 })
 
@@ -75,3 +73,16 @@ socket.on("bye", (user)=>{
 
 
 socket.on("new_message", addMessage);
+
+socket.on("room_change", (rooms) => {
+    const roomList = welcome.querySelector("ul");
+    roomList.innerHTML = "";
+    if(rooms.length === 0){
+        return;
+    }
+    rooms.forEach(room =>{
+        const li = document.createElement("li");
+        li.innerText = room;
+        roomList.append(li);
+    });
+});
