@@ -78,6 +78,12 @@ socket.on("bye", (user, newCount)=>{
 
 socket.on("new_message", addMessage);
 
+socket.on("join", (newCount)=>{
+    const h3 = room.querySelector("h3");
+    h3.innerText = `Room ${roomName} (${newCount})`;
+})
+
+
 socket.on("room_change", (rooms) => {
     const roomList = welcome.querySelector("ul");
     roomList.innerHTML = "";

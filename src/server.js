@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
     socket.on("enter_room", (roomName, done) => {
         socket.join(roomName);
         done();
+        io.to(roomName).emit("join", countRoom(roomName));
         socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
         io.sockets.emit("room_change", publicRooms());
     })
