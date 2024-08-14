@@ -1,6 +1,7 @@
 import express from "express";
 import http from "http";
-import SocketIO from "socket.io";
+import {Server} from "socket.io";
+import {instrument} from "@socket.io/admin-ui";
 import { clearScreenDown } from "readline";
 
 const app = express();
@@ -15,7 +16,18 @@ app.get("/*", (req,res) => res.render("home"));
 const handleListen = () => console.log('Listening on http://localhost:3000');
 
 const httpServer = http.createServer(app);  //express 서버랑 http 합치기
-const io = SocketIO(httpServer);
+const io = new Server(httpServer, {
+    cors : {
+        origin: ["https://admin.socket.io"],
+        credentials: true
+    }
+});
+
+instrument(io, {
+    auth: false,
+    mode: "development",
+});
+
 
 function publicRooms(){
    const {sockets: {adapter: {sids,rooms}}} = io;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
