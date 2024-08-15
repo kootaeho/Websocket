@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
         const publicRoomArr = publicRooms();
         const randomElement = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
         if(publicRoomArr.length === 0){
-            console.log("private room enter!");
+            console.log("Creating room!");
             socket.join(roomName);
             done();
             io.to(roomName).emit("join", countRoom(roomName));
@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
             io.sockets.emit("room_change", publicRooms());
         }
         else{
-            console.log("existed room enter!");
+            console.log("Existed room enter!");
             socket.join(randomElement);
             done();
             io.to(randomElement).emit("join", countRoom(randomElement));
