@@ -5,6 +5,9 @@ const rnform = welcome.querySelector("#roomname")
 const nickform = welcome.querySelector("#nickname")
 const room = document.getElementById("room");
 
+
+let i =1
+
 room.hidden = true
 rnform.hidden = true
 
@@ -55,7 +58,7 @@ function handleRoomsubmit(event){
     event.preventDefault();
     //const input = rnform.querySelector("input");
     //const nameForm = room.querySelector("#nickname");
-    roomName = socket.id
+    roomName = i+1
     socket.emit("enter_room", roomName, showRoom);
     //nameForm.addEventListener("submit", handleNicknameSubmit);
     //roomName = input.value;

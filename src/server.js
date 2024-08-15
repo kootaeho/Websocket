@@ -32,13 +32,13 @@ instrument(io, {
 function publicRooms(){
    const {sockets: {adapter: {sids,rooms}}} = io;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
    // == const {sockets: {adapter: {sids : mysids ,rooms : myrooms }}} = io; 이렇게 하면 다른이름의 변수에 저장가능.
-   const publicRooms = [];
+   const userRooms = [];
    rooms.forEach((_, key) => {
-    if(sids.get(key) === undefined){
-        publicRooms.push(key)
-    }
+        if(sids.get(key) === undefined){
+            userRooms.push(key);
+        }
    })
-   return publicRooms;
+   return userRooms;
 }
 
 function countRoom(roomName){
@@ -58,6 +58,7 @@ io.on("connection", (socket) => {
         const publicRoomArr = publicRooms();
         const randomElement = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
         if(publicRoomArr.length === 0){
+            console.log("private room enter!");
             socket.join(roomName);
             done();
             io.to(roomName).emit("join", countRoom(roomName));
@@ -65,6 +66,7 @@ io.on("connection", (socket) => {
             io.sockets.emit("room_change", publicRooms());
         }
         else{
+            console.log("existed room enter!");
             socket.join(randomElement);
             done();
             io.to(randomElement).emit("join", countRoom(randomElement));
