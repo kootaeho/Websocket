@@ -54,11 +54,23 @@ io.on("connection", (socket) => {
         console.log(`Socket Event: ${event}`);
     })
     socket.on("enter_room", (roomName, done) => {
-        socket.join(roomName);
-        done();
-        io.to(roomName).emit("join", countRoom(roomName));
-        socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
-        io.sockets.emit("room_change", publicRooms());
+        const publicRoomArr = publicRooms();
+        const randomElement = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
+        if(publicRoomArr.length === 0){
+            socket.join(roomName);
+            done();
+            io.to(roomName).emit("join", countRoom(roomName));
+            socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
+            io.sockets.emit("room_change", publicRooms());
+        }
+        else{
+            socket.join(randomElement);
+            done();
+            io.to(randomElement).emit("join", countRoom(randomElement));
+            socket.to(randomElement).emit("welcome", socket.nickname, countRoom(randomElement));
+            io.sockets.emit("room_change", publicRooms());
+        }
+    
     })
     socket.on("disconnecting", ()=> {
         socket.rooms.forEach((room) => socket.to(room).emit("bye",socket.nickname, countRoom(room) - 1));
