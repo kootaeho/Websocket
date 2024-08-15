@@ -53,7 +53,8 @@ io.on("connection", (socket) => {
     socket.onAny((event) => {
         console.log(`Socket Event: ${event}`);
     })
-    socket.on("enter_room", (roomName, done) => {
+    socket.on("enter_room", (roomName,done) => {
+        //const roomName = socket.id
         const publicRoomArr = publicRooms();
         const randomElement = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
         if(publicRoomArr.length === 0){

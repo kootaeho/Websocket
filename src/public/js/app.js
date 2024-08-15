@@ -47,18 +47,19 @@ function showRoom(){
 function showRoomenter(){
     nickform.hidden = true;
     rnform.hidden = false;
-    rnform.addEventListener("submit", handleRoomsubmit);
+    rnform.addEventListener("click", handleRoomsubmit);
 }
 
 
 function handleRoomsubmit(event){
     event.preventDefault();
-    const input = rnform.querySelector("input");
+    //const input = rnform.querySelector("input");
     //const nameForm = room.querySelector("#nickname");
-    socket.emit("enter_room", input.value, showRoom);
+    roomName = socket.id
+    socket.emit("enter_room", roomName, showRoom);
     //nameForm.addEventListener("submit", handleNicknameSubmit);
-    roomName = input.value;
-    input.value = "";
+    //roomName = input.value;
+    //input.value = "";
 }
 
 nickform.addEventListener("submit", handleNicknameSubmit);
