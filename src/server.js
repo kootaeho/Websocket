@@ -63,12 +63,10 @@ io.on("connection", (socket) => {
             roomToJoin = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
             let roomNum = countRoom(roomToJoin)
             if(roomNum >=2 ){
-                console.log("방이 다참!")
                 roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
                 socket.join(roomToJoin);
             }
             else{
-                console.log("방에 자리가 남아있음!");
                 socket.join(roomToJoin);
             }
         }
