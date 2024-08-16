@@ -3,6 +3,7 @@ import http from "http";
 import {Server} from "socket.io";
 import {instrument} from "@socket.io/admin-ui";
 import { clearScreenDown } from "readline";
+import { count } from "console";
 
 const app = express();
 
@@ -46,49 +47,46 @@ function countRoom(roomName){
 }
 
 
-
 io.on("connection", (socket) => {
     io.sockets.emit("room_change", publicRooms());
-    socket["nickname"] = "Annonymous";
-    socket.onAny((event) => {
-        console.log(`Socket Event: ${event}`);
-    })
-    socket.on("enter_room", (roomName,done) => {
-        //const roomName = socket.id
+    socket["nickname"] = "Anonymous";
+
+    socket.on("enter_room", (roomName, done) => {
         const publicRoomArr = publicRooms();
-        const randomElement = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
-        if(publicRoomArr.length === 0){
-            console.log("Creating room!");
-            socket.join(roomName);
-            done();
-            io.to(roomName).emit("join", countRoom(roomName));
-            socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
-            io.sockets.emit("room_change", publicRooms());
+        let roomToJoin;
+        
+        if (publicRoomArr.length === 0) {
+            // 새 방을 만듭니다.
+            roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
+            socket.join(roomToJoin);
+        } else {
+            // 기존 방 중 하나를 랜덤으로 선택합니다.
+            roomToJoin = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
+            socket.join(roomToJoin);
         }
-        else{
-            console.log("Existed room enter!");
-            socket.join(randomElement);
-            done();
-            io.to(randomElement).emit("join", countRoom(randomElement));
-            socket.to(randomElement).emit("welcome", socket.nickname, countRoom(randomElement));
-            io.sockets.emit("room_change", publicRooms());
-        }
-    
-    })
-    socket.on("disconnecting", ()=> {
-        socket.rooms.forEach((room) => socket.to(room).emit("bye",socket.nickname, countRoom(room) - 1));
+        done(roomToJoin);  // 클라이언트에 방 이름을 전달합니다.
+        io.to(roomToJoin).emit("join", countRoom(roomToJoin));
+        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(roomToJoin));
+        io.sockets.emit("room_change", publicRooms());
     });
+
+    socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1));
+    });
+
     socket.on("disconnect", () => {
         io.sockets.emit("room_change", publicRooms());
-    })
-    socket.on("new_message", (msg, room, done)=>{
-        socket.to(room).emit("new_message", `${socket.nickname} : ${msg}`)
-        done();
-    })
-    socket.on("nickname", (nickname)=> {
-        socket["nickname"] = nickname
     });
-})
+
+    socket.on("new_message", (msg, room, done) => {
+        socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
+        done();
+    });
+
+    socket.on("nickname", (nickname) => {
+        socket["nickname"] = nickname;
+    });
+});
 
 
 /*
