@@ -54,8 +54,6 @@ io.on("connection", (socket) => {
     socket.on("enter_room", (roomName, done) => {
         const publicRoomArr = publicRooms();
         let roomToJoin;
-        
-        console.log(roomNum)
         if (publicRoomArr.length === 0) {
             // 새 방을 만듭니다.
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
@@ -64,7 +62,7 @@ io.on("connection", (socket) => {
             // 기존 방 중 하나를 랜덤으로 선택합니다.
             roomToJoin = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
             let roomNum = countRoom(roomToJoin)
-            if(roomNum >=1 ){
+            if(roomNum >=2 ){
                 console.log("방이 다참!")
                 roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
                 socket.join(roomToJoin);
