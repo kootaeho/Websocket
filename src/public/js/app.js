@@ -10,9 +10,11 @@ let currentRoomName;
 room.hidden = true;
 rnform.hidden = true;
 
-function addMessage(message) {
-    const ul = room.querySelector("ul");
+function addMessage(message, isOwnMessage = false) {
+    const ul = room.querySelector("ul.message-container");
     const li = document.createElement("li");
+    li.classList.add("message");
+    li.classList.add(isOwnMessage ? "you" : "other");
     li.innerText = message;
     ul.appendChild(li);
 }

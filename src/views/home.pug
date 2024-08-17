@@ -3,26 +3,72 @@ html(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title hihi
-        <link rel="stylesheet" href="https://unpkg.com/mvp.css"> 
-    body
+        title RandomROom
+        <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+        style.
+            .message-container {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                display: flex;
+                flex-direction: column;
+            }
+            .message {
+                margin-bottom: 10px;
+                padding: 10px;
+                max-width: 70%;
+                border-radius: 10px;
+                position: relative;
+                color: #fff;
+                font-size: 16px;
+                word-wrap: break-word;
+            }
+            .message.you {
+                background-color: #4CAF50;
+                align-self: flex-end;
+            }
+            .message.other {
+                background-color: #555;
+                align-self: flex-start;
+            }
+            .message::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 0;
+                border: 10px solid transparent;
+            }
+            .message.you::after {
+                border-right-color: #4CAF50;
+                border-left: 0;
+                border-right: 10px solid #4CAF50;
+                left: 100%;
+                top: 10px;
+            }
+            .message.other::after {
+                border-left-color: #555;
+                border-right: 0;
+                border-left: 10px solid #555;
+                right: 100%;
+                top: 10px;
+            }
+    body(style="background-color: black; color:white;")
         header 
-            h1 Chat
+            h1 RandomROom
         main
-            div#welcome
+            div#welcome(style="text-align: right; padding-right: 20px;")
                 form#nickname
-                    input(placeholder = "nickname", required , type="text")
+                    input(placeholder="닉네임을 입력하세요", required, type="text" style="background-color: white;")
                     button Save
                 form#roomname
-                    // input(placeholder = "room name", required , type="text")
+                    // input(placeholder="room name", required, type="text")
                     button Enter Room
-                h4 Open Rooms:
                 ul 
             div#room
                 h3
-                ul
+                ul.message-container
                 form#msg
-                    input(placeholder = "message", required , type="text")
+                    input(placeholder="message", required, type="text")
                     button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
