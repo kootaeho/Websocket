@@ -24,11 +24,10 @@ function handleMessageSubmit(event) {
     const input = room.querySelector("#msg input");
     const value = input.value;
     socket.emit("new_message", value, currentRoomName, () => {
-        addMessage(`You: ${value}`);
+        addMessage(`You: ${value}`, true);
     });
     input.value = "";
 }
-
 function handleNicknameSubmit(event) {
     event.preventDefault();
     const input = welcome.querySelector("#nickname input");
