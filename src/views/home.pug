@@ -12,7 +12,7 @@ html(lang="en")
                 display: flex;
                 flex-direction: column;
                 overflow-y: auto;
-                height: 600px;
+                height: 300px; /* 채팅 박스 높이 설정 */
                 border: 1px solid #444;
                 padding: 10px;
                 background-color: #222;
@@ -87,11 +87,10 @@ html(lang="en")
                     // input(placeholder="room name", required, type="text")
                     button Enter Room
             div#room
+                h3 Room Name
                 ul.message-container
-                    // 추가 메시지가 여기에 표시됨
                 form#msg
                     input(placeholder="message", required, type="text")
                     button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
-

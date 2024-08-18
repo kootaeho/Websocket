@@ -17,6 +17,7 @@ function addMessage(message, isOwnMessage = false) {
     li.classList.add(isOwnMessage ? "you" : "other");
     li.innerText = message;
     ul.appendChild(li);
+    ul.scrollTop = ul.scrollHeight;
 }
 
 function handleMessageSubmit(event) {
@@ -63,13 +64,13 @@ nickform.addEventListener("submit", handleNicknameSubmit);
 
 socket.on("welcome", (user, newCount) => {
     const h3 = room.querySelector("h3");
-    //h3.innerText = `Room ${currentRoomName} (${newCount})`;
+    h3.innerText = `Room (${newCount})명 있음.`;
     addMessage(`${user} joined!`);
 });
 
 socket.on("bye", (user, newCount) => {
     const h3 = room.querySelector("h3");
-    //h3.innerText = `Room ${currentRoomName} (${newCount})`;
+    h3.innerText = `Room (${newCount})명 있음.`;
     addMessage(`${user} left!`);
 });
 
@@ -77,7 +78,7 @@ socket.on("new_message", addMessage);
 
 socket.on("join", (newCount) => {
     const h3 = room.querySelector("h3");
-    //h3.innerText = `Room ${currentRoomName} (${newCount})`;
+    h3.innerText = `Room (${newCount})명 있음.`;
 });
 
 socket.on("room_change", (rooms) => {
