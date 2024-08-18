@@ -1,10 +1,9 @@
-doctype html
 html(lang="en")
     head
         meta(charset="UTF-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title RandomROom
-        <link rel="stylesheet" href="https://unpkg.com/mvp.css">
+        title RandomRoom
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
         style.
             .message-container {
                 list-style: none;
@@ -12,6 +11,12 @@ html(lang="en")
                 margin: 0;
                 display: flex;
                 flex-direction: column;
+                overflow-y: auto;
+                height: 600px;
+                border: 1px solid #444;
+                padding: 10px;
+                background-color: #222;
+                border-radius: 10px;
             }
             .message {
                 margin-bottom: 10px;
@@ -52,9 +57,27 @@ html(lang="en")
                 right: 100%;
                 top: 10px;
             }
-    body(style="background-color: black; color:white;")
+            form#msg {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 20px;
+            }
+            form#msg input {
+                flex: 1;
+                padding: 10px;
+                margin-right: 10px;
+                border-radius: 5px;
+            }
+            form#msg button {
+                padding: 10px;
+                border-radius: 5px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+            }
+    body(style="background-color: black; color: white;")
         header 
-            h1 RandomROom
+            h1 RandomRoom
         main
             div#welcome(style="text-align: right; padding-right: 20px;")
                 form#nickname
@@ -63,12 +86,13 @@ html(lang="en")
                 form#roomname
                     // input(placeholder="room name", required, type="text")
                     button Enter Room
-                ul 
             div#room
-                h3
+                h3 Room Name
                 ul.message-container
+                    // 추가 메시지가 여기에 표시됨
                 form#msg
                     input(placeholder="message", required, type="text")
                     button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
+
