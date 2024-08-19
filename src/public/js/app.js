@@ -54,6 +54,7 @@ function showRoomEnter() {
 
 function handleRoomSubmit(event) {
     event.preventDefault();
+    rnform.hidden = true;
     socket.emit("enter_room", null, (roomName) => {
         currentRoomName = roomName;
         showRoom();

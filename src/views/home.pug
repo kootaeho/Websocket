@@ -93,11 +93,26 @@ html(lang="en")
                 font-size : 35px;
                 margin : 0;
             }
+            #welcome {
+                flex-direction: column; /* 자식 요소들을 수직으로 배치 */
+                justify-content: center; /* 수직 중앙 정렬 */
+                align-items: center; /* 수평 중앙 정렬 */
+                display: flex;
+            }
+            #nickname input {
+                width: 600px; /* 원하는 가로 길이로 설정 */
+                padding: 10px; /* 입력 필드의 내부 여백 추가 */
+                box-sizing: border-box; /* 패딩을 포함한 너비 조정 */
+            }
+            #roomname button {
+                width: 100%;
+                padding: 10px;
+            }
     body(style="background-color: black; color: white;")
         header 
             h1 RandomRoom
         main
-            div#welcome(style="text-align: right; padding-right: 20px;")
+            div#welcome
                 form#nickname
                     input(placeholder="닉네임을 입력하세요", required, type="text" style="background-color: white;")
                     button Save
