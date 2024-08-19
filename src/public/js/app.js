@@ -64,13 +64,13 @@ nickform.addEventListener("submit", handleNicknameSubmit);
 
 socket.on("welcome", (user, newCount) => {
     const h3 = room.querySelector("h3");
-    h3.innerText = `Room (${newCount})명 있음.`;
+    h3.innerText = `방에 (${newCount})명 있음.`;
     addMessage(`${user} joined!`);
 });
 
 socket.on("bye", (user, newCount) => {
     const h3 = room.querySelector("h3");
-    h3.innerText = `Room (${newCount})명 있음.`;
+    h3.innerText = `방에 (${newCount})명 있음.`;
     addMessage(`${user} left!`);
 });
 
@@ -78,7 +78,7 @@ socket.on("new_message", addMessage);
 
 socket.on("join", (newCount) => {
     const h3 = room.querySelector("h3");
-    h3.innerText = `Room (${newCount})명 있음.`;
+    h3.innerText = `방에 (${newCount})명 있음.`;
 });
 
 socket.on("room_change", (rooms) => {
