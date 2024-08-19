@@ -75,6 +75,25 @@ html(lang="en")
                 color: white;
                 border: none;
             }
+            main {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+            }
+            #room {
+                margin-top: 0; /* 위쪽 마진만 제거 */
+                margin-left: auto; /* 다른 방향의 기본 마진을 유지 */
+                margin-right: auto; /* 중앙 정렬 유지 */
+                order : 1;
+            }
+            header {
+                padding : 10px;
+                height : auto;
+            }
+            header h1 {
+                font-size : 35px;
+                margin : 0;
+            }
     body(style="background-color: black; color: white;")
         header 
             h1 RandomRoom
@@ -87,7 +106,7 @@ html(lang="en")
                     // input(placeholder="room name", required, type="text")
                     button Enter Room
             div#room
-                h3 Room Name
+                h3
                 ul.message-container
                 form#msg
                     input(placeholder="message", required, type="text")
