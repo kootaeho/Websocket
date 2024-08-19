@@ -4,11 +4,32 @@ const welcome = document.querySelector("#welcome");
 const rnform = welcome.querySelector("#roomname");
 const nickform = welcome.querySelector("#nickname");
 const room = document.getElementById("room");
+const Groupchat = document.querySelector("#Group");
+const individual = document.querySelector("#oneOnone");
+const GroupSelect = document.querySelector("GroupSelect")
 
 let currentRoomName;
+let Roomcap;
 
 room.hidden = true;
 rnform.hidden = true;
+nickform.hidden = true;
+
+Groupchat.addEventListener("submit", handleGroupchat);
+individual.addEventListener("submit", handleOneonOne);
+
+function handleOneonOne(event){
+    event.preventDefault();
+    Roomcap = 2;
+    handleNicknameSubmit();
+}
+
+
+function handleGroupchat(event){
+    event.preventDefault();
+    Roomcap = 30;
+    handleNicknameSubmit();
+}
 
 function addMessage(message, isOwnMessage = false) {
     const ul = room.querySelector("ul.message-container");
@@ -30,6 +51,8 @@ function handleMessageSubmit(event) {
     input.value = "";
 }
 function handleNicknameSubmit(event) {
+    GroupSelect.hidden = true;
+    nickform.hidden = false;
     event.preventDefault();
     const input = welcome.querySelector("#nickname input");
     socket.emit("nickname", input.value);
@@ -55,7 +78,7 @@ function showRoomEnter() {
 function handleRoomSubmit(event) {
     event.preventDefault();
     rnform.hidden = true;
-    socket.emit("enter_room", null, (roomName) => {
+    socket.emit("enter_room", Roomcap, (roomName) => {
         currentRoomName = roomName;
         showRoom();
     });

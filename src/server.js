@@ -51,16 +51,17 @@ io.on("connection", (socket) => {
     io.sockets.emit("room_change", publicRooms());
     socket["nickname"] = "Anonymous";
 
-    socket.on("enter_room", (roomName, done) => {
+    socket.on("enter_room", (roomName, MaxCap , done) => {
         const publicRoomArr = publicRooms();
         let roomToJoin;
+        let RoomCap = MaxCap;
         if (publicRoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
             socket.join(roomToJoin);
         } else {
             roomToJoin = publicRoomArr[Math.floor(Math.random() * publicRoomArr.length)];
             let roomNum = countRoom(roomToJoin)
-            if(roomNum >=2 ){
+            if(roomNum >= RoomCap ){
                 roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
                 socket.join(roomToJoin);
             }
