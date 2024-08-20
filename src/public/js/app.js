@@ -84,18 +84,10 @@ function showRoomEnter() {
 function handleRoomSubmit(event) {
     event.preventDefault();
     rnform.hidden = true;
-    if(Roomcap === 2){
-        socket.emit("enter_room", null, Roomcap, (roomName) => {
-            currentRoomName = roomName;
-            showRoom();
-        });
-    }
-    else{
-        socket.emit("enter_Group_room", null, Roomcap, (roomName) => {
-            currentRoomName = roomName;
-            showRoom();
-        });
-    }
+    socket.emit("enter_room", null, Roomcap, (roomName) => {
+        currentRoomName = roomName;
+        showRoom();
+    });
 }
 
 nickform.addEventListener("submit", handleNicknameSubmit);
