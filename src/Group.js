@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
     io.sockets.emit("room_change", publicRooms());
     socket["nickname"] = "Anonymous";
 
-    socket.on("enter_room", (roomName, MaxCap , done) => {
+    socket.on("enter_Group_room", (roomName, MaxCap , done) => {
         const publicRoomArr = publicRooms();
         let roomToJoin;
         let RoomCap = Maxcap;
@@ -118,4 +118,3 @@ wss.on("connection", (socket)=>{
 */
 
 httpServer.listen(3000,handleListen);
-
