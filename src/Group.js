@@ -54,7 +54,7 @@ io.on("connection", (socket) => {
     socket.on("enter_Group_room", (roomName, MaxCap , done) => {
         const publicRoomArr = publicRooms();
         let roomToJoin;
-        let RoomCap = Maxcap;
+        let RoomCap = MaxCap;
         if (publicRoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
             socket.join(roomToJoin);
@@ -117,4 +117,4 @@ wss.on("connection", (socket)=>{
 })
 */
 
-httpServer.listen(3000,handleListen);
+httpServer.listen(3001,handleListen);

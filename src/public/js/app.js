@@ -11,7 +11,7 @@ const GroupSelect = document.querySelector("#GroupSelect")
 let currentRoomName;
 let Roomcap;
 
-room.hidden = true;
+room.hidden = true; 
 rnform.hidden = true;
 nickform.hidden = true;
 GroupSelect.hidden = false;
@@ -24,6 +24,8 @@ function handleOneonOne(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 2;
+
+    socket = io("http://localhost:3000");
     handleNicknameSubmit();
 }
 
@@ -33,6 +35,7 @@ function handleGroupchat(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 30;
+    socket = io("http://localhost:3001");
     handleNicknameSubmit();
 }
 
