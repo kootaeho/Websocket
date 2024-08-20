@@ -13,8 +13,8 @@ app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
 
-
-const handleListen = () => console.log('Listening on http://localhost:3000');
+console.log("Group.js 실행됨!");
+const handleListen = () => console.log('Listening on http://localhost:3001');
 
 const httpServer = http.createServer(app);  //express 서버랑 http 합치기
 const io = new Server(httpServer, {
@@ -29,6 +29,7 @@ instrument(io, {
     mode: "development",
 });
 
+httpServer.listen(3001,handleListen);
 
 function publicRooms(){
    const {sockets: {adapter: {sids,rooms}}} = io;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
@@ -117,4 +118,3 @@ wss.on("connection", (socket)=>{
 })
 */
 
-httpServer.listen(3001,handleListen);

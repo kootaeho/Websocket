@@ -1,4 +1,4 @@
 {
     "ignore" : [""],
-    "exec" : "babel-node src/server.js"
+     "exec": "concurrently \"babel-node src/server.js\" \"babel-node src/Group.js\""
 }

@@ -13,7 +13,7 @@ app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
 
-
+console.log("app.js 실행됨!");
 const handleListen = () => console.log('Listening on http://localhost:3000');
 
 const httpServer = http.createServer(app);  //express 서버랑 http 합치기
