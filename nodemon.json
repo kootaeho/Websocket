@@ -1,4 +1,4 @@
 {
     "ignore" : [""],
-     "exec": "concurrently \"babel-node src/oneOnone.js\" \"babel-node src/Group.js\""
+    "exec": "concurrently \"babel-node src/oneOnone.js\" \"babel-node src/Group.js\""
 }

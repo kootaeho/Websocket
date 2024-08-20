@@ -25,7 +25,7 @@ function handleOneonOne(event){
     nickform.hidden = false;
     Roomcap = 2;
 
-    socket = io("http://localhost:3000");
+    socket = io("http://localhost:3000");  //1대1챗 백엔드 서버로 연결 설정
     handleNicknameSubmit();
 }
 
@@ -35,7 +35,7 @@ function handleGroupchat(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 30;
-    socket = io("http://localhost:3001");
+    socket = io("http://localhost:3001");  //그룹챗 백엔드 서버로 연결 설정
     handleNicknameSubmit();
 }
 
