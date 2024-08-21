@@ -13,11 +13,11 @@ app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
 
-console.log("app.js 실행됨!");
+console.log("oneOnone.js 실행됨!");
 const handleListen = () => console.log('Listening on http://localhost:3000');
 
-const httpServer = http.createServer(app);  //express 서버랑 http 합치기
-const io = new Server(httpServer, {
+const oneOnonehttpServer = http.createServer(app);  //express 서버랑 http 합치기
+const io = new Server(oneOnonehttpServer, {
     cors : {
         origin: ["https://admin.socket.io"],
         credentials: true
@@ -30,7 +30,7 @@ instrument(io, {
 });
 
 
-function publicRooms(){
+function publiconeOnoneRooms(){
    const {sockets: {adapter: {sids,rooms}}} = io;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
    // == const {sockets: {adapter: {sids : mysids ,rooms : myrooms }}} = io; 이렇게 하면 다른이름의 변수에 저장가능.
    const userRooms = [];
@@ -46,13 +46,15 @@ function countRoom(roomName){
     return io.sockets.adapter.rooms.get(roomName)?.size;
 }
 
+oneOnonehttpServer.listen(3000,handleListen);
+
 
 io.on("connection", (socket) => {
-    io.sockets.emit("room_change", publicRooms());
+    //io.sockets.emit("room_change", publicRooms());
     socket["nickname"] = "Anonymous";
 
     socket.on("enter_room", (roomName, MaxCap , done) => {
-        const publicRoomArr = publicRooms();
+        const publicRoomArr = publiconeOnoneRooms();
         let roomToJoin;
         let RoomCap = MaxCap;
         if (publicRoomArr.length === 0) {
@@ -72,7 +74,7 @@ io.on("connection", (socket) => {
         done(roomToJoin);  
         io.to(roomToJoin).emit("join", countRoom(roomToJoin));
         socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(roomToJoin));
-        io.sockets.emit("room_change", publicRooms());
+        io.sockets.emit("room_change", publiconeOnoneRooms());
     });
 
     socket.on("disconnecting", () => {
@@ -80,7 +82,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        io.sockets.emit("room_change", publicRooms());
+        io.sockets.emit("room_change", publiconeOnoneRooms());
     });
 
     socket.on("new_message", (msg, room, done) => {
@@ -117,5 +119,4 @@ wss.on("connection", (socket)=>{
 })
 */
 
-httpServer.listen(3000,handleListen);
 
