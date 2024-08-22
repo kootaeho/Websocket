@@ -33,6 +33,7 @@ GrouphttpServer.listen(3001,handleListen);
 
 function publicGroupRooms(namespace){
     if (!namespace.sockets || !namespace.sockets.adapter) {
+        console.log("방 리스트!"+userGroupRooms);
         return [];
     }
    const {sockets: {adapter: {sids,rooms}}} = namespace;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
@@ -129,6 +130,7 @@ oneOnoneChat.on("connection", (socket) => {
             }
         }
         done(roomToJoin);  
+        console.log(roomToJoin)
         oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
         socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
