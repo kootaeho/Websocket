@@ -1,4 +1,4 @@
-const GroupSocket = io("http://localhost:3000");  //1대1챗 백엔드 서버로 연결 설정
+const GroupSocket = io("http://localhost:3001");  //1대1챗 백엔드 서버로 연결 설정
 const oneOnoneSocket = io("http://localhost:3000");  // 1대1 챗 서버
 //let socket
 let activeSocket = null;
@@ -27,8 +27,6 @@ function handleOneonOne(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 2;
-
-    console.log("1대1 버튼")
     activeSocket = oneOnoneSocket;
     handleNicknameSubmit();
 }
@@ -39,8 +37,6 @@ function handleGroupchat(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 30;
-
-    console.log("그룹챗 버튼")
     activeSocket = GroupSocket;
     handleNicknameSubmit();
 }
@@ -74,6 +70,7 @@ function handleNicknameSubmit(event) {
 function showRoom() {
     welcome.hidden = true;
     room.hidden = false;
+    console.log("룸 보여주기 호출됨!")
     //const h3 = room.querySelector("h3");
     //h3.innerText = `Room ${currentRoomName}`;
     const msgForm = room.querySelector("#msg");
@@ -83,15 +80,16 @@ function showRoom() {
 function showRoomEnter() {
     nickform.hidden = true;
     rnform.hidden = false;
-    rnform.removeEventListener("click", handleRoomSubmit);
+    //rnform.removeEventListener("click", handleRoomSubmit);
     rnform.addEventListener("click", handleRoomSubmit);
 }
 
 function handleRoomSubmit(event) {
     event.preventDefault();
     rnform.hidden = true;
-    activeSocket.emit("enter_room", null, Roomcap, (roomName) => {
+    activeSocket.emit("enter_room",null, Roomcap,(roomName) => {
         currentRoomName = roomName;
+        console.log("콜백 실행됨!")
         showRoom();
     });
 }

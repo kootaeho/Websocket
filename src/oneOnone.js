@@ -52,8 +52,8 @@ oneOnonehttpServer.listen(3000,handleListen);
 io.on("connection", (socket) => {
     //io.sockets.emit("room_change", publicRooms());
     socket["nickname"] = "Anonymous";
-
     socket.on("enter_room", (roomName, MaxCap , done) => {
+        console.log("enter_room 이벤트 수신:", roomName, MaxCap);
         const publicRoomArr = publiconeOnoneRooms();
         let roomToJoin;
         let RoomCap = MaxCap;

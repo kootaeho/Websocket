@@ -55,6 +55,7 @@ io.on("connection", (socket) => {
     socket.on("enter_room", (roomName, MaxCap , done) => {
         const GroupRoomArr = publicGroupRooms();
         let roomToJoin;
+        console.log("enter_room 이벤트 수신:", roomName, MaxCap);
         let RoomCap = MaxCap;
         if (GroupRoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
