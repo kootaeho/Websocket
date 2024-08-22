@@ -1,3 +1,4 @@
+/*
 import express from "express";
 import http from "http";
 import {Server} from "socket.io";
@@ -95,7 +96,7 @@ io.on("connection", (socket) => {
     });
 });
 
-
+*/
 /*
 const sockets = [];
 wss.on("connection", (socket)=>{
