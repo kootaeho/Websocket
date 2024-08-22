@@ -28,11 +28,14 @@ instrument(io, {
     auth: false,
     mode: "development",
 });
-
+const GroupChat = io.of("/group")
 GrouphttpServer.listen(3001,handleListen);
 
-function publicGroupRooms(){
-   const {sockets: {adapter: {sids,rooms}}} = io;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
+function publicGroupRooms(namespace){
+    if (!namespace.sockets || !namespace.sockets.adapter) {
+        return [];
+    }
+   const {sockets: {adapter: {sids,rooms}}} = namespace;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
    // == const {sockets: {adapter: {sids : mysids ,rooms : myrooms }}} = io; 이렇게 하면 다른이름의 변수에 저장가능.
    const userGroupRooms = [];
    rooms.forEach((_, key) => {
@@ -43,17 +46,19 @@ function publicGroupRooms(){
    return userGroupRooms;
 }
 
-function countRoom(roomName){
-    return io.sockets.adapter.rooms.get(roomName)?.size;
+function countRoom(namespace,roomName){
+    if (!namespace.sockets || !namespace.sockets.adapter) {
+        return 0;
+    }
+    return namespace.sockets.adapter.rooms.get(roomName)?.size || 0;
 }
 
 
-io.on("connection", (socket) => {
-    //io.sockets.emit("room_change", publicRooms());
+GroupChat.on("connection", (socket) => {
     socket["nickname"] = "Anonymous";
 
     socket.on("enter_room", (roomName, MaxCap , done) => {
-        const GroupRoomArr = publicGroupRooms();
+        const GroupRoomArr = publicGroupRooms(GroupChat);
         let roomToJoin;
         console.log("enter_room 이벤트 수신:", roomName, MaxCap);
         let RoomCap = MaxCap;
@@ -62,7 +67,7 @@ io.on("connection", (socket) => {
             socket.join(roomToJoin);
         } else {
             roomToJoin = GroupRoomArr[Math.floor(Math.random() * GroupRoomArr.length)];
-            let roomNum = countRoom(roomToJoin)
+            let roomNum = countRoom(GroupChat,roomToJoin)
             if(roomNum >= RoomCap ){
                 roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
                 socket.join(roomToJoin);
@@ -72,17 +77,17 @@ io.on("connection", (socket) => {
             }
         }
         done(roomToJoin);  
-        io.to(roomToJoin).emit("join", countRoom(roomToJoin));
-        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(roomToJoin));
-        io.sockets.emit("room_change", publicGroupRooms());
+        GroupChat.to(roomToJoin).emit("join", countRoom(GroupChat,roomToJoin));
+        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(GroupChat,roomToJoin));
+        GroupChat.emit("room_change", publicGroupRooms(GroupChat));
     });
 
     socket.on("disconnecting", () => {
-        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(room) - 1));
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(GroupChat,room) - 1));
     });
 
     socket.on("disconnect", () => {
-        io.sockets.emit("room_change", publicGroupRooms());
+        GroupChat.emit("room_change", publicGroupRooms(GroupChat));
     });
 
     socket.on("new_message", (msg, room, done) => {
@@ -96,4 +101,53 @@ io.on("connection", (socket) => {
 });
 
 
+const oneOnoneChat = io.of("/oneonone")
 
+
+
+oneOnoneChat.on("connection", (socket) => {
+    //io.sockets.emit("room_change", publicRooms());
+    socket["nickname"] = "Anonymous";
+
+    socket.on("enter_room", (roomName, MaxCap , done) => {
+        const GroupRoomArr = publicGroupRooms(oneOnoneChat);
+        let roomToJoin;
+        console.log("enter_room 이벤트 수신:", roomName, MaxCap);
+        let RoomCap = MaxCap;
+        if (GroupRoomArr.length === 0) {
+            roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
+            socket.join(roomToJoin);
+        } else {
+            roomToJoin = GroupRoomArr[Math.floor(Math.random() * GroupRoomArr.length)];
+            let roomNum = countRoom(oneOnoneChat,roomToJoin)
+            if(roomNum >= RoomCap ){
+                roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
+                socket.join(roomToJoin);
+            }
+            else{
+                socket.join(roomToJoin);
+            }
+        }
+        done(roomToJoin);  
+        oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
+        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
+        oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
+    });
+
+    socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat,room) - 1));
+    });
+
+    socket.on("disconnect", () => {
+        oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
+    });
+
+    socket.on("new_message", (msg, room, done) => {
+        socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
+        done();
+    });
+
+    socket.on("nickname", (nickname) => {
+        socket["nickname"] = nickname;
+    });
+});

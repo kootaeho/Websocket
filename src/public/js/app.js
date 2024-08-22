@@ -1,5 +1,5 @@
-const GroupSocket = io("http://localhost:3001");  //1대1챗 백엔드 서버로 연결 설정
-const oneOnoneSocket = io("http://localhost:3000");  // 1대1 챗 서버
+//const GroupSocket = io("http://localhost:3001");  //1대1챗 백엔드 서버로 연결 설정
+//const oneOnoneSocket = io("http://localhost:3000");  // 1대1 챗 서버
 //let socket
 let activeSocket = null;
 
@@ -27,7 +27,7 @@ function handleOneonOne(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 2;
-    activeSocket = oneOnoneSocket;
+    activeSocket = io("/oneonone")
     handleNicknameSubmit();
 }
 
@@ -37,7 +37,7 @@ function handleGroupchat(event){
     GroupSelect.hidden = true;
     nickform.hidden = false;
     Roomcap = 30;
-    activeSocket = GroupSocket;
+    activeSocket = io("/group")
     handleNicknameSubmit();
 }
 
