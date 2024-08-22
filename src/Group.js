@@ -32,18 +32,19 @@ const GroupChat = io.of("/group")
 GrouphttpServer.listen(3001,handleListen);
 
 function publicGroupRooms(namespace){
-    if (!namespace.sockets || !namespace.sockets.adapter) {
-        console.log("방 리스트!"+userGroupRooms);
+    if (!namespace.adapter || !namespace.adapter.rooms) {
+        console.log("네임스페이스 오류!");
         return [];
     }
-   const {sockets: {adapter: {sids,rooms}}} = namespace;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
+   const {adapter: {sids,rooms}} = namespace;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
    // == const {sockets: {adapter: {sids : mysids ,rooms : myrooms }}} = io; 이렇게 하면 다른이름의 변수에 저장가능.
    const userGroupRooms = [];
-   rooms.forEach((_, key) => {
-        if(sids.get(key) === undefined){
+   for (const [key, value] of rooms) {
+    // 방이 클라이언트 개별 ID(sids)에 포함되지 않은 경우 공용 방으로 간주
+        if (!sids.has(key)) {
             userGroupRooms.push(key);
         }
-   })
+    }
    return userGroupRooms;
 }
 
