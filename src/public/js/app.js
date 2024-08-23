@@ -28,7 +28,7 @@ function handleOneonOne(event){
     nickform.hidden = false;
     Roomcap = 2;
     activeSocket = io("/oneonone")
-    handleNicknameSubmit();
+    setupSocketListeners(); 
 }
 
 
@@ -38,7 +38,7 @@ function handleGroupchat(event){
     nickform.hidden = false;
     Roomcap = 30;
     activeSocket = io("/group")
-    handleNicknameSubmit();
+    setupSocketListeners();
 }
 
 function addMessage(message, isOwnMessage = false) {
@@ -94,33 +94,33 @@ function handleRoomSubmit(event) {
 
 nickform.addEventListener("submit", handleNicknameSubmit);
 
-// 이벤트 리스너를 각각의 소켓에 연결
-[GroupSocket, oneOnoneSocket].forEach(socket => {
-    socket.on("welcome", (user, newCount) => {
+function setupSocketListeners() {
+    activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
         addMessage(`${user} joined!`);
     });
 
-    socket.on("bye", (user, newCount) => {
+    activeSocket.on("bye", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
         addMessage(`${user} left!`);
     });
 
-    socket.on("new_message", addMessage);
+    activeSocket.on("new_message", (message) => {
+        addMessage(message);
+    });
 
-    socket.on("join", (newCount) => {
-        console.log("join함수 도착!");
+    activeSocket.on("join", (newCount) => {
+        console.log("join 함수 도착!");
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
     });
 
-    socket.on("room_change", (rooms) => {
+    activeSocket.on("room_change", (rooms) => {
         const roomList = welcome.querySelector("ul");
-        //roomList.innerHTML = "";
         if (rooms.length === 0) {
             return;
         }
     });
-});
+}

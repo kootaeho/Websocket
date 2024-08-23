@@ -28,7 +28,9 @@ instrument(io, {
     auth: false,
     mode: "development",
 });
-const GroupChat = io.of("/group")
+const GroupChat = io.of("/group");
+const oneOnoneChat = io.of("/oneonone");
+
 GrouphttpServer.listen(3001,handleListen);
 
 function publicGroupRooms(namespace){
@@ -76,9 +78,8 @@ GroupChat.on("connection", (socket) => {
             }
         }
         done(roomToJoin);
-        console.log(GroupRoomArr);
         GroupChat.to(roomToJoin).emit("join", countRoom(GroupChat,roomToJoin));
-        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(GroupChat,roomToJoin));
+        GroupChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(GroupChat,roomToJoin));
         GroupChat.emit("room_change", publicGroupRooms(GroupChat));
     });
 
@@ -99,10 +100,6 @@ GroupChat.on("connection", (socket) => {
         socket["nickname"] = nickname;
     });
 });
-
-
-const oneOnoneChat = io.of("/oneonone")
-
 
 
 oneOnoneChat.on("connection", (socket) => {
@@ -128,7 +125,6 @@ oneOnoneChat.on("connection", (socket) => {
             }
         }
         done(roomToJoin);
-        console.log(RoomArr);
         oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
         socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
