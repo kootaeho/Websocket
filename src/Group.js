@@ -36,7 +36,7 @@ function publicGroupRooms(namespace){
         console.log("네임스페이스 오류!");
         return [];
     }
-   const {adapter: {sids,rooms}} = namespace;  // == const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
+   const {adapter: {sids,rooms}} = namespace;  // const sids = io.sockets.adapter.sids; const rooms = io.sockets.adapter.rooms; 
    // == const {sockets: {adapter: {sids : mysids ,rooms : myrooms }}} = io; 이렇게 하면 다른이름의 변수에 저장가능.
    const userGroupRooms = [];
    for (const [key, value] of rooms) {
@@ -49,10 +49,8 @@ function publicGroupRooms(namespace){
 }
 
 function countRoom(namespace,roomName){
-    if (!namespace.sockets || !namespace.sockets.adapter) {
-        return 0;
-    }
-    return namespace.sockets.adapter.rooms.get(roomName)?.size || 0;
+    //console.log(namespace.adapter.rooms.get(roomName)?.size);
+    return namespace.adapter.rooms.get(roomName)?.size ;
 }
 
 
@@ -62,7 +60,6 @@ GroupChat.on("connection", (socket) => {
     socket.on("enter_room", (roomName, MaxCap , done) => {
         const GroupRoomArr = publicGroupRooms(GroupChat);
         let roomToJoin;
-        console.log("enter_room 이벤트 수신:", roomName, MaxCap);
         let RoomCap = MaxCap;
         if (GroupRoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
@@ -78,7 +75,8 @@ GroupChat.on("connection", (socket) => {
                 socket.join(roomToJoin);
             }
         }
-        done(roomToJoin);  
+        done(roomToJoin);
+        console.log(GroupRoomArr);
         GroupChat.to(roomToJoin).emit("join", countRoom(GroupChat,roomToJoin));
         socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(GroupChat,roomToJoin));
         GroupChat.emit("room_change", publicGroupRooms(GroupChat));
@@ -114,7 +112,6 @@ oneOnoneChat.on("connection", (socket) => {
     socket.on("enter_room", (roomName, MaxCap , done) => {
         const RoomArr = publicGroupRooms(oneOnoneChat);
         let roomToJoin;
-        console.log("enter_room 이벤트 수신:", roomName, MaxCap);
         let RoomCap = MaxCap;
         if (RoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
@@ -130,8 +127,8 @@ oneOnoneChat.on("connection", (socket) => {
                 socket.join(roomToJoin);
             }
         }
-        done(roomToJoin);  
-        console.log(roomToJoin)
+        done(roomToJoin);
+        console.log(RoomArr);
         oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
         socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));

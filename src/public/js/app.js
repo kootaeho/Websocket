@@ -70,7 +70,6 @@ function handleNicknameSubmit(event) {
 function showRoom() {
     welcome.hidden = true;
     room.hidden = false;
-    console.log("룸 보여주기 호출됨!")
     //const h3 = room.querySelector("h3");
     //h3.innerText = `Room ${currentRoomName}`;
     const msgForm = room.querySelector("#msg");
@@ -89,7 +88,6 @@ function handleRoomSubmit(event) {
     rnform.hidden = true;
     activeSocket.emit("enter_room",null, Roomcap,(roomName) => {
         currentRoomName = roomName;
-        console.log("콜백 실행됨!")
         showRoom();
     });
 }
@@ -113,6 +111,7 @@ nickform.addEventListener("submit", handleNicknameSubmit);
     socket.on("new_message", addMessage);
 
     socket.on("join", (newCount) => {
+        console.log("join함수 도착!");
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
     });
