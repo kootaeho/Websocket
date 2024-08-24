@@ -1,10 +1,98 @@
 html(lang="en")
     head
         meta(charset="UTF-8")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
         title RandomRoom
         link(rel="stylesheet" href="https://unpkg.com/mvp.css")
         style.
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+            }
+
+            body {
+                background-color: #121212;
+                color: #f1f1f1;
+                font-family: 'Roboto', sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                transition: background-color 0.3s ease;
+            }
+
+            header {
+                padding: 20px;
+                text-align: center;
+                animation: fadeIn 1s ease-in-out;
+            }
+
+            header h1 {
+                font-size: 3rem;
+                margin: 0;
+                color: #4CAF50;
+            }
+
+            header h3 {
+                font-size: 1.2rem;
+                margin-top: 10px;
+                color: #a1a1a1;
+            }
+
+            #choose, #welcome, #room {
+                width: 100%;
+                max-width: 600px;
+                padding: 20px;
+                border-radius: 10px;
+                animation: fadeIn 1s ease-in-out;
+                background-color: #1e1e1e;
+            }
+
+            button {
+                font-size: 1rem;
+                padding: 10px 20px;
+                margin: 5px 0;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            button:hover {
+                background-color: #3e8e41;
+            }
+
+            input[type="text"] {
+                padding: 10px;
+                width: 100%;
+                border: 1px solid #444;
+                border-radius: 5px;
+                margin-bottom: 10px;
+                background-color: #2a2a2a;
+                color: #f1f1f1;
+                font-size: 1rem;
+            }
+
             .message-container {
                 list-style: none;
                 padding: 0;
@@ -18,6 +106,7 @@ html(lang="en")
                 background-color: #222;
                 border-radius: 10px;
             }
+
             .message {
                 margin-bottom: 10px;
                 padding: 10px;
@@ -28,14 +117,17 @@ html(lang="en")
                 font-size: 16px;
                 word-wrap: break-word;
             }
+
             .message.you {
                 background-color: #4CAF50;
                 align-self: flex-end;
             }
+
             .message.other {
                 background-color: #555;
                 align-self: flex-start;
             }
+
             .message::after {
                 content: '';
                 position: absolute;
@@ -43,6 +135,7 @@ html(lang="en")
                 height: 0;
                 border: 10px solid transparent;
             }
+
             .message.you::after {
                 border-right-color: #4CAF50;
                 border-left: 0;
@@ -50,6 +143,7 @@ html(lang="en")
                 left: 100%;
                 top: 10px;
             }
+
             .message.other::after {
                 border-left-color: #555;
                 border-right: 0;
@@ -57,17 +151,20 @@ html(lang="en")
                 right: 100%;
                 top: 10px;
             }
+
             form#msg {
                 display: flex;
                 justify-content: space-between;
                 margin-top: 20px;
             }
+
             form#msg input {
                 flex: 1;
                 padding: 10px;
                 margin-right: 10px;
                 border-radius: 5px;
             }
+
             form#msg button {
                 padding: 10px;
                 border-radius: 5px;
@@ -75,45 +172,43 @@ html(lang="en")
                 color: white;
                 border: none;
             }
+
             main {
                 display: flex;
                 flex-direction: column;
                 padding: 0;
             }
+
             #room {
                 margin-top: 0; /* 위쪽 마진만 제거 */
-                
-                order : 1;
+                order: 1;
             }
-            header {
-                padding : 10px;
-                height : auto;
-            }
-            header h1 {
-                font-size : 35px;
-                margin : 0;
-            }
+
             #welcome {
                 flex-direction: column; /* 자식 요소들을 수직으로 배치 */
                 justify-content: center; /* 수직 중앙 정렬 */
                 align-items: center; /* 수평 중앙 정렬 */
                 display: flex;
             }
+
             #nickname input {
                 width: 600px; /* 원하는 가로 길이로 설정 */
                 padding: 10px; /* 입력 필드의 내부 여백 추가 */
                 box-sizing: border-box; /* 패딩을 포함한 너비 조정 */
             }
+
             #roomname button {
                 width: 100%;
                 padding: 10px;
             }
+
             #GroupSelect {
                 position: relative;
                 width: 50%; /* form의 너비를 설정하여 중앙에 배치 */
                 margin: 0 auto; /* form을 페이지 중앙에 위치 */
                 text-align: center; /* 버튼들을 수평으로 중앙에 정렬 */
             }
+
             #Group, #oneOnone {
                 flex: 1;
                 margin: 0 20px; /* 버튼 사이에 여백 추가 */
@@ -132,7 +227,6 @@ html(lang="en")
                     input(placeholder="닉네임을 입력하세요", required, type="text" style="background-color: white;")
                     button 저장
                 form#roomname
-                    // input(placeholder="room name", required, type="text")
                     button 방 입장
             div#room
                 h3
@@ -142,3 +236,4 @@ html(lang="en")
                     button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
+
