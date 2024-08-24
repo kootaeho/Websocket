@@ -10,6 +10,7 @@ const room = document.getElementById("room");
 const Groupchat = document.querySelector("#Group");
 const individual = document.querySelector("#oneOnone");
 const GroupSelect = document.querySelector("#GroupSelect")
+const sub = document.querySelector("#SubTitle");
 
 let currentRoomName;
 let Roomcap;
@@ -25,6 +26,7 @@ individual.addEventListener("click", handleOneonOne);
 function handleOneonOne(event){
     event.preventDefault();
     GroupSelect.hidden = true;
+    sub.innerText = "1대1 랜덤 챗";
     nickform.hidden = false;
     Roomcap = 2;
     activeSocket = io("/oneonone")
@@ -35,6 +37,7 @@ function handleOneonOne(event){
 function handleGroupchat(event){
     event.preventDefault();
     GroupSelect.hidden = true;
+    sub.innerText = "그룹 랜덤 챗";
     nickform.hidden = false;
     Roomcap = 30;
     activeSocket = io("/group")

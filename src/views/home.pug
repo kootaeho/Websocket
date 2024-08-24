@@ -121,18 +121,19 @@ html(lang="en")
     body(style="background-color: black; color: white;")
         header 
             h1 RandomRoom
+                h3#SubTitle
         main
             div#choose
                 form#GroupSelect
-                    button#Group 그룹챗
-                    button#oneOnone 1대1 채팅
+                    button#Group 랜덤 그룹챗
+                    button#oneOnone 랜덤 1대1 채팅
             div#welcome
                 form#nickname
                     input(placeholder="닉네임을 입력하세요", required, type="text" style="background-color: white;")
-                    button Save
+                    button 저장
                 form#roomname
                     // input(placeholder="room name", required, type="text")
-                    button Enter Room
+                    button 방 입장
             div#room
                 h3
                 ul.message-container
