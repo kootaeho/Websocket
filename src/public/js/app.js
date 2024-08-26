@@ -108,7 +108,7 @@ function setupSocketListeners() {
     activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
-        addMessage(`${user} joined!`);
+        addMessage(`${user} 방 입장!`);
     });
 
     activeSocket.on("bye", (user, newCount) => {
@@ -122,7 +122,6 @@ function setupSocketListeners() {
     });
 
     activeSocket.on("join", (newCount) => {
-        console.log("join 함수 도착!");
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
     });

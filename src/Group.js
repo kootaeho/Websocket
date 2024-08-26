@@ -126,7 +126,7 @@ oneOnoneChat.on("connection", (socket) => {
         }
         done(roomToJoin);
         oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
-        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
+        oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });
 
