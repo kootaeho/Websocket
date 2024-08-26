@@ -6,7 +6,8 @@ import { clearScreenDown } from "readline";
 import { count } from "console";
 
 const app = express();
-
+const now = new Date();
+console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
 app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
@@ -126,7 +127,7 @@ oneOnoneChat.on("connection", (socket) => {
         }
         done(roomToJoin);
         oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
-        socket.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
+        oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });
 

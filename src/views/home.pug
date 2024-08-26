@@ -108,8 +108,15 @@ html(lang="en")
                 box-sizing : border-box;
             }
 
-            .message {
+            .message-container-item {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
                 margin-bottom: 10px;
+                position: relative;
+            }
+
+            .message {
                 padding: 10px;
                 max-width: 70%;
                 border-radius: 10px;
@@ -127,6 +134,22 @@ html(lang="en")
             .message.other {
                 background-color: #555;
                 align-self: flex-start;
+            }
+
+            .message-time {
+                font-size: 0.8rem;
+                color: #888;
+                margin: 0 10px;
+                white-space: nowrap;
+            }
+
+            .message-container-item .you + .message-time {
+                order: -1; /* 나의 메시지일 때 시간 위치를 왼쪽으로 변경 */
+                margin-right: auto;
+            }
+
+            .message-container-item .other + .message-time {
+                margin-left: auto;
             }
 
             .message::after {
@@ -262,6 +285,7 @@ html(lang="en")
             div#room
                 h3
                 ul.message-container
+                ul.time
                 form#msg
                     input(placeholder="message", required, type="text")
                     button Send

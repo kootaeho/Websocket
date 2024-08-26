@@ -53,9 +53,27 @@ function handleGroupchat(event){
 function addMessage(message, isOwnMessage = false) {
     const ul = room.querySelector("ul.message-container");
     const li = document.createElement("li");
-    li.classList.add("message");
-    li.classList.add(isOwnMessage ? "you" : "other");
-    li.innerText = message;
+    li.classList.add("message-container-item");
+
+    // 현재 시간을 구하여 포맷
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    // 메시지 텍스트
+    const messageBox = document.createElement("div");
+    messageBox.classList.add("message");
+    messageBox.classList.add(isOwnMessage ? "you" : "other");
+    messageBox.innerText = message;
+
+    // 시간 텍스트
+    const messageTime = document.createElement("div");
+    messageTime.classList.add("message-time");
+    messageTime.innerText = time;
+
+    // 메시지와 시간을 li에 추가
+    li.appendChild(isOwnMessage ? messageTime : messageBox);
+    li.appendChild(isOwnMessage ? messageBox : messageTime);
+
     ul.appendChild(li);
     ul.scrollTop = ul.scrollHeight;
 }
@@ -108,7 +126,7 @@ function setupSocketListeners() {
     activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
-        addMessage(`${user} joined!`);
+        addMessage(`${user} 방 입장!`);
     });
 
     activeSocket.on("bye", (user, newCount) => {
@@ -122,7 +140,6 @@ function setupSocketListeners() {
     });
 
     activeSocket.on("join", (newCount) => {
-        console.log("join 함수 도착!");
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
     });
