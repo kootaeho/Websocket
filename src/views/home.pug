@@ -59,7 +59,7 @@ html(lang="en")
                 color: #a1a1a1;
             }
 
-            #choose, #welcome, #room {
+            #choose, #welcome {
                 width: 100%;
                 max-width: 600px;
                 padding: 20px;
@@ -94,17 +94,18 @@ html(lang="en")
             }
 
             .message-container {
+                flex: 1; /* 남은 공간을 메시지 컨테이너가 차지 */
                 list-style: none;
-                padding: 0;
+                padding: 10px;
                 margin: 0;
                 display: flex;
                 flex-direction: column;
                 overflow-y: auto;
-                height: 600px; /* 채팅 박스 높이 설정 */
                 border: 1px solid #444;
-                padding: 10px;
                 background-color: #222;
                 border-radius: 10px;
+                width : 800px;
+                box-sizing : border-box;
             }
 
             .message {
@@ -155,7 +156,9 @@ html(lang="en")
             form#msg {
                 display: flex;
                 justify-content: space-between;
-                margin-top: 20px;
+                margin-top: 10px;
+                width : 100%;
+                box-sizing : border-box;
             }
 
             form#msg input {
@@ -163,6 +166,7 @@ html(lang="en")
                 padding: 10px;
                 margin-right: 10px;
                 border-radius: 5px;
+                box-sizing: border-box;
             }
 
             form#msg button {
@@ -171,6 +175,7 @@ html(lang="en")
                 background-color: #4CAF50;
                 color: white;
                 border: none;
+                box-sizing: border-box;
             }
 
             main {
@@ -180,10 +185,21 @@ html(lang="en")
             }
 
             #room {
-                margin-top: 0; /* 위쪽 마진만 제거 */
+                width: 800px;
+                height: 80vh; /* 전체 페이지 높이의 80%를 차지 */
+                margin-top: 0;
                 order: 1;
-                width: 600px;
-                height : 600px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                box-sizing : border-box;
+            }
+
+            #room h3 {
+                margin: 0 0 10px 0;
+                font-size: 1.5rem;
+                text-align: center;
+                width : 100%;
             }
 
             #welcome {
@@ -219,6 +235,9 @@ html(lang="en")
                 flex: 1;
                 margin: 20px; /* 버튼 사이에 여백 추가 */
             }
+            #room[hidden] {
+                display: none;
+            }
     body(style="background-color: black; color: white;")
         header 
             h1 RandomRoom
@@ -242,4 +261,3 @@ html(lang="en")
                     button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
-

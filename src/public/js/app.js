@@ -6,7 +6,7 @@ let activeSocket = null;
 const welcome = document.querySelector("#welcome");
 const rnform = welcome.querySelector("#roomname");
 const nickform = welcome.querySelector("#nickname");
-const room = document.getElementById("room");
+const room = document.querySelector("#room");
 const Groupchat = document.querySelector("#Group");
 const individual = document.querySelector("#oneOnone");
 const GroupSelect = document.querySelector("#GroupSelect")
@@ -17,7 +17,7 @@ let currentRoomName;
 let Roomcap;
 
 welcome.style.display = "none";
-room.hidden = true; 
+room.hidden = true;
 rnform.hidden = true;
 nickform.hidden = true;
 GroupSelect.hidden = false;
