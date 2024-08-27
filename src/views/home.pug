@@ -110,7 +110,7 @@ html(lang="en")
 
             .message-container-item {
                 display: flex;
-                align-items: center;
+                align-items: flex-start;
                 margin-bottom: 10px;
                 position: relative;
             }
@@ -137,20 +137,23 @@ html(lang="en")
 
             .message-time {
                 font-size: 0.8rem;
-                color: #888;
+                color: #888;    
                 /*position: relative;*/
                 position: absolute; /* 부모 요소에 상대적으로 위치 */
                 bottom: 0; /* 메시지 박스의 하단에 위치 */
                 white-space: nowrap;
+                transform: translateY(100%);
             }
 
             .message-container-item .you + .message-time {
-                left: -50px;
+                left: calc(100% - 70px);
+                margin-bottom : 6px;
                 /*margin-left: 10px;*/
             }
 
             .message-container-item .other + .message-time {
-                right: -50px; /* 상대방 메시지일 때 시간 위치를 메시지 왼쪽에 배치 */
+                left: calc(0% + 15px);
+                margin-bottom : 6px;
                 /*margin-right: 10px;*/
             }
 
