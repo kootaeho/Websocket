@@ -57,7 +57,7 @@ function addMessage(message, isOwnMessage = false) {
 
     // 현재 시간을 구하여 포맷
     const now = new Date();
-    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
     // 메시지 텍스트
     const messageBox = document.createElement("div");
@@ -84,7 +84,7 @@ function handleMessageSubmit(event) {
     const input = room.querySelector("#msg input");
     const value = input.value;
     activeSocket.emit("new_message", value, currentRoomName, () => {
-        addMessage(`You: ${value}`, true);
+        addMessage(`${value}`, true);
     });
     input.value = "";
 }
