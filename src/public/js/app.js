@@ -71,12 +71,13 @@ function addMessage(message, isOwnMessage = false) {
     messageTime.innerText = time;
 
     // 메시지와 시간을 li에 추가
-    li.appendChild(isOwnMessage ? messageTime : messageBox);
-    li.appendChild(isOwnMessage ? messageBox : messageTime);
+    li.appendChild(messageBox);
+    li.appendChild(messageTime);
 
     ul.appendChild(li);
     ul.scrollTop = ul.scrollHeight;
 }
+
 
 function handleMessageSubmit(event) {
     event.preventDefault();

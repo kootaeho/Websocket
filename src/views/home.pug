@@ -111,7 +111,6 @@ html(lang="en")
             .message-container-item {
                 display: flex;
                 align-items: center;
-                justify-content: flex-start;
                 margin-bottom: 10px;
                 position: relative;
             }
@@ -128,28 +127,31 @@ html(lang="en")
 
             .message.you {
                 background-color: #4CAF50;
-                align-self: flex-end;
+                margin-left: auto;
             }
 
             .message.other {
                 background-color: #555;
-                align-self: flex-start;
+                margin-right: auto;
             }
 
             .message-time {
                 font-size: 0.8rem;
                 color: #888;
-                margin: 0 10px;
+                /*position: relative;*/
+                position: absolute; /* 부모 요소에 상대적으로 위치 */
+                bottom: 0; /* 메시지 박스의 하단에 위치 */
                 white-space: nowrap;
             }
 
             .message-container-item .you + .message-time {
-                order: -1; /* 나의 메시지일 때 시간 위치를 왼쪽으로 변경 */
-                margin-right: auto;
+                left: -50px;
+                /*margin-left: 10px;*/
             }
 
             .message-container-item .other + .message-time {
-                margin-left: auto;
+                right: -50px; /* 상대방 메시지일 때 시간 위치를 메시지 왼쪽에 배치 */
+                /*margin-right: 10px;*/
             }
 
             .message::after {
@@ -285,9 +287,9 @@ html(lang="en")
             div#room
                 h3
                 ul.message-container
-                ul.time
-                form#msg
-                    input(placeholder="message", required, type="text")
-                    button Send
+                div#message-input
+                    form#msg
+                        input(placeholder="message", required, type="text")
+                        button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
