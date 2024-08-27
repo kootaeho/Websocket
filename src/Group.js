@@ -7,6 +7,8 @@ import { count } from "console";
 
 const app = express();
 const now = new Date();
+const mysql = require("mysql2");
+const dbconfig = require('./config/dbconfig.json');
 console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
 app.set("views", __dirname + "/views");
