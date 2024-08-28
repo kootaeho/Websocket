@@ -24,26 +24,38 @@ verifyform.addEventListener("submit",handleVerify);
 
 function handleVerify(event){
     event.preventDefault();
-    verifyform.hidden = true;
-    nickform.hidden = false;
     const emailInput = document.querySelector("#emailInput").value;
     const codeInput = document.querySelector("#codeInput").value;
 
     activeSocket.emit("verify_code", emailInput,codeInput,(response)=>{
-        console.log(response);
+        if (response.success) {
+            // 인증 코드 검증이 성공했을 때만 다음 단계로 이동
+            console.log("이메일 인증에 성공했습니다.");
+            verifyform.hidden = true;
+            nickform.hidden = false;
+        } else {
+            console.log("인증 실패:", response.error);
+            alert("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
+        }
     });
     
 }
 
 function handleEmail(event){
     event.preventDefault();
-    emailform.hidden = true;
-    verifyform.hidden = false;
     const emailInput = emailform.querySelector('#emailInput').value;
     const univNameInput = emailform.querySelector('#univNameInput').value;
 
     activeSocket.emit("certify_email", emailInput,univNameInput,(response)=>{
-        console.log(response);
+        if (response.success) {
+            // 인증 코드 전송이 성공했을 때만 다음 단계로 이동
+            console.log("인증 코드가 전송되었습니다.");
+            emailform.hidden = true;
+            verifyform.hidden = false;
+        } else {
+            console.log("인증 코드 전송 실패:", response.error);
+            alert("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
+        }
     });
 }
 
