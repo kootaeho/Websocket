@@ -150,6 +150,18 @@ oneOnoneChat.on("connection", (socket) => {
             done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
         }
     });
+    socket.on("verify_code", async (email, code, done) => {
+        try {
+            const response = await axios.post('https://univcert.com/api/v1/certifycode', {
+                key: API_KEY,
+                email: email,
+                code: code
+            });
+            done(response.data);
+        } catch (error) {
+            done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
+        }
+    });
 
     socket.on("disconnecting", () => {
         socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat,room) - 1));

@@ -14,16 +14,30 @@ const sub = document.querySelector("#SubTitle");
 const choose = document.querySelector("#choose");
 const emailform = document.querySelector("#emailSubmit");
 const emailButton = document.querySelector("#emailButton");
+const verifyform = document.querySelector("#verify");
 
-emailButton.addEventListener("click",handleEmail);
+
+emailButton.addEventListener("submit",handleEmail);
+verifyform.addEventListener("submit",handleVerify);
+
+function handleVerify(event){
+    event.preventDefault();
+    const emailInput = document.querySelector("#emailInput").value;
+    const codeInput = document.querySelector("#codeInput").value;
+
+    Socket.emit("verify_code", emailInput,codeInput,(response)=>{
+        console.log(response);
+    });
+    
+}
 
 function handleEmail(event){
     console.log("제출됨!")
     event.preventDefault();
-    const emailInput = emailform.querySelector('input[placeholder="학교 이메일을 입력하세요"]').value;
-    const univNameInput = emailform.querySelector('input[placeholder="학교 이름을 입력하세요"]').value;
-    activeSocket.emit("certify_email", emailInput,univNameInput,()=>{
-        console.log(emailInput, univNameInput);
+    const emailInput = emailform.querySelector('#emailInput').value;
+    const univNameInput = emailform.querySelector('#univNameInput').value;
+    activeSocket.emit("certify_email", emailInput,univNameInput,(response)=>{
+        console.log(response);
     });
 }
 

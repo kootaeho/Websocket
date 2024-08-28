@@ -281,11 +281,11 @@ html(lang="en")
         main
             div#email
                 from#emailSubmit
-                    input(placeholder="학교 이메일을 입력하세요", required, type="text")
-                    input(placeholder="학교 이름을 입력하세요", required, type="text")
+                    input(id = "emailInput" placeholder="학교 이메일을 입력하세요", required, type="text")
+                    input(id = "univNameInput" placeholder="학교 이름을 입력하세요", required, type="text")
                     button#emailButton 인증 코드 발송
                 form#verify
-                    input(placeholder="인증 코드 입력", required, type="text")
+                    input(id = "codeInput" placeholder="인증 코드 입력", required, type="text")
                     button#verifyButton 인증 
             div#choose
                 form#GroupSelect
