@@ -138,7 +138,6 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("certify_email", async (email, univName, done) => {
         try {
-            console.log("유저가 인증 시도중!");
             const response = await axios.post('https://univcert.com/api/v1/certify', {
                 key: API_KEY,
                 email: email,

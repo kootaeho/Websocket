@@ -14,28 +14,34 @@ const sub = document.querySelector("#SubTitle");
 const choose = document.querySelector("#choose");
 const emailform = document.querySelector("#emailSubmit");
 const emailButton = document.querySelector("#emailButton");
-const verifyform = document.querySelector("#verify");
+const verifyform = document.querySelector("#verifySubmit");
+const verifyButton = document.querySelector("#verifyButton");
 
 
-emailButton.addEventListener("submit",handleEmail);
+
+emailform.addEventListener("submit",handleEmail);
 verifyform.addEventListener("submit",handleVerify);
 
 function handleVerify(event){
     event.preventDefault();
+    verifyform.hidden = true;
+    nickform.hidden = false;
     const emailInput = document.querySelector("#emailInput").value;
     const codeInput = document.querySelector("#codeInput").value;
 
-    Socket.emit("verify_code", emailInput,codeInput,(response)=>{
+    activeSocket.emit("verify_code", emailInput,codeInput,(response)=>{
         console.log(response);
     });
     
 }
 
 function handleEmail(event){
-    console.log("제출됨!")
     event.preventDefault();
+    emailform.hidden = true;
+    verifyform.hidden = false;
     const emailInput = emailform.querySelector('#emailInput').value;
     const univNameInput = emailform.querySelector('#univNameInput').value;
+
     activeSocket.emit("certify_email", emailInput,univNameInput,(response)=>{
         console.log(response);
     });
@@ -46,6 +52,8 @@ let Roomcap;
 
 welcome.style.display = "none";
 room.hidden = true;
+emailform.hidden = true;
+verifyform.hidden = true;
 rnform.hidden = true;
 nickform.hidden = true;
 GroupSelect.hidden = false;
@@ -57,7 +65,8 @@ function handleOneonOne(event){
     event.preventDefault();
     GroupSelect.hidden = true;
     choose.hidden = true;
-    nickform.hidden = false;
+    nickform.hidden = true;
+    emailform.hidden = false;
     welcome.style.display =  "flex";
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
@@ -70,7 +79,8 @@ function handleGroupchat(event){
     event.preventDefault();
     GroupSelect.hidden = true;
     choose.hidden = true;
-    nickform.hidden = false;
+    nickform.hidden = true;
+    emailform.hidden = false;
     welcome.style.display =  "flex";
     sub.innerText = "그룹 랜덤 챗";
     Roomcap = 30;
