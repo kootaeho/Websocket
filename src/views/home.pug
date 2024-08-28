@@ -65,7 +65,7 @@ html(lang="en")
                 padding: 20px;
                 border-radius: 10px;
                 animation: fadeIn 1s ease-in-out;
-                background-color: #1e1e1e;
+                background-color: white;
             }
 
             button {
@@ -101,8 +101,8 @@ html(lang="en")
                 display: flex;
                 flex-direction: column;
                 overflow-y: auto;
-                border: 1px solid #444;
-                background-color: #222;
+                border: 1px solid #FFFAF0;
+                background-color: #FFFAF0;
                 border-radius: 10px;
                 width : 800px;
                 box-sizing : border-box;
@@ -131,7 +131,7 @@ html(lang="en")
             }
 
             .message.other {
-                background-color: #555;
+                background-color: #6495ED;
                 margin-right: auto;
             }
 
@@ -174,9 +174,9 @@ html(lang="en")
             }
 
             .message.other::after {
-                border-left-color: #555;
+                border-left-color: #6495ED;
                 border-right: 0;
-                border-left: 10px solid #555;
+                border-left: 10px solid #6495ED;
                 right: 100%;
                 top: 10px;
             }
@@ -232,6 +232,7 @@ html(lang="en")
             }
 
             #welcome {
+                background-color : white;
                 flex-direction: column; /* 자식 요소들을 수직으로 배치 */
                 justify-content: center; /* 수직 중앙 정렬 */
                 align-items: center; /* 수평 중앙 정렬 */
@@ -256,6 +257,7 @@ html(lang="en")
             }
 
             #GroupSelect {
+                background-color : white;
                 position: relative;
                 width: 50%; /* form의 너비를 설정하여 중앙에 배치 */
                 margin: 0 auto; /* form을 페이지 중앙에 위치 */
@@ -272,7 +274,7 @@ html(lang="en")
             #room[hidden] {
                 display: none;
             }
-    body(style="background-color: black; color: white;")
+    body(style="background-color: white; color: black;")
         header 
             h1 RandomRoom
                 h3#SubTitle
@@ -292,7 +294,7 @@ html(lang="en")
                 ul.message-container
                 div#message-input
                     form#msg
-                        input(placeholder="message", required, type="text")
+                        input(placeholder="message", required, type="text" style = "background-color : #F0FFFF; color:black")
                         button Send
         script(src="/socket.io/socket.io.js")
         script(src="/public/js/app.js")
