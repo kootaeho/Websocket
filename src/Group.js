@@ -9,6 +9,9 @@ const app = express();
 const now = new Date();
 const mysql = require("mysql2");
 const dbconfig = require('./config/dbconfig.json');
+const axios = require('axios');
+
+const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
 console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
 app.set("views", __dirname + "/views");
@@ -131,6 +134,21 @@ oneOnoneChat.on("connection", (socket) => {
         oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
+    });
+
+    socket.on("certify_email", async (email, univName, done) => {
+        try {
+            console.log("유저가 인증 시도중!");
+            const response = await axios.post('https://univcert.com/api/v1/certify', {
+                key: API_KEY,
+                email: email,
+                univName: univName,
+                univ_check: true
+            });
+            done(response.data);
+        } catch (error) {
+            done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
+        }
     });
 
     socket.on("disconnecting", () => {

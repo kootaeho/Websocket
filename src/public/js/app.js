@@ -12,6 +12,20 @@ const individual = document.querySelector("#oneOnone");
 const GroupSelect = document.querySelector("#GroupSelect")
 const sub = document.querySelector("#SubTitle");
 const choose = document.querySelector("#choose");
+const emailform = document.querySelector("#emailSubmit");
+const emailButton = document.querySelector("#emailButton");
+
+emailButton.addEventListener("click",handleEmail);
+
+function handleEmail(event){
+    console.log("제출됨!")
+    event.preventDefault();
+    const emailInput = emailform.querySelector('input[placeholder="학교 이메일을 입력하세요"]').value;
+    const univNameInput = emailform.querySelector('input[placeholder="학교 이름을 입력하세요"]').value;
+    activeSocket.emit("certify_email", emailInput,univNameInput,()=>{
+        console.log(emailInput, univNameInput);
+    });
+}
 
 let currentRoomName;
 let Roomcap;

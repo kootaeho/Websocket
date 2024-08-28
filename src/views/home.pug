@@ -279,6 +279,14 @@ html(lang="en")
             h1 RandomRoom
                 h3#SubTitle
         main
+            div#email
+                from#emailSubmit
+                    input(placeholder="학교 이메일을 입력하세요", required, type="text")
+                    input(placeholder="학교 이름을 입력하세요", required, type="text")
+                    button#emailButton 인증 코드 발송
+                form#verify
+                    input(placeholder="인증 코드 입력", required, type="text")
+                    button#verifyButton 인증 
             div#choose
                 form#GroupSelect
                     button#Group 랜덤 그룹챗
