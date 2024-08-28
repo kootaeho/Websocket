@@ -46,9 +46,11 @@ function handleEmail(event){
     const emailInput = emailform.querySelector('#emailInput').value;
     const univNameInput = emailform.querySelector('#univNameInput').value;
 
+    activeSocket.emit("clear_code", emailInput,(response)=>{
+    });
+
     activeSocket.emit("certify_email", emailInput,univNameInput,(response)=>{
         if (response.success) {
-            // 인증 코드 전송이 성공했을 때만 다음 단계로 이동
             console.log("인증 코드가 전송되었습니다.");
             emailform.hidden = true;
             verifyform.hidden = false;
@@ -57,6 +59,7 @@ function handleEmail(event){
             alert("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
         }
     });
+
 }
 
 let currentRoomName;
