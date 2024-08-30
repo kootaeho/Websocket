@@ -44,7 +44,7 @@ function handleVerify(event){
 function handleEmail(event){
     event.preventDefault();
     const emailInput = emailform.querySelector('#emailInput').value;
-    const univNameInput = emailform.querySelector('#univNameInput').value;
+    const univNameInput = "한국외국어대학교";
 
     activeSocket.emit("certify_email", emailInput,univNameInput,(response)=>{
         if (response.success) {
