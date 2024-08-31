@@ -7,7 +7,7 @@ const welcome = document.querySelector("#welcome");
 const rnform = welcome.querySelector("#roomname");
 const nickform = welcome.querySelector("#nickname");
 const room = document.querySelector("#room");
-const Groupchat = document.querySelector("#Group");
+//const Groupchat = document.querySelector("#Group");
 const individual = document.querySelector("#oneOnone");
 const GroupSelect = document.querySelector("#GroupSelect")
 const sub = document.querySelector("#SubTitle");
@@ -77,7 +77,7 @@ nickform.hidden = true;
 GroupSelect.hidden = false;
 waiting.hidden = true;
 
-Groupchat.addEventListener("click", handleGroupchat);
+//Groupchat.addEventListener("click", handleGroupchat);
 individual.addEventListener("click", handleOneonOne);
 
 function handleOneonOne(event){
@@ -172,9 +172,9 @@ function handleRoomSubmit(event) {
     event.preventDefault();
     welcome.style.display = "none";
     rnform.hidden = true;
-    activeSocket.emit("enter_room",null, Roomcap,(roomName) => {
-        console.log(roomName);
-        if(roomName === "방 없음"){
+    activeSocket.emit("enter_room",null, Roomcap,(roomName,RoomExist) => {
+        if(RoomExist === "방 없음"){
+            currentRoomName = roomName;
             waiting.hidden = false;
         }
         else{
