@@ -172,10 +172,15 @@ function handleRoomSubmit(event) {
     event.preventDefault();
     welcome.style.display = "none";
     rnform.hidden = true;
-    waiting.hidden = false;
     activeSocket.emit("enter_room",null, Roomcap,(roomName) => {
-        currentRoomName = roomName;
-        //showRoom();
+        console.log(roomName);
+        if(roomName === "방 없음"){
+            waiting.hidden = false;
+        }
+        else{
+            currentRoomName = roomName;
+            showRoom();
+        }
     });
 }
 
@@ -199,6 +204,9 @@ function setupSocketListeners() {
     });
 
     activeSocket.on("join", (newCount) => {
+        waiting.hidden = true;
+        //currentRoomName = roomName;
+        showRoom();
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
     });

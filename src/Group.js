@@ -72,18 +72,20 @@ GroupChat.on("connection", (socket) => {
         if (GroupRoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
             socket.join(roomToJoin);
+            done("방 없음");
         } else {
             roomToJoin = GroupRoomArr[Math.floor(Math.random() * GroupRoomArr.length)];
             let roomNum = countRoom(GroupChat,roomToJoin)
             if(roomNum >= RoomCap ){
                 roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
                 socket.join(roomToJoin);
+                done("방 없음");
             }
             else{
                 socket.join(roomToJoin);
+                done(roomToJoin);
             }
         }
-        done(roomToJoin);
         GroupChat.to(roomToJoin).emit("join", countRoom(GroupChat,roomToJoin));
         GroupChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(GroupChat,roomToJoin));
         GroupChat.emit("room_change", publicGroupRooms(GroupChat));
@@ -119,20 +121,22 @@ oneOnoneChat.on("connection", (socket) => {
         if (RoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
             socket.join(roomToJoin);
+            done("방 없음");
         } else {
             roomToJoin = RoomArr[Math.floor(Math.random() * RoomArr.length)];
             let roomNum = countRoom(oneOnoneChat,roomToJoin)
             if(roomNum >= RoomCap ){
                 roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
                 socket.join(roomToJoin);
+                done("방 없음");
             }
             else{
                 socket.join(roomToJoin);
+                done(roomToJoin);
+                oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
+                oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
             }
         }
-        done(roomToJoin);
-        oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
-        oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });
 
