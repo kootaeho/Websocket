@@ -16,6 +16,7 @@ const emailform = document.querySelector("#emailSubmit");
 const emailButton = document.querySelector("#emailButton");
 const verifyform = document.querySelector("#verifySubmit");
 const verifyButton = document.querySelector("#verifyButton");
+const waiting = document.querySelector("#waiting")
 
 
 
@@ -74,6 +75,7 @@ verifyform.hidden = true;
 rnform.hidden = true;
 nickform.hidden = true;
 GroupSelect.hidden = false;
+waiting.hidden = true;
 
 Groupchat.addEventListener("click", handleGroupchat);
 individual.addEventListener("click", handleOneonOne);
@@ -170,9 +172,10 @@ function handleRoomSubmit(event) {
     event.preventDefault();
     welcome.style.display = "none";
     rnform.hidden = true;
+    waiting.hidden = false;
     activeSocket.emit("enter_room",null, Roomcap,(roomName) => {
         currentRoomName = roomName;
-        showRoom();
+        //showRoom();
     });
 }
 
