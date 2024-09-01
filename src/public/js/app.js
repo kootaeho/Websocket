@@ -2,6 +2,7 @@
 //const oneOnoneSocket = io("http://localhost:3000");  // 1대1 챗 서버
 //let socket
 let activeSocket = null;
+let userCount = 0;
 
 const welcome = document.querySelector("#welcome");
 const rnform = welcome.querySelector("#roomname");
@@ -168,6 +169,7 @@ function showRoomEnter() {
 }
 
 function handleRoomSubmit(event) {
+    userCount += 1;
     event.preventDefault();
     welcome.style.display = "none";
     rnform.hidden = true;
