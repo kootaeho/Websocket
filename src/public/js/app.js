@@ -53,7 +53,7 @@ function handleEmail(event){
             emailform.hidden = true;
             verifyform.hidden = false;
         }
-        else if(response.error.message || response.error.message.trim() === "인증 코드 전송 실패: 이미 완료된 요청입니다."){
+        else if(response.error.message == "이미 완료된 요청입니다."){
             console.log("이미 인증이 끝난 이메일!");
             emailform.hidden = true;
             nickform.hidden = false;
@@ -62,7 +62,6 @@ function handleEmail(event){
             alert("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
         }
     });
-
 }
 
 let currentRoomName;
