@@ -5,8 +5,8 @@ let activeSocket = null;
 let userCount = 0;
 
 const welcome = document.querySelector("#welcome");
-const rnform = welcome.querySelector("#roomname");
-const nickform = welcome.querySelector("#nickname");
+const rnform = document.querySelector("#roomname");
+const nickform = document.querySelector("#nickname");
 const room = document.querySelector("#room");
 //const Groupchat = document.querySelector("#Group");
 const individual = document.querySelector("#oneOnone");
@@ -17,7 +17,8 @@ const emailform = document.querySelector("#emailSubmit");
 const emailButton = document.querySelector("#emailButton");
 const verifyform = document.querySelector("#verifySubmit");
 const verifyButton = document.querySelector("#verifyButton");
-const waiting = document.querySelector("#waiting")
+const waiting = document.querySelector("#waiting");
+const leaveButton = document.querySelector("#leave");
 
 
 
@@ -158,8 +159,20 @@ function showRoom() {
     //const h3 = room.querySelector("h3");
     //h3.innerText = `Room ${currentRoomName}`;
     const msgForm = room.querySelector("#msg");
+    leaveButton.addEventListener("click", handleLeave);
     msgForm.addEventListener("submit", handleMessageSubmit);
+
 }
+
+function handleLeave(){
+    rnform.hidden = false;
+    //nickform.hidden = false;
+    welcome.style.display =  "flex";
+    room.hidden = true;
+    console.log(currentRoomName);
+    activeSocket.emit("leave_room", currentRoomName);
+}
+rnform.addEventListener("click", handleRoomSubmit);
 
 function showRoomEnter() {
     nickform.hidden = true;

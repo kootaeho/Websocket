@@ -180,6 +180,15 @@ oneOnoneChat.on("connection", (socket) => {
     socket.on("disconnecting", () => {
         socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat,room) - 1));
     });
+    
+    socket.on("leave_room", (roomName) => {
+        socket.rooms.forEach((room) => {
+            socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat, room) - 1);
+        });
+
+        socket.emit("room_change", publicGroupRooms(oneOnoneChat));
+        socket.leave(roomName); // 비동기 처리가 필요 없으므로 콜백 제거
+    });
 
     socket.on("disconnect", () => {
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
