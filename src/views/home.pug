@@ -276,7 +276,7 @@ html(lang="en")
             }
     body(style="background-color: white; color: black;")
         header 
-            h1 교내 채팅 서비스
+            h1 외랜
                 h3#SubTitle
         main
             div#email
@@ -287,6 +287,10 @@ html(lang="en")
                 form#verifySubmit
                     input#codeInput(placeholder="인증 코드 입력", required, type="text")
                     button#verifyButton(type="submit") 인증
+            div#SignIn
+                form#passwd
+                    input#passwdInput(placeholder="패스워드를 입력하세요", required, type="text")
+                    button(type="submit") 계정 만들기
             div#choose
                 form#GroupSelect
                     //button#Group 랜덤 그룹챗

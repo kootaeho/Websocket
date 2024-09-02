@@ -19,6 +19,8 @@ const verifyform = document.querySelector("#verifySubmit");
 const verifyButton = document.querySelector("#verifyButton");
 const waiting = document.querySelector("#waiting");
 const leaveButton = document.querySelector("#leave");
+const SignIn = document.querySelector("#SignIn")
+
 
 
 
@@ -35,13 +37,20 @@ function handleVerify(event){
             // 인증 코드 검증이 성공했을 때만 다음 단계로 이동
             console.log("이메일 인증에 성공했습니다.");
             verifyform.hidden = true;
-            nickform.hidden = false;
+            SignIn.hidden = false;
+            SignIn.addEventListener("submit",handleSignIn);
         } else {
             console.log("인증 실패:", response.error);
             alert("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
     });
     
+}
+
+function handleSignIn(event){
+    event.preventDefault();
+    const passwdInput = SignIn.querySelector("#passwdInput").value;
+    console.log(passwdInput)
 }
 
 function handleEmail(event){
@@ -69,6 +78,7 @@ function handleEmail(event){
 let currentRoomName;
 let Roomcap;
 
+SignIn.hidden = true;
 welcome.style.display = "none";
 room.hidden = true;
 emailform.hidden = true;

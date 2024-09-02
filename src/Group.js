@@ -171,6 +171,7 @@ oneOnoneChat.on("connection", (socket) => {
             const response = await axios.post(`https://univcert.com/api/v1/clear/${email}`, {
                 key: API_KEY,
             });
+            console.log("초기화 됨!")
             done(response.data);
         } catch (error) {
             done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
@@ -187,7 +188,7 @@ oneOnoneChat.on("connection", (socket) => {
         });
 
         socket.emit("room_change", publicGroupRooms(oneOnoneChat));
-        socket.leave(roomName); // 비동기 처리가 필요 없으므로 콜백 제거
+        socket.leave(roomName); 
     });
 
     socket.on("disconnect", () => {
