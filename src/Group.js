@@ -7,7 +7,7 @@ import { count } from "console";
 
 const app = express();
 const now = new Date();
-const mysql = require("mysql2");
+const mysql = require("mysql");
 const dbconfig = require('./config/dbconfig.json');
 const axios = require('axios');
 
