@@ -3,6 +3,9 @@
 //let socket
 let activeSocket = null;
 let userCount = 0;
+let email = null;
+let passwd = null;
+let nickname = null;
 
 const welcome = document.querySelector("#welcome");
 const rnform = document.querySelector("#roomname");
@@ -38,6 +41,7 @@ function handleVerify(event){
             console.log("이메일 인증에 성공했습니다.");
             verifyform.hidden = true;
             SignIn.hidden = false;
+            nickform.hidden = false;
             SignIn.addEventListener("submit",handleSignIn);
         } else {
             console.log("인증 실패:", response.error);
@@ -49,16 +53,18 @@ function handleVerify(event){
 
 function handleSignIn(event){
     event.preventDefault();
-    const passwdInput = SignIn.querySelector("#passwdInput").value;
-    console.log(passwdInput)
+    passwd = SignIn.querySelector("#passwdInput").value;
+    activeSocket.emit("adduser",email,passwd,nickname,()=>{
+        console.log("에밋 콜백 호출됨");
+    })
 }
 
 function handleEmail(event){
     event.preventDefault();
-    const emailInput = emailform.querySelector('#emailInput').value;
+    email = emailform.querySelector('#emailInput').value;
     const univNameInput = "한국외국어대학교";
 
-    activeSocket.emit("certify_email", emailInput,univNameInput,(response)=>{
+    activeSocket.emit("certify_email", email,univNameInput,(response)=>{
         if (response.success) {
             console.log("인증 코드가 전송되었습니다.");
             emailform.hidden = true;
@@ -67,7 +73,7 @@ function handleEmail(event){
         else if(response.error.message == "이미 완료된 요청입니다."){
             console.log("이미 인증이 끝난 이메일!");
             emailform.hidden = true;
-            nickform.hidden = false;
+            //nickform.hidden = false;
         }else {
             console.log("인증 코드 전송 실패:", response.error.message);
             alert("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
@@ -101,6 +107,9 @@ function handleOneonOne(event){
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
     activeSocket = io("/oneonone")
+    activeSocket.emit("clear_code","xogh1289@hufs.ac.kr",(response)=>{
+        console.log("초기화됨");
+    })
     setupSocketListeners(); 
 }
 
@@ -156,10 +165,11 @@ function handleMessageSubmit(event) {
     });
     input.value = "";
 }
+
 function handleNicknameSubmit(event) {
     event.preventDefault();
-    const input = welcome.querySelector("#nickname input");
-    activeSocket.emit("nickname", input.value);
+    nickname = welcome.querySelector("#nickname input").value;
+    activeSocket.emit("nickname", nickname.value);
     showRoomEnter();
 }
 

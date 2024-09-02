@@ -16,8 +16,20 @@ console.log(now.toLocaleTimeString());
 app.set('view engine', "pug");
 app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
+app.use(express.urlencoded({extended:true}));
+app.use(express.json());
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
+
+const pool = mysql.createPool({
+    connectionLimit : 10,
+    host: dbconfig.host,
+    user: dbconfig.user,
+    password: dbconfig.password,
+    database: dbconfig.database,
+    debug:false
+})
+
 
 console.log("Group.js 실행됨!");
 const handleListen = () => console.log('Listening on http://localhost:3001');
@@ -177,6 +189,33 @@ oneOnoneChat.on("connection", (socket) => {
             done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
         }
     });
+
+    socket.on("adduser", (email,passwd,nickname,done)=>{
+        pool.getConnection((err,conn)=>{
+            if(err){
+                conn.release();
+                console.log('Mysql getConnection error. aborted');
+                done()
+                return;
+            }
+            console.log("데베 연결됨.");
+
+            conn.query(
+                'INSERT INTO users (user_email, user_password, user_nickname, user_active) VALUES (?,?,?,?)',
+                [email, passwd, nickname, true],
+                (err, result)=>{
+                    conn.release();
+                    console.log("쿼리문 실행됨.")
+                    if(err){
+                        console.log("쿼리문 오류발생");
+                        return;
+                    }
+                    console.log("사용자 추가됨!",result)
+                    done();
+                }
+            )
+        })
+    })
 
     socket.on("disconnecting", () => {
         socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat,room) - 1));
