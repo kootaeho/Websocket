@@ -16,18 +16,25 @@ const room = document.querySelector("#room");
 const sub = document.querySelector("#SubTitle");
 //const choose = document.querySelector("#choose");
 const emailform = document.querySelector("#emailSubmit");
-const emailButton = document.querySelector("#LoginButton");
+const LoginButton = document.querySelector("#LoginButton");
 const verifyform = document.querySelector("#verifySubmit");
 const verifyButton = document.querySelector("#verifyButton");
 const waiting = document.querySelector("#waiting");
+const LogIn = document.querySelector("#LogIn")
 const leaveButton = document.querySelector("#leave");
-const SignIn = document.querySelector("#SignIn")
+const SignIn = document.querySelector("#SignIn");
+const SiginButton = document.querySelector("#SiginButton");
 
+LoginButton.addEventListener("submit",handleLogin);
 
-
-
-emailform.addEventListener("submit",handleEmail);
-verifyform.addEventListener("submit",handleVerify);
+function handleLogin(event){
+    event.preventDefault();
+    const emailInput = document.querySelector("#emailInput").value;
+    const passwdInput = document.querySelector("#passwdInput").value;
+    activeSocket.emit("Login", emailInput,passwdInput,(response=>{
+        
+    }))
+}
 
 function handleVerify(event){
     event.preventDefault();
@@ -84,13 +91,12 @@ let currentRoomName;
 let Roomcap;
 
 SignIn.hidden = true;
-welcome.style.display = "none";
+welcome.style.display = "flex";
 room.hidden = true;
 emailform.hidden = true;
 verifyform.hidden = true;
 rnform.hidden = true;
 nickform.hidden = true;
-GroupSelect.hidden = false;
 waiting.hidden = true;
 
 //Groupchat.addEventListener("click", handleGroupchat);
@@ -98,21 +104,15 @@ waiting.hidden = true;
 
 function handleOneonOne(event){
     event.preventDefault();
-    GroupSelect.hidden = true;
-    choose.hidden = true;
     nickform.hidden = true;
     emailform.hidden = false;
     welcome.style.display =  "flex";
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
-    activeSocket = io("/oneonone")
-    activeSocket.emit("clear_code","xogh1289@hufs.ac.kr",(response)=>{
-        console.log("초기화됨");
-    })
     setupSocketListeners(); 
 }
 
-
+/*
 function handleGroupchat(event){
     event.preventDefault();
     GroupSelect.hidden = true;
@@ -124,7 +124,7 @@ function handleGroupchat(event){
     Roomcap = 30;
     activeSocket = io("/group")
     setupSocketListeners();
-}
+}*/
 
 function addMessage(message, isOwnMessage = false) {
     const ul = room.querySelector("ul.message-container");
