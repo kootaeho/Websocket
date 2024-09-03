@@ -1,8 +1,7 @@
 //const GroupSocket = io("http://localhost:3001");  //1대1챗 백엔드 서버로 연결 설정
 //const oneOnoneSocket = io("http://localhost:3000");  // 1대1 챗 서버
 //let socket
-let activeSocket = null;
-let userCount = 0;
+let activeSocket = io("/oneonone");
 let email = null;
 let passwd = null;
 let nickname = null;
@@ -12,10 +11,10 @@ const rnform = document.querySelector("#roomname");
 const nickform = document.querySelector("#nickname");
 const room = document.querySelector("#room");
 //const Groupchat = document.querySelector("#Group");
-const individual = document.querySelector("#oneOnone");
-const GroupSelect = document.querySelector("#GroupSelect")
+//const individual = document.querySelector("#oneOnone");
+//const GroupSelect = document.querySelector("#GroupSelect")
 const sub = document.querySelector("#SubTitle");
-const choose = document.querySelector("#choose");
+//const choose = document.querySelector("#choose");
 const emailform = document.querySelector("#emailSubmit");
 const emailButton = document.querySelector("#emailButton");
 const verifyform = document.querySelector("#verifySubmit");
@@ -95,7 +94,7 @@ GroupSelect.hidden = false;
 waiting.hidden = true;
 
 //Groupchat.addEventListener("click", handleGroupchat);
-individual.addEventListener("click", handleOneonOne);
+//individual.addEventListener("click", handleOneonOne);
 
 function handleOneonOne(event){
     event.preventDefault();

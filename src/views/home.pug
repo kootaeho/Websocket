@@ -279,26 +279,22 @@ html(lang="en")
             h1 외랜
                 h3#SubTitle
         main
-            div#email
+            div#SignIn
                 form#emailSubmit
-                    input#emailInput(placeholder="학교 이메일을 입력하세요", required, type="text")
-                    //input#univNameInput(placeholder="학교 이름을 입력하세요", required, type="text")//
-                    button#emailButton(type="submit") 인증/로그인
+                    input#emailVerify(placeholder="학교 이메일을 입력하세요", required, type="text")
+                    button#verifyButton(type="submit") 인증코드 보내기
                 form#verifySubmit
                     input#codeInput(placeholder="인증 코드 입력", required, type="text")
                     button#verifyButton(type="submit") 인증
-            div#SignIn
-                form#passwd
-                    input#passwdInput(placeholder="패스워드를 입력하세요", required, type="text")
-                    button(type="submit") 계정 만들기
-            div#choose
-                form#GroupSelect
-                    //button#Group 랜덤 그룹챗
-                    button#oneOnone 랜덤 1대1 채팅
-            div#welcome
                 form#nickname
                     input(placeholder="닉네임을 입력하세요", required, type="text" style="background-color: white;")
                     button 저장
+            div#welcome
+                form#LogIn
+                    input#passwdInput(placeholder="패스워드를 입력하세요", required, type="text")
+                    input#emailInput(placeholder="학교 이메일을 입력하세요", required, type="text")
+                    button#emailButton(type="submit") 로그인
+            div#main
                 form#roomname
                     button 방 입장
             div#room
