@@ -49,6 +49,7 @@ function handleMainPage(){
     welcome.style.display = "none";
     main.hidden = false;
     rnform.hidden = false;
+    rnform.addEventListener("click", handleRoomSubmit);
 }
 
 function handleVerify(event){
@@ -188,6 +189,7 @@ function handleNicknameSubmit(event) {
 }
 
 function showRoom() {
+    setupSocketListeners();
     welcome.style.display = "none";
     room.hidden = false;
     //const h3 = room.querySelector("h3");
@@ -206,7 +208,6 @@ function handleLeave(){
     console.log(currentRoomName);
     activeSocket.emit("leave_room", currentRoomName);
 }
-rnform.addEventListener("click", handleRoomSubmit);
 
 function showRoomEnter() {
     nickform.hidden = true;
@@ -216,14 +217,16 @@ function showRoomEnter() {
 }
 
 function handleRoomSubmit(event) {
-    userCount += 1;
+    //userCount += 1;
     event.preventDefault();
-    welcome.style.display = "none";
     rnform.hidden = true;
+    sub.innerText = "1대1 랜덤 챗";
+    Roomcap = 2;
     activeSocket.emit("enter_room",null, Roomcap,(roomName,RoomExist) => {
         if(RoomExist === "방 없음"){
             currentRoomName = roomName;
             waiting.hidden = false;
+            setupSocketListeners();
         }
         else{
             currentRoomName = roomName;
