@@ -195,7 +195,7 @@ oneOnoneChat.on("connection", (socket) => {
             if (err) {
                 conn.release(); // 연결 해제
                 console.log('MySQL 연결 오류. 중단됨.');
-                done({ success: false, message: 'Database connection failed' });
+                done({success : false});
                 return;
             }
             const query = 'SELECT * FROM users WHERE user_email = ? AND user_password = ?';
@@ -203,15 +203,15 @@ oneOnoneChat.on("connection", (socket) => {
                 conn.release();
                 if (err) {
                     console.log("쿼리 실행 오류:", err);
-                    done({ success: false, message: 'Query execution error' });
+                    done({success : false});
                     return;
                 }
                 if (results.length > 0) {
                     console.log("로그인 성공:", results);
-                    done({ success: true, message: 'Login successful', user: results[0] });
+                    done({success : true});
                 } else {
                     console.log("로그인 실패: 해당 사용자 없음.");
-                    done({ success: false, message: 'Invalid email or password' });
+                    done({success : false});
                 }
             });
         });

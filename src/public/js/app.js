@@ -24,6 +24,7 @@ const LogIn = document.querySelector("#LogIn")
 const leaveButton = document.querySelector("#leave");
 const SignIn = document.querySelector("#SignIn");
 const SiginButton = document.querySelector("#SiginButton");
+const main = document.querySelector("#main");
 
 LoginButton.addEventListener("click",handleLogin);
 
@@ -34,8 +35,20 @@ function handleLogin(event){
     console.log(emailInput);
     console.log(passwdInput);
     activeSocket.emit("Login", emailInput,passwdInput,(response)=>{
-        console.log(response);
+        console.log(response.success)
+        if(response.success == true){
+            handleMainPage();
+        }
+        else{
+            alert("잘못된 이메일/패스워드!");
+        }
     })
+}
+
+function handleMainPage(){
+    welcome.style.display = "none";
+    main.hidden = false;
+    rnform.hidden = false;
 }
 
 function handleVerify(event){
