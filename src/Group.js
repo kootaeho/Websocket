@@ -190,6 +190,33 @@ oneOnoneChat.on("connection", (socket) => {
         }
     });
 
+    socket.on("Login", (email, passwd, done) => {
+        pool.getConnection((err, conn) => {
+            if (err) {
+                conn.release(); // 연결 해제
+                console.log('MySQL 연결 오류. 중단됨.');
+                done({ success: false, message: 'Database connection failed' });
+                return;
+            }
+            const query = 'SELECT * FROM users WHERE user_email = ? AND user_password = ?';
+            conn.query(query, [email, passwd], (err, results) => {
+                conn.release();
+                if (err) {
+                    console.log("쿼리 실행 오류:", err);
+                    done({ success: false, message: 'Query execution error' });
+                    return;
+                }
+                if (results.length > 0) {
+                    console.log("로그인 성공:", results);
+                    done({ success: true, message: 'Login successful', user: results[0] });
+                } else {
+                    console.log("로그인 실패: 해당 사용자 없음.");
+                    done({ success: false, message: 'Invalid email or password' });
+                }
+            });
+        });
+    });
+
     socket.on("adduser", (email,passwd,nickname,done)=>{
         pool.getConnection((err,conn)=>{
             if(err){

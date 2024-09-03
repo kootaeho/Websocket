@@ -25,15 +25,17 @@ const leaveButton = document.querySelector("#leave");
 const SignIn = document.querySelector("#SignIn");
 const SiginButton = document.querySelector("#SiginButton");
 
-LoginButton.addEventListener("submit",handleLogin);
+LoginButton.addEventListener("click",handleLogin);
 
 function handleLogin(event){
     event.preventDefault();
     const emailInput = document.querySelector("#emailInput").value;
     const passwdInput = document.querySelector("#passwdInput").value;
-    activeSocket.emit("Login", emailInput,passwdInput,(response=>{
-        
-    }))
+    console.log(emailInput);
+    console.log(passwdInput);
+    activeSocket.emit("Login", emailInput,passwdInput,(response)=>{
+        console.log(response);
+    })
 }
 
 function handleVerify(event){
