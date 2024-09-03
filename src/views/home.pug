@@ -282,7 +282,7 @@ html(lang="en")
             div#SignIn
                 form#emailSubmit
                     input#emailVerify(placeholder="학교 이메일을 입력하세요", required, type="text")
-                    button#verifyButton(type="submit") 인증코드 보내기
+                    button#emailCodeButton(type="submit") 인증코드 보내기
                 form#verifySubmit
                     input#codeInput(placeholder="인증 코드 입력", required, type="text")
                     button#verifyButton(type="submit") 인증
@@ -293,7 +293,7 @@ html(lang="en")
                 form#LogIn
                     input#passwdInput(placeholder="패스워드를 입력하세요", required, type="text")
                     input#emailInput(placeholder="학교 이메일을 입력하세요", required, type="text")
-                    button#emailButton(type="submit") 로그인
+                    button#LoginButton(type="submit") 로그인
             div#main
                 form#roomname
                     button 방 입장
