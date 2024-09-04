@@ -94,13 +94,13 @@ function handleNickname(passwdInput){
     const passwdInputs = passwdInput
     passwdSubmit.hidden = true
     nickform.hidden = false;
-    const nicknameinputs = document.querySelector("#nicknameInput").value;
     nicknameButton.addEventListener("click",(event)=>{
+        const nicknameinputs = document.querySelector("#nicknameInput").value;
         event.preventDefault();
         console.log(nicknameinputs);
         nickform.hidden = true;
         SignIn.hidden = true;
-        welcome.hidden = false;
+        welcome.style.display = "flex";
         activeSocket.emit("adduser",email,passwdInputs,nicknameinputs,(response)=>{
             console.log(response)
         })
