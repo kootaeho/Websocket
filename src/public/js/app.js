@@ -29,7 +29,8 @@ const emailCodeButton = document.querySelector("#emailCodeButton");
 const passwdSubmit = document.querySelector("#passwdSubmit");
 const password = document.querySelector("#passwd");
 const passwdButton = document.querySelector("#passwdButton");
-
+const nicknameInput = document.querySelector("#nicknameInput");
+const nicknameButton = document.querySelector("#nicknameButton");
 
 LoginButton.addEventListener("click",handleLogin);
 SiginButton.addEventListener("click",handleSignin);
@@ -71,25 +72,34 @@ function handleVerify(event){
     const codeInput = document.querySelector("#codeInput").value;
     activeSocket.emit("verify_code", email,codeInput,(response)=>{
         if (response.success) {
-            // 인증 코드 검증이 성공했을 때만 다음 단계로 이동
             verifyform.hidden = true;
-            SignIn.hidden = false;
-            nickform.hidden = false;
-            SignIn.addEventListener("submit",handleSignIn);
+            passwdSubmit.hidden = false
+            passwdButton.addEventListener("click",handlePasswd)
         } else {
             console.log("인증 실패:", response.error);
             alert("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
     });
-    
 }
 
-function handleSignIn(event){
+function handlePasswd(event){
     event.preventDefault();
-    passwd = SignIn.querySelector("#passwdInput").value;
-    activeSocket.emit("adduser",email,passwd,nickname,()=>{
-        console.log("에밋 콜백 호출됨");
-    })
+    const passwdInput = document.querySelector("#passwd").value;
+    handleNickname(passwdInput);
+}
+
+function handleNickname(passwdInput){
+    passwdSubmit.hidden = true
+    nickform.hidden = false;
+    const nicknameinput = document.querySelector("#nicknameButton").value;
+    nicknameButton.addEventListener("click",()=>{
+        nickform.hidden = true;
+        SignIn.hidden = true;
+        welcome.hidden = false;
+        activeSocket.emit("adduser",email,passwdInput,nicknameinput,()=>{
+            console.log("유저 추가됨!")
+        })
+    });
 }
 
 function handleEmail(event){
@@ -106,11 +116,11 @@ function handleEmail(event){
         }   
         else if(response.error.message == "이미 완료된 요청입니다."){
             alert("이미 인증이 끝난 이메일!");
-            emailform.hidden = true;
+            //emailform.hidden = true;
             //nickform.hidden = false;
         }else {
             console.log("인증 코드 전송 실패:", response.error.message);
-            alert("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
+            alert("인증 코드 전송에 실패했습니다. 이메일을 확인해주세요.");
         }
     });
 }
@@ -126,6 +136,7 @@ verifyform.hidden = true;
 rnform.hidden = true;
 nickform.hidden = true;
 waiting.hidden = true;
+passwdSubmit.hidden = true;
 
 //Groupchat.addEventListener("click", handleGroupchat);
 //individual.addEventListener("click", handleOneonOne);
