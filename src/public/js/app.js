@@ -29,7 +29,6 @@ const emailCodeButton = document.querySelector("#emailCodeButton");
 const passwdSubmit = document.querySelector("#passwdSubmit");
 const password = document.querySelector("#passwd");
 const passwdButton = document.querySelector("#passwdButton");
-const nicknameInput = document.querySelector("#nicknameInput");
 const nicknameButton = document.querySelector("#nicknameButton");
 
 LoginButton.addEventListener("click",handleLogin);
@@ -40,6 +39,9 @@ function handleSignin(event){
     welcome.style.display = "none";
     SignIn.hidden = false;
     emailform.hidden = false;
+    activeSocket.emit("clear_code","xogh1289@hufs.ac.kr",(response)=>{
+        console.log("초기화 됨!");
+    })
     emailCodeButton.addEventListener("click",(event)=>{
         event.preventDefault();
         handleEmail();
@@ -89,15 +91,17 @@ function handlePasswd(event){
 }
 
 function handleNickname(passwdInput){
+    const passwdInputs = passwdInput
     passwdSubmit.hidden = true
     nickform.hidden = false;
-    const nicknameinput = document.querySelector("#nicknameButton").value;
-    nicknameButton.addEventListener("click",()=>{
+    const nicknameinputs = document.querySelector("#nicknameInput").value;
+    nicknameButton.addEventListener("click",(event)=>{
+        event.preventDefault();
         nickform.hidden = true;
         SignIn.hidden = true;
         welcome.hidden = false;
-        activeSocket.emit("adduser",email,passwdInput,nicknameinput,()=>{
-            console.log("유저 추가됨!")
+        activeSocket.emit("adduser",email,passwdInputs,nicknameinputs,(response)=>{
+            console.log(response)
         })
     });
 }
@@ -203,13 +207,13 @@ function handleMessageSubmit(event) {
     });
     input.value = "";
 }
-
+/*
 function handleNicknameSubmit(event) {
     event.preventDefault();
     nickname = welcome.querySelector("#nickname input").value;
     activeSocket.emit("nickname", nickname.value);
     showRoomEnter();
-}
+}*/
 
 function showRoom() {
     setupSocketListeners();
@@ -258,7 +262,6 @@ function handleRoomSubmit(event) {
     });
 }
 
-nickform.addEventListener("submit", handleNicknameSubmit);
 
 function setupSocketListeners() {
     activeSocket.on("welcome", (user, newCount) => {

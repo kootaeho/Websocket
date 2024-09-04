@@ -226,7 +226,7 @@ oneOnoneChat.on("connection", (socket) => {
                 return;
             }
             console.log("데베 연결됨.");
-
+            console.log(email, passwd , nickname)
             conn.query(
                 'INSERT INTO users (user_email, user_password, user_nickname, user_active) VALUES (?,?,?,?)',
                 [email, passwd, nickname, true],
