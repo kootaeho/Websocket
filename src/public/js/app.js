@@ -97,6 +97,7 @@ function handleNickname(passwdInput){
     const nicknameinputs = document.querySelector("#nicknameInput").value;
     nicknameButton.addEventListener("click",(event)=>{
         event.preventDefault();
+        console.log(nicknameinputs);
         nickform.hidden = true;
         SignIn.hidden = true;
         welcome.hidden = false;

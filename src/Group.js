@@ -234,6 +234,7 @@ oneOnoneChat.on("connection", (socket) => {
                     conn.release();
                     console.log("쿼리문 실행됨.")
                     if(err){
+                        console.log(err);
                         console.log("쿼리문 오류발생");
                         return;
                     }
