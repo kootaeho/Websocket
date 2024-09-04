@@ -26,6 +26,10 @@ const SignIn = document.querySelector("#SignIn");
 const SiginButton = document.querySelector("#SiginButton");
 const main = document.querySelector("#main");
 const emailCodeButton = document.querySelector("#emailCodeButton");
+const passwdSubmit = document.querySelector("#passwdSubmit");
+const password = document.querySelector("#passwd");
+const passwdButton = document.querySelector("#passwdButton");
+
 
 LoginButton.addEventListener("click",handleLogin);
 SiginButton.addEventListener("click",handleSignin);
@@ -64,13 +68,10 @@ function handleMainPage(){
 
 function handleVerify(event){
     event.preventDefault();
-    const emailInput = document.querySelector("#emailInput").value;
     const codeInput = document.querySelector("#codeInput").value;
-
-    activeSocket.emit("verify_code", emailInput,codeInput,(response)=>{
+    activeSocket.emit("verify_code", email,codeInput,(response)=>{
         if (response.success) {
             // 인증 코드 검증이 성공했을 때만 다음 단계로 이동
-            console.log("이메일 인증에 성공했습니다.");
             verifyform.hidden = true;
             SignIn.hidden = false;
             nickform.hidden = false;
@@ -92,7 +93,7 @@ function handleSignIn(event){
 }
 
 function handleEmail(event){
-    event.preventDefault();
+    //event.preventDefault();
     email = document.querySelector('#emailVerify').value;
     const univNameInput = "한국외국어대학교";
 
@@ -101,6 +102,7 @@ function handleEmail(event){
             console.log("인증 코드가 전송되었습니다.");
             emailform.hidden = true;
             verifyform.hidden = false;
+            verifyButton.addEventListener("click",handleVerify);
         }   
         else if(response.error.message == "이미 완료된 요청입니다."){
             alert("이미 인증이 끝난 이메일!");
