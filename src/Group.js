@@ -16,11 +16,11 @@ const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
 console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
 app.set("views", __dirname + "/views");
+app.set('views', path.join(__dirname, 'views'));
 app.use("/public", express.static(__dirname + "/public"));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'src')));
-app.use("/public", express.static(__dirname + "/public"));
+app.use(express.static(path.join(__dirname, '..')));
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
 
