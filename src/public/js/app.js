@@ -101,6 +101,7 @@ function handleNickname(passwdInput){
         nickform.hidden = true;
         SignIn.hidden = true;
         welcome.style.display = "flex";
+        LogIn.hidden = false;
         activeSocket.emit("adduser",email,passwdInputs,nicknameinputs,(response)=>{
             console.log(response)
         })
