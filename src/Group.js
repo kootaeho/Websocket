@@ -10,6 +10,7 @@ const now = new Date();
 const mysql = require("mysql");
 const dbconfig = require('./config/dbconfig.json');
 const axios = require('axios');
+const path = require('path')
 
 const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
 console.log(now.toLocaleTimeString()); 
@@ -18,6 +19,8 @@ app.set("views", __dirname + "/views");
 app.use("/public", express.static(__dirname + "/public"));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'src')));
+app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
 

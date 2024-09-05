@@ -2,6 +2,8 @@
 //const oneOnoneSocket = io("http://localhost:3000");  // 1대1 챗 서버
 //let socket
 let activeSocket = io("/oneonone");
+//const path = require('path');
+
 let email = null;
 let passwd = null;
 let nickname = null;
@@ -30,6 +32,11 @@ const passwdSubmit = document.querySelector("#passwdSubmit");
 const password = document.querySelector("#passwd");
 const passwdButton = document.querySelector("#passwdButton");
 const nicknameButton = document.querySelector("#nicknameButton");
+const Logo = document.querySelector("#Logo");
+
+Logo.addEventListener("click",()=>{
+    console.log("로고 눌림!");
+})
 
 LoginButton.addEventListener("click",handleLogin);
 SiginButton.addEventListener("click",handleSignin);
