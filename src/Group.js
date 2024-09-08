@@ -210,7 +210,7 @@ oneOnoneChat.on("connection", (socket) => {
                     return;
                 }
                 if (results.length > 0) {
-                    console.log("로그인 성공:", results);
+                    //console.log("로그인 성공:", results);
                     done({success : true});
                 } else {
                     console.log("로그인 실패: 해당 사용자 없음.");
@@ -228,14 +228,14 @@ oneOnoneChat.on("connection", (socket) => {
                 done()
                 return;
             }
-            console.log("데베 연결됨.");
+            //console.log("데베 연결됨.");
             console.log(email, passwd , nickname)
             conn.query(
                 'INSERT INTO users (user_email, user_password, user_nickname, user_active) VALUES (?,?,?,?)',
                 [email, passwd, nickname, true],
                 (err, result)=>{
                     conn.release();
-                    console.log("쿼리문 실행됨.")
+                    //console.log("쿼리문 실행됨.")
                     if(err){
                         console.log(err);
                         console.log("쿼리문 오류발생");
