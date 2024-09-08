@@ -164,7 +164,7 @@ function handleOneonOne(event){
     welcome.style.display =  "flex";
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
-    setupSocketListeners(); 
+    //setupSocketListeners(); 
 }
 
 /*
