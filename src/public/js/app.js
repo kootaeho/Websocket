@@ -33,6 +33,7 @@ const password = document.querySelector("#passwd");
 const passwdButton = document.querySelector("#passwdButton");
 const nicknameButton = document.querySelector("#nicknameButton");
 const Logo = document.querySelector("#Logo");
+const friendBox = document.querySelector("#friendBox");
 
 Logo.addEventListener("click",()=>{
     console.log("로고 눌림!");
@@ -73,6 +74,7 @@ function handleMainPage(){
     welcome.style.display = "none";
     main.hidden = false;
     rnform.hidden = false;
+    friendBox.hidden = false;
     rnform.addEventListener("click", handleRoomSubmit);
 }
 
@@ -150,6 +152,7 @@ rnform.hidden = true;
 nickform.hidden = true;
 waiting.hidden = true;
 passwdSubmit.hidden = true;
+friendBox.hidden = true;
 
 //Groupchat.addEventListener("click", handleGroupchat);
 //individual.addEventListener("click", handleOneonOne);

@@ -274,6 +274,31 @@ html(lang="en")
             #room[hidden] {
                 display: none;
             }
+            #friendBox {
+                position: fixed; /* 페이지 오른쪽에 고정 */
+                right: 20px; /* 오른쪽 여백 조절 */
+                top: 20px; /* 위쪽 여백 조절 */
+                width: 200px; /* 친구 리스트 박스의 너비 */
+                height: auto;
+                border: 1px solid black;
+                padding: 10px;
+                background-color: white; /* 박스 배경색 */
+                box-sizing: border-box;
+                z-index: 1000; /* 다른 요소보다 위에 표시되도록 */
+            }
+
+            #friendBox h3 {
+                margin-top: 0;
+            }
+
+            #friendBox ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            #friendBox li {
+                margin-bottom: 10px;
+            }
     body(style="background-color: white; color: black;")
         header 
             h1 외랜
@@ -302,6 +327,11 @@ html(lang="en")
             div#main
                 form#roomname
                     button 방 입장
+                div#friendBox
+                    h3 친구
+                    ul
+                        li 친구 1
+                        li 친구 2
             div#room
                 h3
                 ul.message-container
