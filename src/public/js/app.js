@@ -292,7 +292,7 @@ function setupSocketListeners() {
     activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;    
-        addMessage(`${user} 방 입장!`);
+        addMessage(`매칭되었습니다! 서로 인사를 나눠보세요!`);
     });
 
     activeSocket.on("bye", (user, newCount) => {

@@ -149,9 +149,9 @@ oneOnoneChat.on("connection", (socket) => {
                 socket.join(roomToJoin);
                 done(roomToJoin,"방 있음");
                 oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
+                oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
             }
         }
-        oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });
 
