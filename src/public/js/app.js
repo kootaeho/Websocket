@@ -182,6 +182,7 @@ function handleGroupchat(event){
 }*/
 
 function addMessage(message, isOwnMessage = false) {
+    console.log("에드 메시지 호출됨!")
     const ul = room.querySelector("ul.message-container");
     const li = document.createElement("li");
     li.classList.add("message-container-item");
@@ -228,7 +229,7 @@ function handleNicknameSubmit(event) {
 }*/
 
 function showRoom() {
-    setupSocketListeners();
+    //setupSocketListeners();
     welcome.style.display = "none";
     room.hidden = false;
     //const h3 = room.querySelector("h3");
@@ -269,6 +270,7 @@ function handleRoomSubmit(event) {
         }
         else{
             currentRoomName = roomName;
+            setupSocketListeners();
             showRoom();
         }
     });
@@ -278,7 +280,7 @@ function handleRoomSubmit(event) {
 function setupSocketListeners() {
     activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
-        h3.innerText = `방에 (${newCount})명 있음.`;
+        h3.innerText = `방에 (${newCount})명 있음.`;    
         addMessage(`${user} 방 입장!`);
     });
 
