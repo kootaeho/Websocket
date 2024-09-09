@@ -34,6 +34,9 @@ const passwdButton = document.querySelector("#passwdButton");
 const nicknameButton = document.querySelector("#nicknameButton");
 const Logo = document.querySelector("#Logo");
 const friendBox = document.querySelector("#friendBox");
+const nick = document.querySelector("#nick")
+const nickInput = document.getElementById('nickInput');
+
 
 Logo.addEventListener("click",()=>{
     console.log("로고 눌림!");
@@ -153,6 +156,7 @@ nickform.hidden = true;
 waiting.hidden = true;
 passwdSubmit.hidden = true;
 friendBox.hidden = true;
+nick.hidden = true;
 
 //Groupchat.addEventListener("click", handleGroupchat);
 //individual.addEventListener("click", handleOneonOne);
@@ -182,7 +186,7 @@ function handleGroupchat(event){
 }*/
 
 function addMessage(message, isOwnMessage = false) {
-    console.log("에드 메시지 호출됨!")
+    //console.log("에드 메시지 호출됨!")
     const ul = room.querySelector("ul.message-container");
     const li = document.createElement("li");
     li.classList.add("message-container-item");
@@ -260,20 +264,27 @@ function handleRoomSubmit(event) {
     //userCount += 1;
     event.preventDefault();
     rnform.hidden = true;
+    nick.hidden = false;
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
-    activeSocket.emit("enter_room",null, Roomcap,(roomName,RoomExist) => {
-        if(RoomExist === "방 없음"){
-            currentRoomName = roomName;
-            waiting.hidden = false;
-            setupSocketListeners();
-        }
-        else{
-            currentRoomName = roomName;
-            setupSocketListeners();
-            showRoom();
-        }
-    });
+    nick.addEventListener('submit',(event)=>{
+        event.preventDefault();
+        nick.hidden = true;
+        const nickn = nickInput.value;
+        activeSocket.emit("nickname",nickn);
+        activeSocket.emit("enter_room",null, Roomcap,(roomName,RoomExist) => {
+            if(RoomExist === "방 없음"){
+                currentRoomName = roomName;
+                waiting.hidden = false;
+                setupSocketListeners();
+            }
+            else{
+                currentRoomName = roomName;
+                setupSocketListeners();
+                showRoom();
+            }
+        });
+    })
 }
 
 
