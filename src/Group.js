@@ -270,6 +270,10 @@ oneOnoneChat.on("connection", (socket) => {
         done();
     });
 
+    socket.on("friendRequest",(room)=>{
+        socket.broadcast.to(room).emit("friendRequest");
+    })
+
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
     });

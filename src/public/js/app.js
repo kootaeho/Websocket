@@ -36,6 +36,9 @@ const Logo = document.querySelector("#Logo");
 const friendBox = document.querySelector("#friendBox");
 const nick = document.querySelector("#nick")
 const nickInput = document.getElementById('nickInput');
+const FriendRequest = document.querySelector("#FriendRequest");
+const FriendAccept = document.querySelector("#FriendAccept");
+
 
 
 Logo.addEventListener("click",()=>{
@@ -157,6 +160,7 @@ waiting.hidden = true;
 passwdSubmit.hidden = true;
 friendBox.hidden = true;
 nick.hidden = true;
+FriendAccept.hidden = true;
 
 //Groupchat.addEventListener("click", handleGroupchat);
 //individual.addEventListener("click", handleOneonOne);
@@ -241,7 +245,13 @@ function showRoom() {
     const msgForm = room.querySelector("#msg");
     leaveButton.addEventListener("click", handleLeave);
     msgForm.addEventListener("submit", handleMessageSubmit);
+    FriendRequest.addEventListener("click",handleFriendRequest);
+}
 
+function handleFriendRequest(){
+    activeSocket.emit("friendRequest",currentRoomName,()=>{
+        console.log("친구 요청 보냄!")
+    })
 }
 
 function handleLeave(){
@@ -304,6 +314,10 @@ function setupSocketListeners() {
     activeSocket.on("new_message", (message) => {
         addMessage(message);
     });
+
+    activeSocket.on("friendRequest",()=>{
+        FriendAccept.hidden = false;
+    })
 
     activeSocket.on("join", (newCount) => {
         waiting.hidden = true;
