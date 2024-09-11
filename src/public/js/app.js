@@ -270,6 +270,10 @@ function showRoomEnter() {
     rnform.addEventListener("click", handleRoomSubmit);
 }
 
+function handleFriendAccept(){
+    activeSocket.emit()
+}
+
 function handleRoomSubmit(event) {
     //userCount += 1;
     event.preventDefault();
@@ -317,6 +321,9 @@ function setupSocketListeners() {
 
     activeSocket.on("friendRequest",()=>{
         FriendAccept.hidden = false;
+        FriendRequest.hidden = true;
+        addMessage(`상대방이 친구요청을 보냈습니다!`);
+        FriendAccept.addEventListener("click",handleFriendAccept);
     })
 
     activeSocket.on("join", (newCount) => {

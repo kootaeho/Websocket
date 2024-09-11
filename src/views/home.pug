@@ -98,7 +98,8 @@ html(lang="en")
                 list-style: none;
                 padding: 10px;
                 margin: 0;
-                display: flex;
+                /*display: flex;*/
+                display: inline-block;
                 flex-direction: column;
                 overflow-y: auto;
                 border: 1px solid #FFFAF0;
@@ -106,6 +107,7 @@ html(lang="en")
                 border-radius: 10px;
                 width : 800px;
                 box-sizing : border-box;
+                position: relative;
             }
 
             .message-container-item {
@@ -222,6 +224,7 @@ html(lang="en")
                 justify-content: space-between;
                 box-sizing : border-box;
                 animation: fadeIn 1s ease-in-out;
+                position: relative;
             }
 
             #room h3 {
@@ -299,6 +302,13 @@ html(lang="en")
             #friendBox li {
                 margin-bottom: 10px;
             }
+
+            #FriendRequest,
+            #FriendAccept {
+                position: absolute;
+                right: -175px; /* 오른쪽 정렬 */
+                top: 50px;
+            }
     body(style="background-color: white; color: black;")
         header 
             h1 Unknown
@@ -340,7 +350,7 @@ html(lang="en")
                 ul.message-container
                 button#leave 방 나가기
                 button#FriendRequest 친구 요청 보내기!
-                button#FriendAccept 친구 요청 수락
+                button#FriendAccept 친구 요청 수락하기!
                 div#message-input
                     form#msg
                         input(placeholder="message", required, type="text" style = "background-color : #F0FFFF; color:black")
