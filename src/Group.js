@@ -76,20 +76,57 @@ function countRoom(namespace,roomName){
     return namespace.adapter.rooms.get(roomName)?.size ;
 }
 
-function getRoomUserEmails(roomName, namespace) {
-    console.log("1234");
-    const room = namespace.adapter.rooms.get(roomName);
-    if (!room) return [];
+function getRoomUserEmails(roomName, namespace, callback) {
+    console.log("방의 유저 이메일 조회 시도 중...");
 
+    // 현재 룸에 있는 소켓 ID들을 가져옴
+    const room = namespace.adapter.rooms.get(roomName);
+    if (!room) {
+        console.log("룸이 존재하지 않음.");
+        return callback([]);
+    }
+
+    const socketIds = Array.from(room); // 소켓 ID를 배열로 변환
     const userEmails = [];
-    room.forEach(socketId => {
-        const socket = namespace.sockets.get(socketId);
-        if (socket && socket.email) {
-            userEmails.push(socket.email); // 소켓의 이메일을 배열에 추가
+
+    // MySQL 연결 풀에서 연결 가져오기
+    pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('DB 연결 오류:', err);
+            return callback([]);
         }
+
+        // 소켓 ID를 통해 이메일을 조회하기 위한 SQL 쿼리
+        const query = 'SELECT user_email FROM users WHERE user_email IN (?)';
+
+        // 각 소켓의 이메일을 가져와 배열에 추가
+        const emailsToFetch = socketIds.map(socketId => {
+            const socket = namespace.sockets.get(socketId);
+            return socket ? socket.email : null;
+        }).filter(email => email !== null); // null 값 제거
+
+        if (emailsToFetch.length === 0) {
+            connection.release();
+            console.log("조회할 이메일이 없음.");
+            return callback([]);
+        }
+
+        // 데이터베이스에서 이메일 조회
+        connection.query(query, [emailsToFetch], (err, results) => {
+            connection.release();
+            if (err) {
+                console.error('이메일 조회 중 오류 발생:', err);
+                return callback([]);
+            }
+
+            results.forEach(row => {
+                userEmails.push(row.user_email);
+            });
+
+            console.log("조회된 이메일:", userEmails);
+            callback(userEmails);
+        });
     });
-    console.log(userEmails);
-    return userEmails;
 }
 
 /*
@@ -292,9 +329,9 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("addFriend", (roomName) => {
         const emails = getRoomUserEmails(roomName, oneOnoneChat);
-        if (emails.length < 2) {
-            return;
-        }
+        //if (emails.length < 2) {
+            //return;
+        //}
 
         const [userEmail, friendEmail] = emails;
 
