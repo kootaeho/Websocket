@@ -271,7 +271,8 @@ function showRoomEnter() {
 }
 
 function handleFriendAccept(){
-    activeSocket.emit("addFriend");
+    console.log("수락버튼 눌림!");
+    activeSocket.emit("addFriend",currentRoomName);
 }
 
 function handleRoomSubmit(event) {

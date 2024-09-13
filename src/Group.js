@@ -76,7 +76,23 @@ function countRoom(namespace,roomName){
     return namespace.adapter.rooms.get(roomName)?.size ;
 }
 
+function getRoomUserEmails(roomName, namespace) {
+    console.log("1234");
+    const room = namespace.adapter.rooms.get(roomName);
+    if (!room) return [];
 
+    const userEmails = [];
+    room.forEach(socketId => {
+        const socket = namespace.sockets.get(socketId);
+        if (socket && socket.email) {
+            userEmails.push(socket.email); // 소켓의 이메일을 배열에 추가
+        }
+    });
+    console.log(userEmails);
+    return userEmails;
+}
+
+/*
 GroupChat.on("connection", (socket) => {
     socket["nickname"] = "Anonymous";
 
@@ -123,7 +139,7 @@ GroupChat.on("connection", (socket) => {
         socket["nickname"] = nickname;
     });
 });
-
+*/
 
 oneOnoneChat.on("connection", (socket) => {
     //io.sockets.emit("room_change", publicRooms());
@@ -274,26 +290,30 @@ oneOnoneChat.on("connection", (socket) => {
         socket.broadcast.to(room).emit("friendRequest");
     })
 
-    socket.on("addFriend",(userEmail,friendEmail,done)=>{
+    socket.on("addFriend", (roomName) => {
+        const emails = getRoomUserEmails(roomName, oneOnoneChat);
+        if (emails.length < 2) {
+            return;
+        }
+
+        const [userEmail, friendEmail] = emails;
+
         const query = 'INSERT INTO friends (user_email, friend_email) VALUES (?, ?)';
-        pool.getConnection((err,connection)=>{
-            if(err){
-                console.log("DB 연결오류 , 친구추가",err);
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.log("DB 연결오류 , 친구추가", err);
                 return;
             }
-            connection.query(query, [userEmail,friendEmail], (err,results)=>{
+            connection.query(query, [userEmail, friendEmail], (err, results) => {
                 connection.release();
-                if(err){
-                    console.log("친구추가 중 오류발생",err);
-                    return
+                if (err) {
+                    console.log("친구 추가 중 오류 발생", err);
+                    return;
                 }
-
-                console.log("친구가 추가되었습니다",results);
-                socket.to(room).emit("FriendAdd");
-                done(results);
-            })
-        })
-    })
+                console.log("친구가 추가되었습니다", results);
+            });
+        });
+    });
 
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
