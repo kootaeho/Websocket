@@ -83,11 +83,19 @@ function getRoomUserEmails(roomName, namespace, callback) {
     const room = namespace.adapter.rooms.get(roomName);
     if (!room) {
         console.log("룸이 존재하지 않음.");
-        return callback([]);
+        return callback([]);  // 빈 배열을 콜백으로 전달
     }
 
     const socketIds = Array.from(room); // 소켓 ID를 배열로 변환
-    const userEmails = [];
+    const emailsToFetch = socketIds.map(socketId => {
+        const socket = namespace.sockets.get(socketId);
+        return socket ? socket.email : null;
+    }).filter(email => email !== null); // null 값 제거
+
+    if (emailsToFetch.length === 0) {
+        console.log("조회할 이메일이 없음.");
+        return callback([]); // 빈 배열을 콜백으로 전달
+    }
 
     // MySQL 연결 풀에서 연결 가져오기
     pool.getConnection((err, connection) => {
@@ -98,20 +106,6 @@ function getRoomUserEmails(roomName, namespace, callback) {
 
         // 소켓 ID를 통해 이메일을 조회하기 위한 SQL 쿼리
         const query = 'SELECT user_email FROM users WHERE user_email IN (?)';
-
-        // 각 소켓의 이메일을 가져와 배열에 추가
-        const emailsToFetch = socketIds.map(socketId => {
-            const socket = namespace.sockets.get(socketId);
-            return socket ? socket.email : null;
-        }).filter(email => email !== null); // null 값 제거
-
-        if (emailsToFetch.length === 0) {
-            connection.release();
-            console.log("조회할 이메일이 없음.");
-            return callback([]);
-        }
-
-        // 데이터베이스에서 이메일 조회
         connection.query(query, [emailsToFetch], (err, results) => {
             connection.release();
             if (err) {
@@ -119,10 +113,7 @@ function getRoomUserEmails(roomName, namespace, callback) {
                 return callback([]);
             }
 
-            results.forEach(row => {
-                userEmails.push(row.user_email);
-            });
-
+            const userEmails = results.map(row => row.user_email);
             console.log("조회된 이메일:", userEmails);
             callback(userEmails);
         });
@@ -328,26 +319,30 @@ oneOnoneChat.on("connection", (socket) => {
     })
 
     socket.on("addFriend", (roomName) => {
-        const emails = getRoomUserEmails(roomName, oneOnoneChat);
-        //if (emails.length < 2) {
-            //return;
-        //}
-
-        const [userEmail, friendEmail] = emails;
-
-        const query = 'INSERT INTO friends (user_email, friend_email) VALUES (?, ?)';
-        pool.getConnection((err, connection) => {
-            if (err) {
-                console.log("DB 연결오류 , 친구추가", err);
+        // getRoomUserEmails를 호출할 때 콜백 함수 사용
+        getRoomUserEmails(roomName, oneOnoneChat, (emails) => {
+            if (emails.length < 2) {
+                console.log("룸에 유저가 충분하지 않습니다.");
                 return;
             }
-            connection.query(query, [userEmail, friendEmail], (err, results) => {
-                connection.release();
+    
+            // 배열 구조 분해를 사용하여 이메일을 가져옴
+            const [userEmail, friendEmail] = emails;
+    
+            const query = 'INSERT INTO friends (user_email, friend_email) VALUES (?, ?)';
+            pool.getConnection((err, connection) => {
                 if (err) {
-                    console.log("친구 추가 중 오류 발생", err);
+                    console.log("DB 연결오류 , 친구 추가", err);
                     return;
                 }
-                console.log("친구가 추가되었습니다", results);
+                connection.query(query, [userEmail, friendEmail], (err, results) => {
+                    connection.release();
+                    if (err) {
+                        console.log("친구 추가 중 오류 발생", err);
+                        return;
+                    }
+                    console.log("친구가 추가되었습니다", results);
+                });
             });
         });
     });
