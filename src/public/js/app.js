@@ -271,7 +271,7 @@ function showRoomEnter() {
 }
 
 function handleFriendAccept(){
-    activeSocket.emit()
+    activeSocket.emit("addFriend");
 }
 
 function handleRoomSubmit(event) {
@@ -333,6 +333,10 @@ function setupSocketListeners() {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
     });
+
+    activeSocket.on("FriendAdd",()=>{
+        alert("친구가 추가되었습니다!");
+    })
 
     activeSocket.on("room_change", (rooms) => {
         const roomList = welcome.querySelector("ul");

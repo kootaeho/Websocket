@@ -274,6 +274,27 @@ oneOnoneChat.on("connection", (socket) => {
         socket.broadcast.to(room).emit("friendRequest");
     })
 
+    socket.on("addFriend",(userEmail,friendEmail,done)=>{
+        const query = 'INSERT INTO friends (user_email, friend_email) VALUES (?, ?)';
+        pool.getConnection((err,connection)=>{
+            if(err){
+                console.log("DB 연결오류 , 친구추가",err);
+                return;
+            }
+            connection.query(query, [userEmail,friendEmail], (err,results)=>{
+                connection.release();
+                if(err){
+                    console.log("친구추가 중 오류발생",err);
+                    return
+                }
+
+                console.log("친구가 추가되었습니다",results);
+                socket.to(room).emit("FriendAdd");
+                done(results);
+            })
+        })
+    })
+
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
     });
