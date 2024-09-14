@@ -255,6 +255,7 @@ oneOnoneChat.on("connection", (socket) => {
                 }
                 if (results.length > 0) {
                     //console.log("로그인 성공:", results);
+                    socket.email = email;
                     done({success : true});
                 } else {
                     console.log("로그인 실패: 해당 사용자 없음.");
