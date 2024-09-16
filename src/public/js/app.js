@@ -65,6 +65,7 @@ function handleSignin(event){
 function handleLogin(event){
     event.preventDefault();
     const emailInput = document.querySelector("#emailInput").value;
+    email = emailInput;
     const passwdInput = document.querySelector("#passwdInput").value;
     activeSocket.emit("Login", emailInput,passwdInput,(response)=>{
         if(response.success == true){
@@ -81,6 +82,14 @@ function handleMainPage(){
     main.hidden = false;
     rnform.hidden = false;
     friendBox.hidden = false;
+    activeSocket.emit("ShowFriend",(friends)=>{
+        friendBox.innerHTML = "";
+        friends.forEach(friend => {
+            const li = document.createElement('li'); // 새로운 li 요소 생성
+            li.textContent = friend; // 친구 이메일 또는 이름을 li에 설정
+            friendBox.appendChild(li); // ul에 li 추가
+        });
+    })
     rnform.addEventListener("click", handleRoomSubmit);
 }
 
