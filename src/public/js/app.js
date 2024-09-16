@@ -53,9 +53,9 @@ function handleSignin(event){
     welcome.style.display = "none";
     SignIn.hidden = false;
     emailform.hidden = false;
-    activeSocket.emit("clear_code","xogh1289@hufs.ac.kr",(response)=>{
+    /*activeSocket.emit("clear_code","top6483@hufs.ac.kr",(response)=>{
         console.log("초기화 됨!");
-    })
+    })*/
     emailCodeButton.addEventListener("click",(event)=>{
         event.preventDefault();
         handleEmail();

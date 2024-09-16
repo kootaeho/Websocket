@@ -342,7 +342,8 @@ oneOnoneChat.on("connection", (socket) => {
                         console.log("친구 추가 중 오류 발생", err);
                         return;
                     }
-                    console.log("친구가 추가되었습니다", results);
+                    //console.log("친구가 추가되었습니다", results);
+                    oneOnoneChat.to(roomName).emit("FriendAdd");
                 });
             });
         });
