@@ -351,15 +351,15 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("ShowFriend",(callback)=>{
         const email = socket.email 
-        console.log(email);
+        //console.log(email);
         pool.getConnection((err, connection)=>{
             const query = 'SELECT * FROM friends WHERE user_email = ? OR friend_email = ?';
             connection.query(query, [email, email], (error, results) => {
                 connection.release();
         
-                if (error) {
-                    console.error('친구 목록 조회 중 오류 발생:', error);
-                    return callback(error, null);
+                if (err) {
+                    console.error('친구 목록 조회 중 오류 발생:', err);
+                    return callback(err, null);
                 }
         
                 // 조회된 친구 이메일들을 배열로 반환
@@ -367,7 +367,7 @@ oneOnoneChat.on("connection", (socket) => {
                     // 사용자가 user_email이면 friend_email을 반환하고, 반대의 경우 user_email을 반환
                     return row.user_email === email ? row.friend_email : row.user_email;
                 });
-                console.log(friendList);
+                //console.log(friendList);
                 callback(friendList);
             });
         })
