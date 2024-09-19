@@ -349,29 +349,48 @@ oneOnoneChat.on("connection", (socket) => {
         });
     });
 
-    socket.on("ShowFriend",(callback)=>{
-        const email = socket.email 
-        //console.log(email);
-        pool.getConnection((err, connection)=>{
+    socket.on("ShowFriend", (callback) => {
+        const email = socket.email;
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('DB 연결 오류:', err);
+                return callback(err);
+            }
+    
             const query = 'SELECT * FROM friends WHERE user_email = ? OR friend_email = ?';
             connection.query(query, [email, email], (error, results) => {
-                connection.release();
-        
-                if (err) {
-                    console.error('친구 목록 조회 중 오류 발생:', err);
-                    return callback(err, null);
+                if (error) {
+                    connection.release();
+                    console.error('친구 목록 조회 중 오류 발생:', error);
+                    return callback(error);
                 }
-        
-                // 조회된 친구 이메일들을 배열로 반환
+    
                 const friendList = results.map(row => {
-                    // 사용자가 user_email이면 friend_email을 반환하고, 반대의 경우 user_email을 반환
                     return row.user_email === email ? row.friend_email : row.user_email;
                 });
-                //console.log(friendList);
-                callback(friendList);
+    
+                if (friendList.length === 0) {
+                    connection.release();
+                    return callback([]);  // 친구가 없는 경우 빈 배열 반환
+                }
+    
+                // 친구들의 닉네임을 조회하기 위한 쿼리
+                const query = `SELECT user_nickname FROM users WHERE user_email IN (?)`;
+                connection.query(query, [friendList], (error, results) => {
+                    connection.release();
+    
+                    if (error) {
+                        console.error('닉네임 조회 중 오류 발생:', error);
+                        return callback(error);
+                    }
+    
+                    // 친구들의 닉네임을 배열로 반환
+                    const nicknames = results.map(row => row.user_nickname);
+                    callback(nicknames);
+                });
             });
-        })
-    })
+        });
+    });
 
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
