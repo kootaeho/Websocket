@@ -1,390 +1,341 @@
+doctype html
 html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(name="viewport" content="width=device-width, initial-scale=1.0")
-        title Unknown
-        link(rel="stylesheet" href="https://unpkg.com/mvp.css")
-        style.
-            @keyframes fadeIn {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Unknown
+    link(rel="stylesheet" href="https://unpkg.com/mvp.css")
+    style.
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-            @keyframes fadeOut {
-                from {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-            }
+      body {
+        background-color: #f0f2f5;
+        color: #333;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        transition: background-color 0.3s ease;
+      }
 
-            body {
-                background-color: #121212;
-                color: #f1f1f1;
-                font-family: 'Roboto', sans-serif;
-                margin: 0;
-                padding: 0;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                transition: background-color 0.3s ease;
-            }
+      header {
+        padding: 20px;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
 
-            header {
-                padding: 20px;
-                text-align: center;
-                animation: fadeIn 1s ease-in-out;
-            }
+      header h1 {
+        font-size: 2.5rem;
+        margin: 0;
+        color: #007bff;
+      }
 
-            header h1 {
-                font-size: 3rem;
-                margin: 0;
-                color: black;
-            }
+      header h3 {
+        font-size: 1.2rem;
+        margin-top: 10px;
+        color: #555;
+      }
 
-            header h3 {
-                font-size: 1.2rem;
-                margin-top: 10px;
-                color: #a1a1a1;
-            }
+      #choose, #welcome {
+        width: 100%;
+        max-width: 600px;
+        padding: 20px;
+        border-radius: 10px;
+        animation: fadeIn 1s ease-in-out;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
 
-            #choose, #welcome {
-                width: 100%;
-                max-width: 600px;
-                padding: 20px;
-                border-radius: 10px;
-                animation: fadeIn 1s ease-in-out;
-                background-color: white;
-            }
+      button {
+        font-size: 1rem;
+        padding: 10px 20px;
+        margin: 5px 0;
+        border: none;
+        border-radius: 8px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
 
-            button {
-                font-size: 1rem;
-                padding: 10px 20px;
-                margin: 5px 0;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.3s ease;
-            }
+      button:hover {
+        background-color: #0056b3;
+      }
 
-            button:hover {
-                background-color: #3e8e41;
-            }
+      input[type="text"] {
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        background-color: #fff;
+        color: #333;
+        font-size: 1rem;
+      }
 
-            input[type="text"] {
-                padding: 10px;
-                width: 100%;
-                border: 1px solid #444;
-                border-radius: 5px;
-                margin-bottom: 10px;
-                background-color: #2a2a2a;
-                color: #f1f1f1;
-                font-size: 1rem;
-            }
+      .message-container {
+        list-style: none;
+        padding: 10px;
+        margin: 0;
+        flex: 1;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        background-color: #ffffff;
+        border-radius: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        position: relative;
+      }
 
-            .message-container {
-                flex: 1; /* 남은 공간을 메시지 컨테이너가 차지 */
-                list-style: none;
-                padding: 10px;
-                margin: 0;
-                /*display: flex;*/
-                display: inline-block;
-                flex-direction: column;
-                overflow-y: auto;
-                border: 1px solid black;
-                background-color: white;
-                border-radius: 10px;
-                width : 800px;
-                box-sizing : border-box;
-                position: relative;
-            }
+      .message-container-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 10px;
+        position: relative;
+      }
 
-            .message-container-item {
-                display: flex;
-                align-items: flex-start;
-                margin-bottom: 10px;
-                position: relative;
-            }
+      .message {
+        padding: 10px;
+        max-width: 70%;
+        border-radius: 10px;
+        position: relative;
+        color: #fff;
+        font-size: 16px;
+        word-wrap: break-word;
+      }
 
-            .message {
-                padding: 10px;
-                max-width: 70%;
-                border-radius: 10px;
-                position: relative;
-                color: #fff;
-                font-size: 16px;
-                word-wrap: break-word;
-            }
+      .message.you {
+        background-color: #4CAF50;
+        margin-left: auto;
+      }
 
-            .message.you {
-                background-color: #4CAF50;
-                margin-left: auto;
-            }
+      .message.other {
+        background-color: #6495ED;
+        margin-right: auto;
+      }
 
-            .message.other {
-                background-color: #6495ED;
-                margin-right: auto;
-            }
+      .message-time {
+        font-size: 0.8rem;
+        color: #888;
+        position: absolute;
+        bottom: -10px;
+        right: 10px;
+        transform: translateY(100%);
+      }
 
-            .message-time {
-                font-size: 0.8rem;
-                color: #888;    
-                /*position: relative;*/
-                position: absolute; /* 부모 요소에 상대적으로 위치 */
-                bottom: 0; /* 메시지 박스의 하단에 위치 */
-                white-space: nowrap;
-                transform: translateY(100%);
-            }
+      .message::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+      }
 
-            .message-container-item .you + .message-time {
-                left: calc(100% - 70px);
-                margin-bottom : 6px;
-                /*margin-left: 10px;*/
-            }
+      .message.you::after {
+        border-right-color: #4CAF50;
+        border-left: 0;
+        border-right: 10px solid #4CAF50;
+        left: 100%;
+        top: 10px;
+      }
 
-            .message-container-item .other + .message-time {
-                left: calc(0% + 15px);
-                margin-bottom : 6px;
-                /*margin-right: 10px;*/
-            }
+      .message.other::after {
+        border-left-color: #6495ED;
+        border-right: 0;
+        border-left: 10px solid #6495ED;
+        right: 100%;
+        top: 10px;
+      }
 
-            .message::after {
-                content: '';
-                position: absolute;
-                width: 0;
-                height: 0;
-                border: 10px solid transparent;
-            }
+      form#msg {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        width: 100%;
+        box-sizing: border-box;
+      }
 
-            .message.you::after {
-                border-right-color: #4CAF50;
-                border-left: 0;
-                border-right: 10px solid #4CAF50;
-                left: 100%;
-                top: 10px;
-            }
+      form#msg input {
+        flex: 1;
+        padding: 10px;
+        margin-right: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        color: #333;
+      }
 
-            .message.other::after {
-                border-left-color: #6495ED;
-                border-right: 0;
-                border-left: 10px solid #6495ED;
-                right: 100%;
-                top: 10px;
-            }
+      form#msg button {
+        padding: 10px;
+        border-radius: 8px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        box-sizing: border-box;
+      }
 
-            form#msg {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 10px;
-                width : 100%;
-                box-sizing : border-box;
-            }
+      main {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        width: 100%;
+        max-width: 800px;
+        box-sizing: border-box;
+      }
 
-            form#msg input {
-                flex: 1;
-                padding: 10px;
-                margin-right: 10px;
-                border-radius: 5px;
-                box-sizing: border-box;
-            }
+      #room {
+        width: 100%;
+        height: 80vh;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        box-sizing: border-box;
+      }
 
-            form#msg button {
-                padding: 10px;
-                border-radius: 5px;
-                background-color: #4CAF50;
-                color: white;
-                border: none;
-                box-sizing: border-box;
-            }
+      #room h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.5rem;
+        text-align: center;
+        width: 100%;
+      }
 
-            main {
-                display: flex;
-                flex-direction: column;
-                padding: 0;
-            }
+      #welcome {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
 
-            #room {
-                width: 800px;
-                height: 80vh; /* 전체 페이지 높이의 80%를 차지 */
-                margin-top: 0;
-                order: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                box-sizing : border-box;
-                animation: fadeIn 1s ease-in-out;
-                position: relative;
-            }
+      #nickname input {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        color: #333;
+      }
 
-            #room h3 {
-                margin: 0 0 10px 0;
-                font-size: 1.5rem;
-                text-align: center;
-                width : 100%;
-            }
+      #friendBox {
+        position: fixed;
+        right: 20px;
+        top: 20px;
+        width: 200px;
+        height: auto;
+        border: 1px solid #ddd;
+        padding: 10px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-sizing: border-box;
+        z-index: 1000;
+      }
 
-            #welcome {
-                background-color : white;
-                flex-direction: column; /* 자식 요소들을 수직으로 배치 */
-                justify-content: center; /* 수직 중앙 정렬 */
-                align-items: center; /* 수평 중앙 정렬 */
-                display: flex;
-            }
+      #friendBox h3 {
+        margin-top: 0;
+      }
 
-            #nickname input {
-                width: 600px; /* 원하는 가로 길이로 설정 */
-                padding: 10px; /* 입력 필드의 내부 여백 추가 */
-                box-sizing: border-box; /* 패딩을 포함한 너비 조정 */
-                color : black;
-            }
+      #friendBox ul {
+        list-style: none;
+        padding: 0;
+      }
 
-            #roomname button {
-                width: 100%;
-                padding: 10px;
-                animation: fadeIn 1s ease-in-out;
-            }
+      #friendBox li {
+        margin-bottom: 10px;
+      }
 
-            #roomname {
-                animation: fadeIn 1s ease-in-out;
-            }
+      #FriendRequest,
+      #FriendAccept {
+        position: absolute;
+        right: -175px;
+        top: 50px;
+      }
 
-            #GroupSelect {
-                background-color : white;
-                position: relative;
-                width: 50%; /* form의 너비를 설정하여 중앙에 배치 */
-                margin: 0 auto; /* form을 페이지 중앙에 위치 */
-                text-align: center; /* 버튼들을 수평으로 중앙에 정렬 */
-            }
+      #Logo {
+        width: 100px;
+        height: auto;
+        position: absolute;
+        top: 2px;
+        left: 10px;
+        animation: fadeIn 5s ease-in-out;
+      }
 
-            #GroupSelect button {
-                margin-bottom: 20px; /* 버튼 사이에 20px의 여백 추가 */
-            }
-            #Group, #oneOnone {
-                flex: 1;
-                margin: 20px; /* 버튼 사이에 여백 추가 */
-            }
-            #room[hidden] {
-                display: none;
-            }
-            #friendBox {
-                position: fixed; /* 페이지 오른쪽에 고정 */
-                right: 20px; /* 오른쪽 여백 조절 */
-                top: 20px; /* 위쪽 여백 조절 */
-                width: 200px; /* 친구 리스트 박스의 너비 */
-                height: auto;
-                border: 1px solid black;
-                padding: 10px;
-                background-color: white; /* 박스 배경색 */
-                box-sizing: border-box;
-                z-index: 1000; /* 다른 요소보다 위에 표시되도록 */
-            }
+      #SiginButton {
+        margin-left: 45px;
+      }
 
-            #friendBox h3 {
-                margin-top: 0;
-            }
+      #LoginButton {
+        margin-left: 28px;
+      }
 
-            #friendBox ul {
-                list-style: none;
-                padding: 0;
-            }
+  body
+    header
+      h1 Random Chat
+      h3#SubTitle Join and chat with new people!
+      img#Logo(src="/src/Logo.png" alt="Logo")
 
-            #friendBox li {
-                margin-bottom: 10px;
-            }
+    main
+      #SignIn
+        form#emailSubmit
+          input#emailVerify(placeholder="학교 이메일을 입력하세요" required type="text")
+          button#emailCodeButton(type="submit") 인증코드 보내기
+        form#verifySubmit
+          input#codeInput(placeholder="인증 코드 입력" required type="text")
+          button#verifyButton(type="submit") 인증
+        form#passwdSubmit
+          input#passwd(placeholder="패스워드 설정" required type="text")
+          button#passwdButton(type="submit") 설정
+        form#nickname
+          input#nicknameInput(placeholder="닉네임을 입력하세요" required type="text")
+          button#nicknameButton 저장
 
-            #FriendRequest,
-            #FriendAccept {
-                position: absolute;
-                right: -175px; /* 오른쪽 정렬 */
-                top: 50px;
-            }
-            #Logo {
-                width: 100px; /* 로고의 너비를 조정 */
-                height: auto; /* 비율에 맞게 높이 자동 조정 */
-                position: absolute; /* 절대 위치로 설정하여 페이지의 원하는 위치에 배치 */
-                top: 2px; /* 위쪽 여백 */
-                left: 10px; /* 왼쪽 여백 */
-                animation: fadeIn 5s ease-in-out;
-            }
-            #SiginButton {
-                margin-left : 45px;
-            }
-            #LoginButton{
-                margin-left : 28px;
-            }
-            #nick{
-                animation: fadeIn 1s ease-in-out;
-            }
-            #emailSubmit{
-                animation: fadeIn 1s ease-in-out;
-            }
-            #verifySubmit{
-                animation: fadeIn 1s ease-in-out;
-            }
-            #passwdSubmit{
-                animation: fadeIn 1s ease-in-out;
-            }
-            #nickname{
-                animation: fadeIn 1s ease-in-out;
-            }
-    body(style="background-color: white; color: black;")
-        header 
-            h1 Unknown
-                h3#SubTitle
-            img#Logo(src="/src/Logo.png")
-        main
-            div#SignIn
-                form#emailSubmit
-                    input#emailVerify(placeholder="학교 이메일을 입력하세요", required, type="text")
-                    button#emailCodeButton(type="submit") 인증코드 보내기
-                form#verifySubmit
-                    input#codeInput(placeholder="인증 코드 입력", required, type="text")
-                    button#verifyButton(type="submit") 인증
-                form#passwdSubmit
-                    input#passwd(placeholder="패스워드 설정", required, type="text")
-                    button#passwdButton(type="submit") 설정
-                form#nickname
-                    input#nicknameInput(placeholder="닉네임을 입력하세요", required, type="text" style="background-color: white;")
-                    button#nicknameButton 저장
-            div#welcome
-                form#LogIn
-                    input#emailInput(placeholder="학교 이메일을 입력하세요", required, type="text")
-                    input#passwdInput(placeholder="패스워드를 입력하세요", required, type="text")
-                    button#LoginButton(type="click") 로그인
-                    button#SiginButton(type="click") 회원가입
-            div#main
-                form#roomname
-                    button 방 입장
-                form#nick
-                    input#nickInput(placeholder="일시적으로 사용될 닉네임을 입력하세요", required , type="text")
-                    button 상대 찾기 
-                div#friendBox
-                    h3 친구
-                    ul
-                        li 친구 1
-                        li 친구 2
-            div#room
-                h3
-                ul.message-container
-                button#leave 방 나가기
-                button#FriendRequest 친구 요청 보내기!
-                button#FriendAccept 친구 요청 수락하기!
-                div#message-input
-                    form#msg
-                        input(placeholder="message", required, type="text" style = "background-color : #F0FFFF; color:black")
-                        button Send
-            div#waiting
-                h2 상대방 찾는중 ... 
-        script(src="/socket.io/socket.io.js")
-        script(src="/public/js/app.js")
+      #welcome
+        form#LogIn
+          input#emailInput(placeholder="학교 이메일을 입력하세요" required type="text")
+          input#passwdInput(placeholder="패스워드를 입력하세요" required type="text")
+          button#LoginButton(type="click") 로그인
+          button#SiginButton(type="click") 회원가입
+
+      #main
+        form#roomname
+          button 방 입장
+        form#nick
+          input#nickInput(placeholder="일시적으로 사용될 닉네임을 입력하세요" required type="text")
+          button 상대 찾기
+        #friendBox
+          h3 친구
+          ul
+            li 친구 1
+            li 친구 2
+
+      #room
+        h3
+        ul.message-container
+        button#leave 방 나가기
+        button#FriendRequest 친구 요청 보내기!
+        button#FriendAccept 친구 요청 수락하기!
+        #message-input
+          form#msg
+            input(placeholder="message" required type="text")
+            button Send
+
+      #waiting
+        h2 상대방 찾는중 ...
+
+    script(src="/socket.io/socket.io.js")
+    script(src="/public/js/app.js")
