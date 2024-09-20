@@ -202,7 +202,7 @@ function handleFriendRequest() {
 }
 
 function handleLeave() {
-    rnform.hidden = false;
+    rnform.hidden = true;
     welcome.style.display = "flex";
     room.style.display = "none";
     console.log(currentRoomName);

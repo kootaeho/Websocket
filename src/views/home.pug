@@ -206,6 +206,7 @@ html(lang="en")
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
         box-sizing: border-box;
+        animation: fadeIn 1s ease-in-out;
       }
 
       #room h3 {
@@ -242,6 +243,7 @@ html(lang="en")
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         box-sizing: border-box;
         z-index: 1000;
+        animation: fadeIn 1s ease-in-out;
       }
 
       #friendBox h3 {
@@ -297,6 +299,7 @@ html(lang="en")
         width: 300px;       /* 폼 박스 너비 (예시) */
         border: 1px solid #ccc; /* 폼 박스 테두리 (선택 사항) */
         box-sizing: border-box; /* 패딩 포함 계산 */
+        animation: fadeIn 1s ease-in-out;
       }
       form#roomname button {
         position: absolute;
@@ -308,7 +311,12 @@ html(lang="en")
         background-color : white;
         color : #007bff;
       }
-
+      #emailSubmit, #verifySubmit, #passwdSubmit,#nickname{
+        animation: fadeIn 1s ease-in-out;
+      }
+      #nick{
+        animation: fadeIn 1s ease-in-out;
+      }
   body
     header
       h1 Unknown
