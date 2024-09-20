@@ -102,6 +102,7 @@ html(lang="en")
 
       .message-container-item {
         display: flex;
+        flex-direction: column;
         align-items: flex-start;
         margin-bottom: 10px;
         position: relative;
@@ -119,21 +120,19 @@ html(lang="en")
 
       .message.you {
         background-color: #4CAF50;
-        margin-left: auto;
+        align-self: flex-end;
       }
 
       .message.other {
         background-color: #6495ED;
-        margin-right: auto;
+        align-self: flex-start;
       }
 
       .message-time {
         font-size: 0.8rem;
         color: #888;
-        position: absolute;
-        bottom: -10px;
-        right: 10px;
-        transform: translateY(100%);
+        margin-top: 4px;
+        align-self: flex-end; /* 시간을 메시지의 오른쪽 아래에 정렬 */
       }
 
       .message::after {

@@ -123,6 +123,7 @@ function handleEmail(event) {
     const univNameInput = "한국외국어대학교";
 
     activeSocket.emit("certify_email", email, univNameInput, (response) => {
+        console.log(response);
         if (response.success) {
             console.log("인증 코드가 전송되었습니다.");
             emailform.hidden = true;
@@ -169,6 +170,12 @@ function addMessage(message, isOwnMessage = false) {
     const messageTime = document.createElement("div");
     messageTime.classList.add("message-time");
     messageTime.innerText = time;
+
+    // 상대방 메시지일 경우 위치 조정
+    if (!isOwnMessage) {
+        messageTime.style.alignSelf = "flex-start"; // 시간 텍스트를 왼쪽으로 정렬
+        messageTime.style.marginLeft = "10px"; // 약간의 왼쪽 마진 추가
+    }
 
     li.appendChild(messageBox);
     li.appendChild(messageTime);
