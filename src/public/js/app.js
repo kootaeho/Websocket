@@ -30,6 +30,7 @@ const nick = document.querySelector("#nick")
 const nickInput = document.getElementById('nickInput');
 const FriendRequest = document.querySelector("#FriendRequest");
 const FriendAccept = document.querySelector("#FriendAccept");
+const rnformButton = document.querySelector('form#roomname button');
 
 Logo.addEventListener("click", () => {
     console.log("로고 눌림!");
@@ -76,7 +77,7 @@ function handleMainPage() {
             friendBox.appendChild(li);
         });
     })
-    rnform.addEventListener("click", handleRoomSubmit);
+    rnformButton.addEventListener("click", handleRoomSubmit);
 }
 
 function handleVerify(event) {
