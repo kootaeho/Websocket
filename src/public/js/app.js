@@ -69,14 +69,32 @@ function handleMainPage() {
     main.hidden = false;
     rnform.hidden = false;
     friendBox.hidden = false;
-    activeSocket.emit("ShowFriend", (friends) => {
+    // 친구 목록을 동적으로 추가하는 부분
+    activeSocket.emit("ShowFriend", (friendsList) => {
+        const friends = friendsList;
         friendBox.innerHTML = "";
         friends.forEach(friend => {
-            const li = document.createElement('li');
-            li.textContent = friend;
-            friendBox.appendChild(li);
+            const friendCard = document.createElement('div');
+            friendCard.classList.add('friend-card');
+    
+            const friendInfo = document.createElement('div');
+            friendInfo.classList.add('friend-info');
+    
+            const friendName = document.createElement('h4');
+            friendName.classList.add('friend-name');
+            friendName.textContent = friend;
+    
+            const chatButton = document.createElement('button');
+            chatButton.classList.add('chat-button');
+            chatButton.textContent = '채팅';
+    
+            friendInfo.appendChild(friendName);
+            friendCard.appendChild(friendInfo);
+            friendCard.appendChild(chatButton);
+    
+            friendBox.appendChild(friendCard);
         });
-    })
+    });
     rnformButton.addEventListener("click", handleRoomSubmit);
 }
 

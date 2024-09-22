@@ -24,6 +24,7 @@ app.use(express.static(path.join(__dirname, '..')));
 app.get("/", (req,res) => res.render("home"));
 app.get("/*", (req,res) => res.render("home"));
 
+
 const pool = mysql.createPool({
     connectionLimit : 10,
     host: dbconfig.host,

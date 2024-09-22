@@ -317,6 +317,52 @@ html(lang="en")
       #nick{
         animation: fadeIn 1s ease-in-out;
       }
+      .friend-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .friend-card {
+        display: flex;
+        align-items: center;
+        background-color: #f4f4f4;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 250px;
+      }
+
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .friend-info {
+        flex-grow: 1;
+      }
+
+      .friend-name {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .friend-status {
+        margin: 0;
+        font-size: 12px;
+        color: green; /* 온라인 상태 표시를 위한 색상 */
+      }
+
+      .chat-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
   body
     header
       h1 Unknown
@@ -352,9 +398,17 @@ html(lang="en")
         form#nick
           input#nickInput(placeholder="일시적으로 사용될 닉네임을 입력하세요" required type="text")
           button 상대 찾기
-        #friendBox
-          h3 친구
-          ul
+        #friendBox.friend-container
+          if friends && friends.length > 0
+            each friend in friends
+              .friend-card
+                img.avatar(src=friend.avatar || 'default-avatar.png' alt="Avatar")
+                .friend-info
+                  h4.friend-name= friend.name
+                  p.friend-status= friend.status
+                button.chat-button 채팅
+          else
+            p 친구 목록이 없습니다.
       #room
         h3
         ul.message-container
