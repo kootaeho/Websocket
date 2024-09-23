@@ -394,7 +394,6 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("FriendChat",(friendName)=>{
-        console.log(friendName);
         pool.getConnection((err,connection)=>{
             if(err){
                 console.log("DB 연결 오류 FriendChat",err);
