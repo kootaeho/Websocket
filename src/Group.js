@@ -393,6 +393,32 @@ oneOnoneChat.on("connection", (socket) => {
         });
     });
 
+    socket.on("FriendChat",(friendName)=>{
+        console.log(friendName);
+        pool.getConnection((err,connection)=>{
+            if(err){
+                console.log("DB 연결 오류 FriendChat",err);
+                return;
+            }
+            const query = 'SELECT user_email FROM users WHERE user_nickname = ?';
+            connection.query(query,[friendName],(error,results)=>{
+                connection.release();
+
+                if(error){
+                    console.log("이메일 조회중 오류발생:",error);
+                    return;
+                }
+
+                if(results.length > 0){
+                    const friendEmail = results[0].user_email;
+                    console.log(friendEmail);
+                } else{
+                    console.log("닉네임에 해당하는 이메일을 찾지 못했습니다.")
+                }
+            })
+        })
+    })
+
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
     });

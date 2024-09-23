@@ -106,6 +106,7 @@ function handleMainPage() {
 
 function handle_friendChat(friendName){
     console.log(friendName);
+    activeSocket.emit("FriendChat",friendName);
 }
 
 
