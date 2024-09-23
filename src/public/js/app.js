@@ -87,16 +87,27 @@ function handleMainPage() {
             const chatButton = document.createElement('button');
             chatButton.classList.add('chat-button');
             chatButton.textContent = '채팅';
+            chatButton.setAttribute('data-friend', friend);
     
             friendInfo.appendChild(friendName);
             friendCard.appendChild(friendInfo);
             friendCard.appendChild(chatButton);
     
             friendBox.appendChild(friendCard);
+
+            chatButton.addEventListener('click', (event) => {
+                const friendName = event.target.getAttribute('data-friend');
+                handle_friendChat(friendName);
+            });
         });
     });
     rnformButton.addEventListener("click", handleRoomSubmit);
 }
+
+function handle_friendChat(friendName){
+    console.log(friendName);
+}
+
 
 function handleVerify(event) {
     event.preventDefault();

@@ -406,7 +406,7 @@ html(lang="en")
                 .friend-info
                   h4.friend-name= friend.name
                   p.friend-status= friend.status
-                button.chat-button 채팅
+                button.chat-button(data-friend=friend.name) 채팅
           else
             p 친구 목록이 없습니다.
       #room
