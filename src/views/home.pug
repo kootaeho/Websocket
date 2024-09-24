@@ -409,8 +409,13 @@ html(lang="en")
                 button.chat-button(data-friend=friend.name) 채팅
           else
             p 친구 목록이 없습니다.
-        form#Note
+        #Note
+          h3
           ul#NoteContainer.message-container
+          #message-input
+            form#msg
+              input(placeholder="message" required type="text")
+              button Send
       #room
         h3
         ul.message-container

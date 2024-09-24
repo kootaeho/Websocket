@@ -31,8 +31,9 @@ const nickInput = document.getElementById('nickInput');
 const FriendRequest = document.querySelector("#FriendRequest");
 const FriendAccept = document.querySelector("#FriendAccept");
 const rnformButton = document.querySelector('form#roomname button');
-const NoteContainer = document.querySelector('NoteContainer');
-const Note = document.querySelector('Note');
+const NoteContainer = document.querySelector('#NoteContainer');
+const Note = document.querySelector('#Note');
+
 Logo.addEventListener("click", () => {
     console.log("로고 눌림!");
 })
@@ -107,6 +108,8 @@ function handleMainPage() {
 
 function handle_friendChat(friendName){
     console.log(friendName);
+    Note.style.display = "flex";
+    rnform.hidden = true;
     NoteContainer.hidden = false;
     activeSocket.emit("FriendChat",friendName);
 }
@@ -187,7 +190,7 @@ friendBox.hidden = true;
 nick.hidden = true;
 FriendAccept.hidden = true;
 NoteContainer.hidden = true;
-Note.hidden = true;
+Note.style.display = "none";
 
 function addMessage(message, isOwnMessage = false) {
     const ul = room.querySelector("ul.message-container");
