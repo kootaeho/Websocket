@@ -108,9 +108,9 @@ function handleMainPage() {
 
 function handle_friendChat(friendName){
     console.log(friendName);
+    welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
-    NoteContainer.hidden = false;
     activeSocket.emit("FriendChat",friendName);
 }
 
@@ -189,7 +189,6 @@ passwdSubmit.hidden = true;
 friendBox.hidden = true;
 nick.hidden = true;
 FriendAccept.hidden = true;
-NoteContainer.hidden = true;
 Note.style.display = "none";
 
 function addMessage(message, isOwnMessage = false) {
