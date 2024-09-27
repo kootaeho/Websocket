@@ -107,13 +107,23 @@ function handleMainPage() {
 }
 
 function handle_friendChat(friendName){
-    console.log(friendName);
+    const noteForm = main.querySelector("#note");
+    noteForm.addEventListener("submit",handleNoteSubmit);
     welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
-    activeSocket.emit("FriendChat",friendName);
+    //activeSocket.emit("FriendChat",friendName);
 }
 
+function handleNoteSubmit(event){
+    event.preventDefault();
+    const input = main.querySelector("#note input");
+    const value = input.value;
+    activeSocket.emit("new_message", value, currentRoomName, () => {
+        addMessage(`${value}`, true);
+    });
+    input.value = "";
+}
 
 function handleVerify(event) {
     event.preventDefault();
