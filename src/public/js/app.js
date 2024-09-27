@@ -70,7 +70,7 @@ function handleMainPage() {
     welcome.style.display = "none";
     main.hidden = false;
     rnform.hidden = false;
-    friendBox.hidden = false;
+    friendBox.style.display = "flex";
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
         const friends = friendsList;
@@ -121,7 +121,7 @@ function handleVerify(event) {
     activeSocket.emit("verify_code", email, codeInput, (response) => {
         if (response.success) {
             verifyform.hidden = true;
-            passwdSubmit.hidden = false
+            passwdSubmit.hidden = false;
             passwdButton.addEventListener("click", handlePasswd)
         } else {
             console.log("인증 실패:", response.error);
@@ -186,7 +186,7 @@ rnform.hidden = true;
 nickform.hidden = true;
 waiting.hidden = true;
 passwdSubmit.hidden = true;
-friendBox.hidden = true;
+friendBox.style.display = "none";
 nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
