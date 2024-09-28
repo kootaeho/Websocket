@@ -115,7 +115,7 @@ function getRoomUserEmails(roomName, namespace, callback) {
             }
 
             const userEmails = results.map(row => row.user_email);
-            console.log("조회된 이메일:", userEmails);
+            //console.log("조회된 이메일:", userEmails);
             callback(userEmails);
         });
     });
@@ -316,6 +316,10 @@ oneOnoneChat.on("connection", (socket) => {
         done();
     });
 
+    socket.on("new_note",(value,done)=>{
+        console.log(value)
+    })
+
     socket.on("friendRequest",(room)=>{
         socket.broadcast.to(room).emit("friendRequest");
     })
@@ -393,7 +397,7 @@ oneOnoneChat.on("connection", (socket) => {
         });
     });
 
-    socket.on("FriendChat",(friendName)=>{
+    socket.on("FriendChat",(friendName,done)=>{
         pool.getConnection((err,connection)=>{
             if(err){
                 console.log("DB 연결 오류 FriendChat",err);
@@ -410,7 +414,7 @@ oneOnoneChat.on("connection", (socket) => {
 
                 if(results.length > 0){
                     const friendEmail = results[0].user_email;
-                    console.log(friendEmail);
+                    done(friendEmail,socket.email);
                 } else{
                     console.log("닉네임에 해당하는 이메일을 찾지 못했습니다.")
                 }
