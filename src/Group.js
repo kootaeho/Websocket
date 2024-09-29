@@ -317,7 +317,21 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("new_note",(value,friend,email,done)=>{
-        console.log(value,friend,email);
+        const query = `INSERT INTO messages (sender_email, receiver_email, message_content) VALUES (?, ?, ?)`;
+        pool.getConnection((err,connection) => {
+            if(err){
+                console.log("쪽지 내역 저장중 오류 발생.",err);
+                return;
+            }
+            connection.query(query,[email,friend,value],(error,results)=>{
+                connection.release();
+                if(error){
+                    console.log("쪽지 저장 쿼리문 실행 중 오류발생",error);
+                    return;
+                }
+                done();
+            })
+        })
     })
 
     socket.on("friendRequest",(room)=>{

@@ -125,14 +125,11 @@ function handle_friendChat(friendName){
 }
 
 function handleNoteSubmit(friends,email,event){
-    console.log("가나다라");
-    event.preventDefault();
-    event.stopPropagation();
-    console.log("버튼 눌림!gpgpgp");
+    //event.preventDefault();
     const input = main.querySelector("#note input");
     const value = input.value;
-    console.log(value);
     activeSocket.emit("new_note", value, friends, email,() => {
+        console.log("가나다라마바사");
         addMessage(`${value}`, true);
     });
     input.value = "";
