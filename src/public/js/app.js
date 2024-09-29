@@ -33,6 +33,8 @@ const FriendAccept = document.querySelector("#FriendAccept");
 const rnformButton = document.querySelector('form#roomname button');
 const NoteContainer = document.querySelector('#NoteContainer');
 const Note = document.querySelector('#Note');
+const noteForm = document.querySelector('#note');
+const noteInput = noteForm.querySelector('input'); 
 
 Logo.addEventListener("click", () => {
     console.log("로고 눌림!");
@@ -98,6 +100,8 @@ function handleMainPage() {
             friendBox.appendChild(friendCard);
 
             chatButton.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 const friendName = event.target.getAttribute('data-friend');
                 handle_friendChat(friendName);
             });
@@ -107,22 +111,28 @@ function handleMainPage() {
 }
 
 function handle_friendChat(friendName){
-    const noteForm = Note.querySelector("#note");
     welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
     activeSocket.emit("FriendChat",friendName,(results,email)=>{
         const friends = results;
-        noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
+        //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
+        noteForm.addEventListener("submit", (event) => {
+            event.preventDefault(); // 기본 동작 방지
+            handleNoteSubmit(friends, email); // 이벤트 발생 시 실행
+        });
     });
 }
 
 function handleNoteSubmit(friends,email,event){
+    console.log("가나다라");
     event.preventDefault();
+    event.stopPropagation();
+    console.log("버튼 눌림!gpgpgp");
     const input = main.querySelector("#note input");
     const value = input.value;
-    console.log(friends, email);
-    activeSocket.emit("new_note", value, () => {
+    console.log(value);
+    activeSocket.emit("new_note", value, friends, email,() => {
         addMessage(`${value}`, true);
     });
     input.value = "";

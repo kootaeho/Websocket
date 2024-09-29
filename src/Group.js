@@ -316,8 +316,8 @@ oneOnoneChat.on("connection", (socket) => {
         done();
     });
 
-    socket.on("new_note",(value,done)=>{
-        console.log(value)
+    socket.on("new_note",(value,friend,email,done)=>{
+        console.log(value,friend,email);
     })
 
     socket.on("friendRequest",(room)=>{
