@@ -130,7 +130,7 @@ function handleNoteSubmit(friends,email,event){
     const value = input.value;
     activeSocket.emit("new_note", value, friends, email,() => {
         console.log("가나다라마바사");
-        addMessage(`${value}`, true);
+        addNote(`${value}`, true);
     });
     input.value = "";
 }
@@ -210,6 +210,37 @@ friendBox.style.display = "none";
 nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
+
+function addNote(message, isOwnMessage = false) {
+    const ul = Note.querySelector("ul.message-container");
+    const li = document.createElement("li");
+    li.classList.add("message-container-item");
+
+    //const now = new Date();
+    //const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    const messageBox = document.createElement("div");
+    messageBox.classList.add("message");
+    messageBox.classList.add(isOwnMessage ? "you" : "other");
+    messageBox.innerText = message;
+
+    //const messageTime = document.createElement("div");
+    //messageTime.classList.add("message-time");
+    //messageTime.innerText = time;
+
+    // 상대방 메시지일 경우 위치 조정
+    //if (!isOwnMessage) {
+        //messageTime.style.alignSelf = "flex-start"; // 시간 텍스트를 왼쪽으로 정렬
+        //messageTime.style.marginLeft = "10px"; // 약간의 왼쪽 마진 추가
+    //}
+
+    li.appendChild(messageBox);
+    //li.appendChild(messageTime);
+
+    ul.appendChild(li);
+    ul.scrollTop = ul.scrollHeight;
+}
+
 
 function addMessage(message, isOwnMessage = false) {
     const ul = room.querySelector("ul.message-container");
