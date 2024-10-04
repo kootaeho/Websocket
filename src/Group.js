@@ -4,6 +4,7 @@ import {Server} from "socket.io";
 import {instrument} from "@socket.io/admin-ui";
 import { clearScreenDown } from "readline";
 import { count } from "console";
+import { connect } from "http2";
 
 const app = express();
 const now = new Date();
@@ -330,6 +331,28 @@ oneOnoneChat.on("connection", (socket) => {
                     return;
                 }
                 done();
+            })
+        })
+    })
+
+    socket.on("ShowNote",(friend,email,done)=>{
+        const query = `
+        SELECT message_content, sent_at
+        FROM messages
+        WHERE sender_email = ?;
+    `;
+        pool.getConnection((err,connection)=>{
+            if(err){
+                console.log("메시지 내역 가져오는 중 오류 발생.",err);
+                return;
+            }
+            connection.query(query,[email],(error,result)=>{
+                connection.release();
+                if(error){
+                    console.log("메시지 가져오는 쿼리문 실행 중 오류발생.",error);
+                    return;
+                }
+                done(result)
             })
         })
     })

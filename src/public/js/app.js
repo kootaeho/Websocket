@@ -130,7 +130,7 @@ function handleNoteSubmit(friends,email,event){
     const value = input.value;
     activeSocket.emit("new_note", value, friends, email,() => {
         console.log("가나다라마바사");
-        addNote(`${value}`, true);
+        Show_Note(friends,email);
     });
     input.value = "";
 }
@@ -211,7 +211,11 @@ nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
 
-function addNote(message, isOwnMessage = false) {
+function Show_Note(friend , email) {
+    activeSocket.emit("ShowNote",friend,email,(response)=>{
+        console.log(response);
+    })
+    /*
     const ul = Note.querySelector("ul.message-container");
     const li = document.createElement("li");
     li.classList.add("message-container-item");
@@ -238,7 +242,7 @@ function addNote(message, isOwnMessage = false) {
     //li.appendChild(messageTime);
 
     ul.appendChild(li);
-    ul.scrollTop = ul.scrollHeight;
+    ul.scrollTop = ul.scrollHeight;*/
 }
 
 
