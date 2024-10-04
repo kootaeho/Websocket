@@ -116,6 +116,7 @@ function handle_friendChat(friendName){
     rnform.hidden = true;
     activeSocket.emit("FriendChat",friendName,(results,email)=>{
         const friends = results;
+        Show_Note(friends,email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
         noteForm.addEventListener("submit", (event) => {
             event.preventDefault(); // 기본 동작 방지

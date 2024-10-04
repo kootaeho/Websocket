@@ -337,7 +337,7 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("ShowNote",(friend,email,done)=>{
         const query = `
-        SELECT message_content, sent_at
+        SELECT message_content
         FROM messages
         WHERE sender_email = ?;
     `;
@@ -352,10 +352,11 @@ oneOnoneChat.on("connection", (socket) => {
                     console.log("메시지 가져오는 쿼리문 실행 중 오류발생.",error);
                     return;
                 }
-                done(result)
+                const messageContents = result.map(row => row.message_content);
+                done(messageContents)
             })
         })
-    })
+    });
 
     socket.on("friendRequest",(room)=>{
         socket.broadcast.to(room).emit("friendRequest");
