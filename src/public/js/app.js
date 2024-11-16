@@ -116,6 +116,7 @@ function handle_friendChat(friendName){
     rnform.hidden = true;
     activeSocket.emit("FriendChat",friendName,(results,email)=>{
         const friends = results;
+        console.log(friends);
         Show_Note(friends,email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
         noteForm.addEventListener("submit", (event) => {
@@ -130,7 +131,6 @@ function handleNoteSubmit(friends,email,event){
     const input = main.querySelector("#note input");
     const value = input.value;
     activeSocket.emit("new_note", value, friends, email,() => {
-        console.log("가나다라마바사");
         Show_Note(friends,email);
     });
     input.value = "";

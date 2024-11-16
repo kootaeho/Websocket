@@ -441,10 +441,9 @@ oneOnoneChat.on("connection", (socket) => {
                 console.log("DB 연결 오류 FriendChat",err);
                 return;
             }
-            const query = 'SELECT user_email FROM users WHERE user_nickname = ?';
-            connection.query(query,[friendName],(error,results)=>{
-                connection.release();
-
+            const queryEmail = 'SELECT user_email FROM users WHERE user_nickname = ?';
+            connection.query(queryEmail,[friendName],(error,results)=>{
+                //connection.release();
                 if(error){
                     console.log("이메일 조회중 오류발생:",error);
                     return;
@@ -452,13 +451,36 @@ oneOnoneChat.on("connection", (socket) => {
 
                 if(results.length > 0){
                     const friendEmail = results[0].user_email;
-                    done(friendEmail,socket.email);
+
+                    const queryMessages = `
+                    SELECT message_content, sent_at 
+                    FROM messages 
+                    WHERE sender_email = ? AND receiver_email = ?
+                    ORDER BY sent_at DESC
+                    `;
+                    connection.query(queryMessages, [friendEmail, socket.email], (msgError, msgResults) => {
+                        if (msgError) {
+                            console.log("메시지 조회 중 오류 발생:", msgError);
+                            connection.release();
+                            return;
+                        }
+    
+                        if (msgResults.length > 0) {
+                            // 메시지를 콜백으로 전달
+                            done(msgResults);
+                        } else {
+                            console.log("조회된 메시지가 없습니다.");
+                            done([]);
+                        }
+                        connection.release();
+                    });
                 } else{
-                    console.log("닉네임에 해당하는 이메일을 찾지 못했습니다.")
+                    console.log("닉네임에 해당하는 이메일을 찾지 못했습니다.");
+                    connection.release();
                 }
-            })
-        })
-    })
+            });
+        });
+    });
 
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
