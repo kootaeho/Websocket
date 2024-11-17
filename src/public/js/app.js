@@ -114,19 +114,19 @@ function handle_friendChat(friendName){
     welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
-    activeSocket.emit("FriendChat",friendName,(results,email)=>{
-        const friends = results;
-        console.log(friends);
-        Show_Note(friends,email);
+    activeSocket.emit("FriendChat",friendName,(results,receive_email)=>{
+        const friends_message_content = results;
+        Show_Note(friends_message_content,receive_email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
         noteForm.addEventListener("submit", (event) => {
             event.preventDefault(); // 기본 동작 방지
-            handleNoteSubmit(friends, email); // 이벤트 발생 시 실행
+            handleNoteSubmit(receive_email, email); // 이벤트 발생 시 실행
         });
     });
 }
 
 function handleNoteSubmit(friends,email,event){
+    console.log(email);
     //event.preventDefault();
     const input = main.querySelector("#note input");
     const value = input.value;

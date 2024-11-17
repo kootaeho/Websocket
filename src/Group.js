@@ -467,10 +467,10 @@ oneOnoneChat.on("connection", (socket) => {
     
                         if (msgResults.length > 0) {
                             // 메시지를 콜백으로 전달
-                            done(msgResults);
+                            done(msgResults,friendEmail);
                         } else {
                             console.log("조회된 메시지가 없습니다.");
-                            done([]);
+                            done([],friendEmail);
                         }
                         connection.release();
                     });
