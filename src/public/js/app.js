@@ -214,34 +214,41 @@ Note.style.display = "none";
 
 function Show_Note(Message_content , email) {
     console.log(Message_content);
-    /*
+    // 메시지를 표시할 컨테이너 선택
     const ul = Note.querySelector("ul.message-container");
-    const li = document.createElement("li");
-    li.classList.add("message-container-item");
 
-    //const now = new Date();
-    //const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    // 기존 메시지 초기화 (필요한 경우)
+    ul.innerHTML = "";
 
-    const messageBox = document.createElement("div");
-    messageBox.classList.add("message");
-    messageBox.classList.add(isOwnMessage ? "you" : "other");
-    messageBox.innerText = message;
+    // Message_content의 각 메시지를 추가
+    Message_content.forEach((message) => {
+        const li = document.createElement("li");
+        li.classList.add("message-container-item");
 
-    //const messageTime = document.createElement("div");
-    //messageTime.classList.add("message-time");
-    //messageTime.innerText = time;
+        const messageBox = document.createElement("div");
+        messageBox.classList.add("message");
 
-    // 상대방 메시지일 경우 위치 조정
-    //if (!isOwnMessage) {
-        //messageTime.style.alignSelf = "flex-start"; // 시간 텍스트를 왼쪽으로 정렬
-        //messageTime.style.marginLeft = "10px"; // 약간의 왼쪽 마진 추가
-    //}
+        // 메시지가 자신의 메시지인지 확인
+        if (message.sender === email) {
+            messageBox.classList.add("you");
+        } else {
+            messageBox.classList.add("other");
+        }
 
-    li.appendChild(messageBox);
-    //li.appendChild(messageTime);
+        messageBox.innerText = message.message_content; // 메시지 텍스트 추가
 
-    ul.appendChild(li);
-    ul.scrollTop = ul.scrollHeight;*/
+        const messageTime = document.createElement("div");
+        messageTime.classList.add("message-time");
+        messageTime.innerText = message.sent_at;
+
+        li.appendChild(messageBox);
+        li.appendChild(messageTime);
+
+        ul.appendChild(li);
+    });
+
+    // 스크롤을 가장 아래로 이동
+    ul.scrollTop = ul.scrollHeight;
 }
 
 
