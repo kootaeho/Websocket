@@ -212,10 +212,8 @@ nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
 
-function Show_Note(friend , email) {
-    activeSocket.emit("ShowNote",friend,email,(response)=>{
-        console.log(response);
-    })
+function Show_Note(Message_content , email) {
+    console.log(Message_content);
     /*
     const ul = Note.querySelector("ul.message-container");
     const li = document.createElement("li");

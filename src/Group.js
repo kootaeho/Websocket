@@ -458,7 +458,7 @@ oneOnoneChat.on("connection", (socket) => {
                     WHERE sender_email = ? AND receiver_email = ?
                     ORDER BY sent_at DESC
                     `;
-                    connection.query(queryMessages, [friendEmail, socket.email], (msgError, msgResults) => {
+                    connection.query(queryMessages, [socket.email, friendEmail], (msgError, msgResults) => {
                         if (msgError) {
                             console.log("메시지 조회 중 오류 발생:", msgError);
                             connection.release();
