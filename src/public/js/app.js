@@ -41,6 +41,7 @@ function setupGlobalChatButtonListener() {
     document.body.addEventListener('click', (event) => {
         // 클릭된 요소가 chat-button인지 확인
         if (event.target.classList.contains('chat-button')) {
+            console.log("채팅버튼 눌림");
             event.preventDefault();
             const friendName = event.target.getAttribute('data-friend');
             handle_friendChat(friendName);
@@ -114,12 +115,7 @@ function handleMainPage() {
     
             friendBox.appendChild(friendCard);
 
-            chatButton.addEventListener('click', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                const friendName = event.target.getAttribute('data-friend');
-                handle_friendChat(friendName);
-            });
+            
         });
     });
     rnformButton.addEventListener("click", handleRoomSubmit);
