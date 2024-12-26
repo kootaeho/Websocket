@@ -456,7 +456,7 @@ oneOnoneChat.on("connection", (socket) => {
                     SELECT message_content, sent_at 
                     FROM messages 
                     WHERE sender_email = ? AND receiver_email = ?
-                    ORDER BY sent_at DESC
+                    ORDER BY sent_at ASC
                     `;
                     connection.query(queryMessages, [socket.email, friendEmail], (msgError, msgResults) => {
                         if (msgError) {

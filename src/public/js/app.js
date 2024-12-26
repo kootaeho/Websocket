@@ -36,6 +36,21 @@ const Note = document.querySelector('#Note');
 const noteForm = document.querySelector('#note');
 const noteInput = noteForm.querySelector('input'); 
 
+// 전역 이벤트 위임을 설정하는 함수
+function setupGlobalChatButtonListener() {
+    document.body.addEventListener('click', (event) => {
+        // 클릭된 요소가 chat-button인지 확인
+        if (event.target.classList.contains('chat-button')) {
+            event.preventDefault();
+            const friendName = event.target.getAttribute('data-friend');
+            handle_friendChat(friendName);
+        }
+    });
+}
+
+// 애플리케이션 초기화 시 호출
+setupGlobalChatButtonListener();
+
 Logo.addEventListener("click", () => {
     console.log("로고 눌림!");
 })
@@ -114,24 +129,31 @@ function handle_friendChat(friendName){
     welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
+    console.log(friendName);
+
+
     activeSocket.emit("FriendChat",friendName,(results,receive_email)=>{
         const friends_message_content = results;
-        Show_Note(friends_message_content,receive_email);
+        console.log(results);
+        Show_Note(friends_message_content,email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
         noteForm.addEventListener("submit", (event) => {
             event.preventDefault(); // 기본 동작 방지
-            handleNoteSubmit(receive_email, email); // 이벤트 발생 시 실행
+            handleNoteSubmit(friendName,receive_email, email); // 이벤트 발생 시 실행
         });
     });
 }
 
-function handleNoteSubmit(friends,email,event){
-    console.log(email);
+function handleNoteSubmit(friendName,receive_email,email,event){
     //event.preventDefault();
     const input = main.querySelector("#note input");
     const value = input.value;
-    activeSocket.emit("new_note", value, friends, email,() => {
-        Show_Note(friends,email);
+    activeSocket.emit("new_note", value, receive_email, email,() => {
+        activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
+            const friends_message_content = results;
+            console.log("쇼 노트 호출됨.")
+            Show_Note(friends_message_content,email);
+        })
     });
     input.value = "";
 }
@@ -213,7 +235,6 @@ FriendAccept.hidden = true;
 Note.style.display = "none";
 
 function Show_Note(Message_content , email) {
-    console.log(Message_content);
     // 메시지를 표시할 컨테이너 선택
     const ul = Note.querySelector("ul.message-container");
 
