@@ -443,6 +443,8 @@ oneOnoneChat.on("connection", (socket) => {
             }
             const queryEmail = 'SELECT user_email FROM users WHERE user_nickname = ?';
             connection.query(queryEmail,[friendName],(error,results)=>{
+                var message1;
+                var message2;
                 //connection.release();
                 if(error){
                     console.log("이메일 조회중 오류발생:",error);
@@ -455,7 +457,7 @@ oneOnoneChat.on("connection", (socket) => {
                     const queryMessages = `
                     SELECT message_content, sent_at 
                     FROM messages 
-                    WHERE sender_email = ? AND receiver_email = ?
+                    WHERE (sender_email = ? AND receiver_email = ?) 
                     ORDER BY sent_at ASC
                     `;
                     connection.query(queryMessages, [socket.email, friendEmail], (msgError, msgResults) => {
@@ -467,11 +469,31 @@ oneOnoneChat.on("connection", (socket) => {
     
                         if (msgResults.length > 0) {
                             // 메시지를 콜백으로 전달
-                            done(msgResults,friendEmail);
+                            message1 = msgResults
                         } else {
                             console.log("조회된 메시지가 없습니다.");
-                            done([],friendEmail);
                         }
+                    });
+                    const queryMessage = `
+                    SELECT message_content, sent_at 
+                    FROM messages 
+                    WHERE (receiver_email = ? AND sender_email = ?)
+                    ORDER BY sent_at ASC
+                    `;
+                    connection.query(queryMessage, [socket.email, friendEmail], (msgError, msgResult) => {
+                        if (msgError) {
+                            console.log("메시지 조회 중 오류 발생:", msgError);
+                            connection.release();
+                            return;
+                        }
+    
+                        if (msgResult.length > 0) {
+                            // 메시지를 콜백으로 전달
+                            message2 = msgResult
+                        } else {
+                            console.log("조회된 메시지가 없습니다.");
+                        }
+                        done(message1,message2,friendEmail);
                         connection.release();
                     });
                 } else{

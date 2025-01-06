@@ -125,13 +125,14 @@ function handle_friendChat(friendName){
     welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
-    console.log(friendName);
 
 
-    activeSocket.emit("FriendChat",friendName,(results,receive_email)=>{
+    activeSocket.emit("FriendChat",friendName,(results,result,receive_email)=>{
         const friends_message_content = results;
-        console.log(results);
+        const message_content = result;
         Show_Note(friends_message_content,email);
+        Show_Note(message_content,receive_email);
+        //Show_Note(message_content,receive_email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
         noteForm.addEventListener("submit", (event) => {
             event.preventDefault(); // 기본 동작 방지
@@ -230,13 +231,13 @@ nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
 
-function Show_Note(Message_content , email) {
+function Show_Note(Message_content , emails) {
     // 메시지를 표시할 컨테이너 선택
     const ul = Note.querySelector("ul.message-container");
 
     // 기존 메시지 초기화 (필요한 경우)
     ul.innerHTML = "";
-
+    
     // Message_content의 각 메시지를 추가
     Message_content.forEach((message) => {
         const li = document.createElement("li");
@@ -244,9 +245,8 @@ function Show_Note(Message_content , email) {
 
         const messageBox = document.createElement("div");
         messageBox.classList.add("message");
-
         // 메시지가 자신의 메시지인지 확인
-        if (message.sender === email) {
+        if (email === emails) {
             messageBox.classList.add("you");
         } else {
             messageBox.classList.add("other");
