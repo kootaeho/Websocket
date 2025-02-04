@@ -126,17 +126,15 @@ function handle_friendChat(friendName){
     Note.style.display = "flex";
     rnform.hidden = true;
 
-
-    activeSocket.emit("FriendChat",friendName,(results,result,receive_email)=>{
+    activeSocket.emit("FriendChat",friendName,(results,friendEmail)=>{
         const friends_message_content = results;
-        const message_content = result;
-        Show_Note(friends_message_content,email);
-        Show_Note(message_content,receive_email);
+        console.log(friends_message_content);
+        Show_Note(friends_message_content);
         //Show_Note(message_content,receive_email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
         noteForm.addEventListener("submit", (event) => {
             event.preventDefault(); // 기본 동작 방지
-            handleNoteSubmit(friendName,receive_email, email); // 이벤트 발생 시 실행
+            handleNoteSubmit(friendName,friendEmail, email); // 이벤트 발생 시 실행
         });
     });
 }
@@ -148,8 +146,7 @@ function handleNoteSubmit(friendName,receive_email,email,event){
     activeSocket.emit("new_note", value, receive_email, email,() => {
         activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
             const friends_message_content = results;
-            console.log("쇼 노트 호출됨.")
-            Show_Note(friends_message_content,email);
+            Show_Note(friends_message_content);
         })
     });
     input.value = "";
@@ -183,7 +180,6 @@ function handleNickname(passwdInput) {
     nicknameButton.addEventListener("click", (event) => {
         const nicknameinputs = document.querySelector("#nicknameInput").value;
         event.preventDefault();
-        console.log(nicknameinputs);
         nickform.hidden = true;
         SignIn.hidden = true;
         welcome.style.display = "flex";
@@ -231,13 +227,16 @@ nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
 
-function Show_Note(Message_content , emails) {
+function Show_Note(Message_content) {
     // 메시지를 표시할 컨테이너 선택
     const ul = Note.querySelector("ul.message-container");
 
     // 기존 메시지 초기화 (필요한 경우)
     ul.innerHTML = "";
-    
+
+    // 메시지들을 sent_at 기준으로 오름차순 정렬 (서버에서 정렬되어 있지 않다면)
+    //Message_content.sort((a, b) => new Date(a.sent_at) - new Date(b.sent_at));
+
     // Message_content의 각 메시지를 추가
     Message_content.forEach((message) => {
         const li = document.createElement("li");
@@ -245,15 +244,18 @@ function Show_Note(Message_content , emails) {
 
         const messageBox = document.createElement("div");
         messageBox.classList.add("message");
-        // 메시지가 자신의 메시지인지 확인
-        if (email === emails) {
+
+        // 메시지가 자신의 메시지인지 확인 (전역 변수 email과 메시지의 sender_email 비교)
+        if (email === message.sender_email) {
             messageBox.classList.add("you");
         } else {
             messageBox.classList.add("other");
         }
 
-        messageBox.innerText = message.message_content; // 메시지 텍스트 추가
+        // 메시지 텍스트 추가
+        messageBox.innerText = message.message_content;
 
+        // 전송 시간 표시
         const messageTime = document.createElement("div");
         messageTime.classList.add("message-time");
         messageTime.innerText = message.sent_at;
@@ -267,6 +269,7 @@ function Show_Note(Message_content , emails) {
     // 스크롤을 가장 아래로 이동
     ul.scrollTop = ul.scrollHeight;
 }
+
 
 
 function addMessage(message, isOwnMessage = false) {

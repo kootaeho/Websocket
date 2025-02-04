@@ -339,7 +339,7 @@ oneOnoneChat.on("connection", (socket) => {
         const query = `
         SELECT message_content
         FROM messages
-        WHERE sender_email = ?;
+        WHERE sender_email = ? or receiver_email = ?;
     `;
         pool.getConnection((err,connection)=>{
             if(err){
@@ -435,74 +435,57 @@ oneOnoneChat.on("connection", (socket) => {
         });
     });
 
-    socket.on("FriendChat",(friendName,done)=>{
-        pool.getConnection((err,connection)=>{
-            if(err){
-                console.log("DB 연결 오류 FriendChat",err);
+    socket.on("FriendChat", (friendName, done) => {
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.log("DB 연결 오류 FriendChat", err);
                 return;
             }
+            
+            // 먼저 friendName에 해당하는 이메일을 가져옵니다.
             const queryEmail = 'SELECT user_email FROM users WHERE user_nickname = ?';
-            connection.query(queryEmail,[friendName],(error,results)=>{
-                var message1;
-                var message2;
-                //connection.release();
-                if(error){
-                    console.log("이메일 조회중 오류발생:",error);
+            connection.query(queryEmail, [friendName], (error, results) => {
+                if (error) {
+                    console.log("이메일 조회 중 오류발생:", error);
+                    connection.release();
                     return;
                 }
-
-                if(results.length > 0){
+                
+                if (results.length > 0) {
                     const friendEmail = results[0].user_email;
-
+                    
+                    // 하나의 쿼리문으로 양방향 메시지를 조회합니다.
                     const queryMessages = `
-                    SELECT message_content, sent_at 
-                    FROM messages 
-                    WHERE (sender_email = ? AND receiver_email = ?) 
-                    ORDER BY sent_at ASC
+                        SELECT message_content, sent_at, sender_email
+                        FROM messages
+                        WHERE (sender_email = ? AND receiver_email = ?)
+                           OR (sender_email = ? AND receiver_email = ?)
+                        ORDER BY sent_at ASC
                     `;
-                    connection.query(queryMessages, [socket.email, friendEmail], (msgError, msgResults) => {
+                    connection.query(queryMessages, [socket.email, friendEmail, friendEmail, socket.email], (msgError, msgResults) => {
                         if (msgError) {
                             console.log("메시지 조회 중 오류 발생:", msgError);
                             connection.release();
                             return;
                         }
-    
+                        
                         if (msgResults.length > 0) {
-                            // 메시지를 콜백으로 전달
-                            message1 = msgResults
+                            // msgResults의 각 항목에는 message_content, sent_at, sender_email이 포함됩니다.
+                            done(msgResults, friendEmail);
                         } else {
                             console.log("조회된 메시지가 없습니다.");
+                            done([], friendEmail);
                         }
-                    });
-                    const queryMessage = `
-                    SELECT message_content, sent_at 
-                    FROM messages 
-                    WHERE (receiver_email = ? AND sender_email = ?)
-                    ORDER BY sent_at ASC
-                    `;
-                    connection.query(queryMessage, [socket.email, friendEmail], (msgError, msgResult) => {
-                        if (msgError) {
-                            console.log("메시지 조회 중 오류 발생:", msgError);
-                            connection.release();
-                            return;
-                        }
-    
-                        if (msgResult.length > 0) {
-                            // 메시지를 콜백으로 전달
-                            message2 = msgResult
-                        } else {
-                            console.log("조회된 메시지가 없습니다.");
-                        }
-                        done(message1,message2,friendEmail);
                         connection.release();
                     });
-                } else{
+                } else {
                     console.log("닉네임에 해당하는 이메일을 찾지 못했습니다.");
                     connection.release();
                 }
             });
         });
     });
+    
 
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
