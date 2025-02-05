@@ -323,6 +323,11 @@ function handleLeave() {
     rnform.hidden = true;
     welcome.style.display = "flex";
     room.style.display = "none";
+    const messageContainer = room.querySelector("ul.message-container");
+    if (messageContainer) {
+        messageContainer.innerHTML = "";
+    }
+    
     console.log(currentRoomName);
     activeSocket.emit("leave_room", currentRoomName);
 }
@@ -330,6 +335,12 @@ function handleLeave() {
 function showRoom() {
     welcome.style.display = "none";
     room.style.display = "flex";
+    // 방 입장 시 메시지 컨테이너 초기화
+    const messageContainer = room.querySelector("ul.message-container");
+    if (messageContainer) {
+        messageContainer.innerHTML = "";
+    }
+    
     const msgForm = room.querySelector("#msg");
     leaveButton.addEventListener("click", handleLeave);
     msgForm.addEventListener("submit", handleMessageSubmit);
