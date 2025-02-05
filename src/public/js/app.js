@@ -44,6 +44,7 @@ function setupGlobalChatButtonListener() {
             console.log("채팅버튼 눌림");
             event.preventDefault();
             const friendName = event.target.getAttribute('data-friend');
+            console.log(friendName);
             handle_friendChat(friendName);
         }
     });
@@ -128,27 +129,27 @@ function handle_friendChat(friendName){
 
     activeSocket.emit("FriendChat",friendName,(results,friendEmail)=>{
         const friends_message_content = results;
-        console.log(friends_message_content);
         Show_Note(friends_message_content);
         //Show_Note(message_content,receive_email);
         //noteForm.addEventListener("submit",handleNoteSubmit(friends,email));
-        noteForm.addEventListener("submit", (event) => {
+        noteForm.onsubmit = (event) => {
             event.preventDefault(); // 기본 동작 방지
-            handleNoteSubmit(friendName,friendEmail, email); // 이벤트 발생 시 실행
-        });
+            handleNoteSubmit(friendName, friendEmail, email);
+        };
     });
 }
 
-function handleNoteSubmit(friendName,receive_email,email,event){
+function handleNoteSubmit(friendName,receive_email,email){
     //event.preventDefault();
     const input = main.querySelector("#note input");
     const value = input.value;
+    console.log(value);
     activeSocket.emit("new_note", value, receive_email, email,() => {
-        activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
-            const friends_message_content = results;
-            Show_Note(friends_message_content);
-        })
     });
+    activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
+        const friends_message_content = results;
+        Show_Note(friends_message_content);
+    })
     input.value = "";
 }
 

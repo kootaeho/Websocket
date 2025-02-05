@@ -318,6 +318,7 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("new_note",(value,friend,email,done)=>{
+        console.log("뉴 노트 호출됨!");
         const query = `INSERT INTO messages (sender_email, receiver_email, message_content) VALUES (?, ?, ?)`;
         pool.getConnection((err,connection) => {
             if(err){
