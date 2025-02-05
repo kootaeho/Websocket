@@ -295,10 +295,34 @@ oneOnoneChat.on("connection", (socket) => {
         })
     })
 
-    socket.on("disconnecting", () => {
-        socket.rooms.forEach((room) => socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat,room) - 1));
+    socket.on("leave_room", () => {
+        // socket.rooms에는 해당 소켓의 모든 방(ID 포함)이 들어있으므로,
+        // 기본 socket.id는 제외하고 실제 채팅방들에 대해서만 처리합니다.
+        socket.rooms.forEach((room) => {
+            if (room === socket.id) return; // 기본 룸은 건너뛰기
+
+            // 현재 방에 속한 소켓의 수 (disconnecting 이벤트 시 소켓은 아직 포함되어 있음)
+            const currentCount = countRoom(oneOnoneChat, room) || 0;
+            
+            // 1대1 채팅에서는 currentCount가 2라면, 나가는 후 남은 사용자는 1명이 됨
+            if (currentCount === 2) {
+                // 남은 소켓에게 'bye' 이벤트를 보내 메시지를 전달
+                socket.to(room).emit("bye", "상대방이 퇴장하였습니다.");
+                // 1초 후에 남은 소켓을 강제로 방에서 탈출시키고, 'room_closed' 이벤트를 전송
+                setTimeout(async () => {
+                    const sockets = await oneOnoneChat.in(room).fetchSockets();
+                    sockets.forEach(s => {
+                        s.leave(room);
+                        s.emit("room_closed", "방이 종료되었습니다.");
+                    });
+                }, 1000);
+            } else {
+                // 2명 이상의 경우 (혹은 기타 상황) 기존 로직 그대로 처리
+                socket.to(room).emit("bye", socket.nickname, currentCount - 1);
+            }
+        });
     });
-    
+    /*
     socket.on("leave_room", (roomName) => {
         socket.rooms.forEach((room) => {
             socket.to(room).emit("bye", socket.nickname, countRoom(oneOnoneChat, room) - 1);
@@ -306,7 +330,7 @@ oneOnoneChat.on("connection", (socket) => {
 
         socket.emit("room_change", publicGroupRooms(oneOnoneChat));
         socket.leave(roomName); 
-    });
+    });*/
 
     socket.on("disconnect", () => {
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
@@ -318,7 +342,6 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("new_note",(value,friend,email,done)=>{
-        console.log("뉴 노트 호출됨!");
         const query = `INSERT INTO messages (sender_email, receiver_email, message_content) VALUES (?, ?, ?)`;
         pool.getConnection((err,connection) => {
             if(err){

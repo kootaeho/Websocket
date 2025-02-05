@@ -145,11 +145,11 @@ function handleNoteSubmit(friendName,receive_email,email){
     const value = input.value;
     console.log(value);
     activeSocket.emit("new_note", value, receive_email, email,() => {
+        activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
+            const friends_message_content = results;
+            Show_Note(friends_message_content);
+        })
     });
-    activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
-        const friends_message_content = results;
-        Show_Note(friends_message_content);
-    })
     input.value = "";
 }
 
@@ -406,5 +406,18 @@ function setupSocketListeners() {
         if (rooms.length === 0) {
             return;
         }
+    });
+
+    activeSocket.on("room_closed", (message) => {
+        // 채팅창에 종료 메시지 표시 (예: addMessage 함수 사용)
+        addMessage("상대방이 방을 떠낫습니다.");
+        // 1초 후에 채팅 UI를 종료(예: 메인 화면으로 전환)
+        setTimeout(() => {
+            console.log("타임아웃 호출됨")
+             // 예시: 채팅창(예: room) 숨기고, 메인 화면(welcome) 표시
+             room.style.display = "none";
+             welcome.style.display = "flex";
+             // 추가로 필요한 정리 작업(예: 내부 변수 초기화) 수행
+        }, 1000);
     });
 }
