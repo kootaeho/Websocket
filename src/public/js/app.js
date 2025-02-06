@@ -90,6 +90,7 @@ function handleMainPage() {
     main.hidden = false;
     rnform.hidden = false;
     friendBox.style.display = "flex";
+    waiting.hidden = true;
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
         const friends = friendsList;
@@ -119,7 +120,11 @@ function handleMainPage() {
             
         });
     });
-    rnformButton.addEventListener("click", handleRoomSubmit);
+    rnform.onsubmit = (event) => {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
+        handleRoomSubmit(event);
+      };
+      
 }
 
 function handle_friendChat(friendName){
@@ -358,12 +363,14 @@ function handleRoomSubmit(event) {
     nick.hidden = false;
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
-    nick.addEventListener('submit', (event) => {
-        event.preventDefault();
+    // 기존의 nick 요소가 폼(form)이라고 가정합니다.
+    nick.onsubmit = (event) => {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
         nick.hidden = true;
         const nickn = nickInput.value;
         activeSocket.emit("nickname", nickn);
         activeSocket.emit("enter_room", null, Roomcap, (roomName, RoomExist) => {
+            console.log(RoomExist);
             if (RoomExist === "방 없음") {
                 currentRoomName = roomName;
                 waiting.hidden = false;
@@ -374,7 +381,8 @@ function handleRoomSubmit(event) {
                 showRoom();
             }
         });
-    })
+    };
+
 }
 
 function setupSocketListeners() {
