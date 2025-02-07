@@ -202,6 +202,7 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("certify_email", async (email, univName, done) => {
+        console.log(email);
         try {
             const response = await axios.post('https://univcert.com/api/v1/certify', {
                 key: API_KEY,

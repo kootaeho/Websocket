@@ -385,6 +385,9 @@ html(lang="en")
 
     main
       #SignIn
+        form#uniSubmit
+          input#uniInput(placeholder="대학교 이름을 입력하세요" require type="text")
+          button#uniButton(type="submit") 다음
         form#emailSubmit
           input#emailVerify(placeholder="학교 이메일을 입력하세요" required type="text")
           button#emailCodeButton(type="submit") 인증코드 보내기

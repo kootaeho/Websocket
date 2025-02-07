@@ -3,6 +3,7 @@ let activeSocket = io("/oneonone");
 let email = null;
 let passwd = null;
 let nickname = null;
+let uni = null;
 
 const welcome = document.querySelector("#welcome");
 const rnform = document.querySelector("#roomname");
@@ -35,6 +36,9 @@ const NoteContainer = document.querySelector('#NoteContainer');
 const Note = document.querySelector('#Note');
 const noteForm = document.querySelector('#note');
 const noteInput = noteForm.querySelector('input'); 
+const uniSubmit = document.querySelector("#uniSubmit");
+const uniInput = document.querySelector("#uniInput");
+const uniButton = document.querySelector("#uniButton");
 
 // 전역 이벤트 위임을 설정하는 함수
 function setupGlobalChatButtonListener() {
@@ -58,13 +62,27 @@ Logo.addEventListener("click", () => {
 })
 
 LoginButton.addEventListener("click", handleLogin);
-SiginButton.addEventListener("click", handleSignin);
+SiginButton.addEventListener("click", handleSignin1);
 
-function handleSignin(event) {
+function handleSignin1(event){
     event.preventDefault();
     welcome.style.display = "none";
     SignIn.hidden = false;
+    emailform.hidden = true;
+    uniSubmit.hidden = false;
+    uniInput.hidden = false;
+    uniButton.addEventListener("click", handleSignin);
+}
+
+function handleSignin(event) {
+    uni = document.querySelector('#uniInput').value;
+    console.log(uni);
+    event.preventDefault();
+    //welcome.style.display = "none";
+    SignIn.hidden = false;
     emailform.hidden = false;
+    uniSubmit.hidden = true;
+    uniInput.hidden = true;
     emailCodeButton.addEventListener("click", (event) => {
         event.preventDefault();
         handleEmail();
@@ -91,6 +109,7 @@ function handleMainPage() {
     rnform.hidden = false;
     friendBox.style.display = "flex";
     waiting.hidden = true;
+    uniSubmit.hidden = true;
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
         const friends = friendsList;
@@ -198,7 +217,7 @@ function handleNickname(passwdInput) {
 
 function handleEmail(event) {
     email = document.querySelector('#emailVerify').value;
-    const univNameInput = "한국외국어대학교";
+    const univNameInput = uni
 
     activeSocket.emit("certify_email", email, univNameInput, (response) => {
         console.log(response);
@@ -210,6 +229,7 @@ function handleEmail(event) {
         } else if (response.error.message == "이미 완료된 요청입니다.") {
             alert("이미 인증이 끝난 이메일!");
         } else {
+            console.log(response);
             console.log("인증 코드 전송 실패:", response.error.message);
             alert("인증 코드 전송에 실패했습니다. 이메일을 확인해주세요.");
         }
@@ -232,6 +252,7 @@ friendBox.style.display = "none";
 nick.hidden = true;
 FriendAccept.hidden = true;
 Note.style.display = "none";
+uniSubmit.hidden = true;
 
 function Show_Note(Message_content) {
     // 메시지를 표시할 컨테이너 선택
@@ -279,6 +300,7 @@ function Show_Note(Message_content) {
 
 
 function addMessage(message, isOwnMessage = false) {
+    console.log("메시지 추가 호출됨!");
     const ul = room.querySelector("ul.message-container");
     const li = document.createElement("li");
     li.classList.add("message-container-item");
@@ -347,9 +369,12 @@ function showRoom() {
     }
     
     const msgForm = room.querySelector("#msg");
-    leaveButton.addEventListener("click", handleLeave);
-    msgForm.addEventListener("submit", handleMessageSubmit);
-    FriendRequest.addEventListener("click", handleFriendRequest);
+    leaveButton.onclick = handleLeave;
+    msgForm.onsubmit = (event) => {
+        event.preventDefault(); // 기본 제출 동작 방지
+        handleMessageSubmit(event);
+    };
+    FriendRequest.onclick = handleFriendRequest;
 }
 
 function handleFriendAccept() {
@@ -370,7 +395,6 @@ function handleRoomSubmit(event) {
         const nickn = nickInput.value;
         activeSocket.emit("nickname", nickn);
         activeSocket.emit("enter_room", null, Roomcap, (roomName, RoomExist) => {
-            console.log(RoomExist);
             if (RoomExist === "방 없음") {
                 currentRoomName = roomName;
                 waiting.hidden = false;
@@ -395,7 +419,7 @@ function setupSocketListeners() {
     activeSocket.on("bye", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
-        addMessage(`${user} left!`);
+        //addMessage(`${user} left!`);
     });
 
     activeSocket.on("new_message", (message) => {
