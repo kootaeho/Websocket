@@ -410,6 +410,16 @@ function handleRoomSubmit(event) {
 }
 
 function setupSocketListeners() {
+    // 기존 new_message 이벤트 리스너 제거
+    activeSocket.off("new_message");
+    activeSocket.off("welcome");
+    activeSocket.off("bye");
+    activeSocket.off("friendRequest");
+    activeSocket.off("join");
+    activeSocket.off("FriendAdd");
+    activeSocket.off("room_change");
+    activeSocket.off("room_closed");
+
     activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
         h3.innerText = `방에 (${newCount})명 있음.`;
