@@ -296,7 +296,7 @@ html(lang="en")
       #roomname{
         position: relative; /* 부모 요소를 상대 위치로 설정 */
         height: 100px;      /* 폼 박스 높이 (예시) */
-        width: 300px;       /* 폼 박스 너비 (예시) */
+        width: 310px;       /* 폼 박스 너비 (예시) */
         border: 1px solid #ccc; /* 폼 박스 테두리 (선택 사항) */
         box-sizing: border-box; /* 패딩 포함 계산 */
         animation: fadeIn 1s ease-in-out;
@@ -411,9 +411,9 @@ html(lang="en")
 
       #main
         form#roomname
-          button 방 입장
+          button 1대1 랜덤챗
         form#nick
-          input#nickInput(placeholder="일시적으로 사용될 닉네임을 입력하세요" required type="text")
+          input#nickInput(placeholder="일회용 닉네임을 입력하세요" required type="text")
           button 상대 찾기
         #friendBox.friend-container
           if friends && friends.length > 0
