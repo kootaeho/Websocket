@@ -103,6 +103,7 @@ function handleLogin(event) {
 }
 
 function handleMainPage() {
+    room.style.display = "none";
     welcome.style.display = "none";
     main.hidden = false;
     rnform.hidden = false;
@@ -347,15 +348,12 @@ function handleFriendRequest() {
 }
 
 function handleLeave() {
-    rnform.hidden = true;
-    welcome.style.display = "flex";
-    room.style.display = "none";
+    handleMainPage();
     const messageContainer = room.querySelector("ul.message-container");
     if (messageContainer) {
         messageContainer.innerHTML = "";
     }
     
-    console.log(currentRoomName);
     activeSocket.emit("leave_room", currentRoomName);
 }
 
@@ -468,8 +466,7 @@ function setupSocketListeners() {
         setTimeout(() => {
             console.log("타임아웃 호출됨")
              // 예시: 채팅창(예: room) 숨기고, 메인 화면(welcome) 표시
-             room.style.display = "none";
-             welcome.style.display = "flex";
+             handleMainPage();
              // 추가로 필요한 정리 작업(예: 내부 변수 초기화) 수행
         }, 1000);
     });

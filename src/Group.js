@@ -250,7 +250,8 @@ oneOnoneChat.on("connection", (socket) => {
         }
         activeUsers[email] = socket;
         socket.email = email;
-        
+        console.log(socket.email);
+
         pool.getConnection((err, conn) => {
             if (err) {
                 conn.release(); // 연결 해제
