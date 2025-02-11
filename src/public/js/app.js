@@ -62,7 +62,7 @@ Logo.addEventListener("click", () => {
 })
 
 LoginButton.addEventListener("click", handleLogin);
-SiginButton.addEventListener("click", handleSignin1);
+SiginButton.addEventListener("click", handleSignin);
 
 function handleSignin1(event){
     event.preventDefault();
@@ -76,9 +76,8 @@ function handleSignin1(event){
 
 function handleSignin(event) {
     uni = document.querySelector('#uniInput').value;
-    console.log(uni);
     event.preventDefault();
-    //welcome.style.display = "none";
+    welcome.style.display = "none";
     SignIn.hidden = false;
     emailform.hidden = false;
     uniSubmit.hidden = true;
@@ -150,6 +149,7 @@ function handle_friendChat(friendName){
     welcome.style.display = "none";
     Note.style.display = "flex";
     rnform.hidden = true;
+    waiting.hidden = true;
 
     activeSocket.emit("FriendChat",friendName,(results,friendEmail)=>{
         const friends_message_content = results;
@@ -217,7 +217,7 @@ function handleNickname(passwdInput) {
 
 function handleEmail(event) {
     email = document.querySelector('#emailVerify').value;
-    const univNameInput = uni
+    const univNameInput = "한국외국어대학교"
 
     activeSocket.emit("certify_email", email, univNameInput, (response) => {
         console.log(response);

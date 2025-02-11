@@ -12,6 +12,8 @@ const mysql = require("mysql");
 const dbconfig = require('./config/dbconfig.json');
 const axios = require('axios');
 const path = require('path')
+const activeUsers = {};
+
 
 const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
 console.log(now.toLocaleTimeString()); 
@@ -241,6 +243,14 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("Login", (email, passwd, done) => {
+        if (activeUsers[email]) {
+            // 이미 연결된 소켓이 있다면 이전 소켓 강제 종료
+            activeUsers[email].emit("force_logout", "다른 기기에서 로그인하여 로그아웃되었습니다.");
+            activeUsers[email].disconnect();
+        }
+        activeUsers[email] = socket;
+        socket.email = email;
+        
         pool.getConnection((err, conn) => {
             if (err) {
                 conn.release(); // 연결 해제
@@ -334,6 +344,9 @@ oneOnoneChat.on("connection", (socket) => {
     });*/
 
     socket.on("disconnect", () => {
+        if (socket.email && activeUsers[socket.email] === socket) {
+            delete activeUsers[socket.email];
+        }
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });
 
