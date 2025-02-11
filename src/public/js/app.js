@@ -58,7 +58,7 @@ function setupGlobalChatButtonListener() {
 setupGlobalChatButtonListener();
 
 Logo.addEventListener("click", () => {
-    console.log("로고 눌림!");
+    handleMainPage();
 })
 
 LoginButton.addEventListener("click", handleLogin);
@@ -105,11 +105,13 @@ function handleLogin(event) {
 function handleMainPage() {
     room.style.display = "none";
     welcome.style.display = "none";
+    Note.style.display = "none";
     main.hidden = false;
     rnform.hidden = false;
     friendBox.style.display = "flex";
     waiting.hidden = true;
     uniSubmit.hidden = true;
+    nick.hidden = true;
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
         const friends = friendsList;
