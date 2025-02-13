@@ -419,6 +419,7 @@ function setupSocketListeners() {
     activeSocket.off("FriendAdd");
     activeSocket.off("room_change");
     activeSocket.off("room_closed");
+    activeSocket.off("force_logout");
 
     activeSocket.on("welcome", (user, newCount) => {
         const h3 = room.querySelector("h3");
@@ -459,6 +460,11 @@ function setupSocketListeners() {
         if (rooms.length === 0) {
             return;
         }
+    });
+
+    activeSocket.on("force_logout", (message)=>{
+        console.log(message);
+        window.location.reload();
     });
 
     activeSocket.on("room_closed", (message) => {
