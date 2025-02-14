@@ -243,15 +243,14 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("Login", (email, passwd, done) => {
-        console.log("유저 들어옴!" , email);
         if (activeUsers[email]) {
             // 이미 연결된 소켓이 있다면 이전 소켓 강제 종료
             activeUsers[email].emit("force_logout", "다른 기기에서 로그인하여 로그아웃되었습니다.");
-            activeUsers[email].disconnect();
+            //activeUsers[email].disconnect();
         }
-        
         activeUsers[email] = socket;
         socket.email = email;
+
         pool.getConnection((err, conn) => {
             if (err) {
                 conn.release(); // 연결 해제
@@ -345,7 +344,6 @@ oneOnoneChat.on("connection", (socket) => {
     });*/
 
     socket.on("disconnect", () => {
-        console.log("유저 나감!");
         if (socket.email && activeUsers[socket.email] === socket) {
             delete activeUsers[socket.email];
         }

@@ -462,11 +462,6 @@ function setupSocketListeners() {
         }
     });
 
-    activeSocket.on("force_logout", (message)=>{
-        console.log(message);
-        window.location.reload();
-    });
-
     activeSocket.on("room_closed", (message) => {
         // 채팅창에 종료 메시지 표시 (예: addMessage 함수 사용)
         addMessage("상대방이 방을 떠낫습니다.");
@@ -479,3 +474,7 @@ function setupSocketListeners() {
         }, 1000);
     });
 }
+activeSocket.on("force_logout", (message)=>{
+    console.log("가나다");
+    window.location.reload();
+});
