@@ -45,7 +45,6 @@ function setupGlobalChatButtonListener() {
     document.body.addEventListener('click', (event) => {
         // 클릭된 요소가 chat-button인지 확인
         if (event.target.classList.contains('chat-button')) {
-            console.log("채팅버튼 눌림");
             event.preventDefault();
             const friendName = event.target.getAttribute('data-friend');
             console.log(friendName);
@@ -61,10 +60,8 @@ Logo.addEventListener("click", () => {
     activeSocket.emit("isLogin",email,(response)=>{
         if(response){
             handleMainPage();
-            console.log(response);
         }
         else{
-            console.log(response);
             return;
         }
     })
@@ -179,7 +176,6 @@ function handleNoteSubmit(friendName,receive_email,email){
     //event.preventDefault();
     const input = main.querySelector("#note input");
     const value = input.value;
-    console.log(value);
     activeSocket.emit("new_note", value, receive_email, email,() => {
         activeSocket.emit("FriendChat", friendName,(results,receive_email)=>{
             const friends_message_content = results;
@@ -198,7 +194,6 @@ function handleVerify(event) {
             passwdSubmit.hidden = false;
             passwdButton.addEventListener("click", handlePasswd)
         } else {
-            console.log("인증 실패:", response.error);
             alert("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
     });
@@ -232,17 +227,13 @@ function handleEmail(event) {
     const univNameInput = "한국외국어대학교"
 
     activeSocket.emit("certify_email", email, univNameInput, (response) => {
-        console.log(response);
         if (response.success) {
-            console.log("인증 코드가 전송되었습니다.");
             emailform.hidden = true;
             verifyform.hidden = false;
             verifyButton.addEventListener("click", handleVerify);
         } else if (response.error.message == "이미 완료된 요청입니다.") {
             alert("이미 인증이 끝난 이메일!");
         } else {
-            console.log(response);
-            console.log("인증 코드 전송 실패:", response.error.message);
             alert("인증 코드 전송에 실패했습니다. 이메일을 확인해주세요.");
         }
     });
@@ -312,7 +303,6 @@ function Show_Note(Message_content) {
 
 
 function addMessage(message, isOwnMessage = false) {
-    console.log("메시지 추가 호출됨!");
     const ul = room.querySelector("ul.message-container");
     const li = document.createElement("li");
     li.classList.add("message-container-item");
@@ -476,7 +466,6 @@ function setupSocketListeners() {
         addMessage("상대방이 방을 떠낫습니다.");
         // 1초 후에 채팅 UI를 종료(예: 메인 화면으로 전환)
         setTimeout(() => {
-            console.log("타임아웃 호출됨")
              // 예시: 채팅창(예: room) 숨기고, 메인 화면(welcome) 표시
              handleMainPage();
              // 추가로 필요한 정리 작업(예: 내부 변수 초기화) 수행
@@ -484,6 +473,5 @@ function setupSocketListeners() {
     });
 }
 activeSocket.on("force_logout", (message)=>{
-    console.log("가나다");
     window.location.reload();
 });
