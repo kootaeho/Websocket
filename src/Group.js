@@ -242,6 +242,15 @@ oneOnoneChat.on("connection", (socket) => {
         }
     });
 
+    socket.on("isLogin",(email,done)=>{
+        if(activeUsers[email]){
+            done(true);
+        }
+        else{
+            done(false);
+        }
+    })
+
     socket.on("Login", (email, passwd, done) => {
         if (activeUsers[email]) {
             // 이미 연결된 소켓이 있다면 이전 소켓 강제 종료

@@ -58,7 +58,16 @@ function setupGlobalChatButtonListener() {
 setupGlobalChatButtonListener();
 
 Logo.addEventListener("click", () => {
-    handleMainPage();
+    activeSocket.emit("isLogin",email,(response)=>{
+        if(response){
+            handleMainPage();
+            console.log(response);
+        }
+        else{
+            console.log(response);
+            return;
+        }
+    })
 })
 
 LoginButton.addEventListener("click", handleLogin);
