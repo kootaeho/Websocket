@@ -382,28 +382,34 @@ oneOnoneChat.on("connection", (socket) => {
         })
     })
 
-    socket.on("ShowNote",(friend,email,done)=>{
+    socket.on("ShowNote", (friendEmail, myEmail, done) => {
         const query = `
-        SELECT message_content
-        FROM messages
-        WHERE sender_email = ? or receiver_email = ?;
-    `;
-        pool.getConnection((err,connection)=>{
-            if(err){
-                console.log("메시지 내역 가져오는 중 오류 발생.",err);
+          SELECT message_content, sent_at, sender_email, receiver_email
+          FROM messages
+          WHERE (sender_email = ? AND receiver_email = ?)
+             OR (sender_email = ? AND receiver_email = ?)
+          ORDER BY sent_at ASC
+        `;
+        pool.getConnection((err, connection) => {
+          if (err) {
+            console.log("메시지 내역 가져오는 중 오류 발생.", err);
+            return;
+          }
+          connection.query(
+            query,
+            [myEmail, friendEmail, friendEmail, myEmail],
+            (error, result) => {
+              connection.release();
+              if (error) {
+                console.log("메시지 가져오는 쿼리문 실행 중 오류발생.", error);
                 return;
+              }
+              const messageContents = result.map(row => row.message_content);
+              done(messageContents);
             }
-            connection.query(query,[email],(error,result)=>{
-                connection.release();
-                if(error){
-                    console.log("메시지 가져오는 쿼리문 실행 중 오류발생.",error);
-                    return;
-                }
-                const messageContents = result.map(row => row.message_content);
-                done(messageContents)
-            })
-        })
-    });
+          );
+        });
+      });
 
     socket.on("friendRequest",(room)=>{
         socket.broadcast.to(room).emit("friendRequest");
