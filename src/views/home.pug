@@ -95,6 +95,7 @@ html(lang="en")
         width: 100%;
         box-sizing: border-box;
         position: relative;
+        max-width: 1200px;
       }
 
       .message-container-item {
@@ -188,7 +189,7 @@ html(lang="en")
         flex-direction: column;
         padding: 0;
         width: 100%;
-        max-width: 800px;
+        max-width: none;
         box-sizing: border-box;
         justify-content: center; /* main 내부 요소의 세로 중앙 정렬 */
         align-items: center;     /* main 내부 요소의 가로 중앙 정렬 */
@@ -363,10 +364,11 @@ html(lang="en")
         border-radius: 5px;
         cursor: pointer;
       }
+
       #Note {
-        width: 100%;
+        width: 200%;
         height: 80vh;
-        margin-top: 0;
+        margin: auto;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -376,7 +378,42 @@ html(lang="en")
         padding: 20px;
         box-sizing: border-box;
         animation: fadeIn 1s ease-in-out;
+        max-width: 1200px;
+        align-items: center;
       }
+
+      #NoteContainer.message-container {
+        width: 100%;
+        max-width: 100%;
+        flex-grow: 1;
+        overflow-y: auto;
+        max-height: 70vh; /* 메시지 목록이 너무 커지지 않도록 설정 */
+      }
+
+      #note-input {
+        width: 100%;
+        display: flex;
+        gap: 10px; /* 입력 필드와 버튼 사이의 간격 */
+        box-sizing: border-box;
+      }
+
+      #note {
+        width: 100%;
+        display: flex;
+        justify-content: space-between; /* 입력 필드와 버튼을 정렬 */
+      }
+
+      #note input {
+        flex: 1; /* 입력 필드가 버튼보다 넓게 차지 */
+        padding: 10px;
+      }
+
+      #note button {
+        padding: 10px 15px;
+        white-space: nowrap;
+      }
+
+
   body
     header
       h1 Unknown
