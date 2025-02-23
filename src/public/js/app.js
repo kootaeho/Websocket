@@ -359,6 +359,7 @@ function handleLeave() {
 }
 
 function showRoom() {
+    Note.style.display = "none";
     welcome.style.display = "none";
     room.style.display = "flex";
     // 방 입장 시 메시지 컨테이너 초기화
