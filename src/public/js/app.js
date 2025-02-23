@@ -59,6 +59,7 @@ setupGlobalChatButtonListener();
 Logo.addEventListener("click", () => {
     activeSocket.emit("isLogin",email,(response)=>{
         if(response){
+            activeSocket.emit("leave_room", currentRoomName);
             handleMainPage();
         }
         else{
