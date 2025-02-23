@@ -366,21 +366,22 @@ html(lang="en")
       }
 
       #Note {
-        width: 200%;
+        width: 90vw; /* 화면의 90%를 차지 */
+        max-width: 1300px; /* 너무 커지는 것을 방지 */
+        margin: 0 auto;
         height: 80vh;
-        margin: auto;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        align-items: center;
         background: white;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         padding: 20px;
         box-sizing: border-box;
         animation: fadeIn 1s ease-in-out;
-        max-width: 1200px;
-        align-items: center;
       }
+
 
       #NoteContainer.message-container {
         width: 100%;
@@ -398,8 +399,9 @@ html(lang="en")
       }
 
       #note {
-        width: 100%;
+        width: 100vw;
         display: flex;
+        max-width: 1300px;
         justify-content: space-between; /* 입력 필드와 버튼을 정렬 */
       }
 
@@ -416,7 +418,7 @@ html(lang="en")
 
   body
     header
-      h1 Unknown
+      h1 언노운
       h3#SubTitle Join and chat with new people!
       img#Logo(src="/src/Logo.png" alt="Logo")
 
