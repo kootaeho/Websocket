@@ -13,6 +13,8 @@ const dbconfig = require('./config/dbconfig.json');
 const axios = require('axios');
 const path = require('path')
 const activeUsers = {};
+const bcrypt = require("bcrypt");
+const saltRounds = 5;
 
 
 const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
