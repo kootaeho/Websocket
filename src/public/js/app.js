@@ -233,6 +233,7 @@ function handleEmail(event) {
             verifyform.hidden = false;
             verifyButton.addEventListener("click", handleVerify);
         } else if (response.error.message == "이미 완료된 요청입니다.") {
+            console.log(response.error.message);
             alert("이미 인증이 끝난 이메일!");
         } else {
             alert("인증 코드 전송에 실패했습니다. 이메일을 확인해주세요.");

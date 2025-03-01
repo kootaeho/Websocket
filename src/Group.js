@@ -206,6 +206,7 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("certify_email", async (email, univName, done) => {
+        
         console.log(email);
         try {
             const response = await axios.post('https://univcert.com/api/v1/certify', {
@@ -255,67 +256,88 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("Login", (email, passwd, done) => {
         if (activeUsers[email]) {
-            // 이미 연결된 소켓이 있다면 이전 소켓 강제 종료
+            // 이미 로그인된 사용자가 있으면 강제 로그아웃 처리
             activeUsers[email].emit("force_logout", "다른 기기에서 로그인하여 로그아웃되었습니다.");
-            //activeUsers[email].disconnect();
         }
-        activeUsers[email] = socket;
-        socket.email = email;
-
+    
         pool.getConnection((err, conn) => {
             if (err) {
-                conn.release(); // 연결 해제
-                console.log('MySQL 연결 오류. 중단됨.');
-                done({success : false});
+                console.log("MySQL 연결 오류. 중단됨.");
+                done({ success: false });
                 return;
             }
-            const query = 'SELECT * FROM users WHERE user_email = ? AND user_password = ?';
-            conn.query(query, [email, passwd], (err, results) => {
+    
+            const query = "SELECT user_password FROM users WHERE user_email = ?";
+            conn.query(query, [email], (err, results) => {
                 conn.release();
                 if (err) {
                     console.log("쿼리 실행 오류:", err);
-                    done({success : false});
+                    done({ success: false });
                     return;
                 }
+    
                 if (results.length > 0) {
-                    //console.log("로그인 성공:", results);
-                    socket.email = email;
-                    done({success : true});
+                    const hashedPassword = results[0].user_password; // DB에 저장된 해싱된 비밀번호
+    
+                    bcrypt.compare(passwd, hashedPassword, (err, isMatch) => {
+                        if (err) {
+                            console.log("비밀번호 비교 중 오류 발생:", err);
+                            done({ success: false });
+                            return;
+                        }
+    
+                        if (isMatch) {
+                            activeUsers[email] = socket;
+                            socket.email = email;
+                            console.log("로그인 성공!");
+                            done({ success: true });
+                        } else {
+                            console.log("로그인 실패: 비밀번호 불일치.");
+                            done({ success: false });
+                        }
+                    });
                 } else {
-                    console.log("로그인 실패: 해당 사용자 없음.");
-                    done({success : false});
+                    console.log("로그인 실패: 해당 이메일 없음.");
+                    done({ success: false });
                 }
             });
         });
     });
+    
 
-    socket.on("adduser", (email,passwd,nickname,done)=>{
-        pool.getConnection((err,conn)=>{
-            if(err){
-                conn.release();
-                console.log('Mysql getConnection error. aborted');
-                done()
+    socket.on("adduser", (email, passwd, nickname, done) => {
+        bcrypt.hash(passwd, saltRounds, (err, hashedPassword) => {
+            if (err) {
+                console.error("비밀번호 해싱 중 오류 발생:", err);
+                done({ success: false, error: "비밀번호 해싱 실패" });
                 return;
             }
-            //console.log("데베 연결됨.");
-            console.log(email, passwd , nickname)
-            conn.query(
-                'INSERT INTO users (user_email, user_password, user_nickname, user_active) VALUES (?,?,?,?)',
-                [email, passwd, nickname, true],
-                (err, result)=>{
+    
+            pool.getConnection((err, conn) => {
+                if (err) {
                     conn.release();
-                    //console.log("쿼리문 실행됨.")
-                    if(err){
-                        console.log(err);
-                        console.log("쿼리문 오류발생");
-                        return;
-                    }
-                    console.log("사용자 추가됨!",result)
-                    done();
+                    console.log("MySQL 연결 오류. 중단됨.");
+                    done({ success: false });
+                    return;
                 }
-            )
-        })
-    })
+    
+                conn.query(
+                    "INSERT INTO users (user_email, user_password, user_nickname, user_active) VALUES (?, ?, ?, ?)",
+                    [email, hashedPassword, nickname, true],
+                    (err, result) => {
+                        conn.release();
+                        if (err) {
+                            console.error("회원가입 중 오류 발생:", err);
+                            done({ success: false });
+                            return;
+                        }
+                        console.log("사용자 추가됨!", result);
+                        done({ success: true });
+                    }
+                );
+            });
+        });
+    });
 
     socket.on("leave_room", () => {
         // socket.rooms에는 해당 소켓의 모든 방(ID 포함)이 들어있으므로,
