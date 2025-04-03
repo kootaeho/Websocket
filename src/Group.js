@@ -1,11 +1,7 @@
-import express from "express";
-import http from "http";
-import {Server} from "socket.io";
-import {instrument} from "@socket.io/admin-ui";
-import { clearScreenDown } from "readline";
-import { count } from "console";
-import { connect } from "http2";
-
+const express = require("express");
+const http = require("http");
+const {Server} = require ("socket.io");
+const {instrument} = require("@socket.io/admin-ui");
 const app = express();
 const now = new Date();
 const mysql = require("mysql");
@@ -36,7 +32,8 @@ const pool = mysql.createPool({
     user: dbconfig.user,
     password: dbconfig.password,
     database: dbconfig.database,
-    debug:false
+    debug:false,
+    charset: 'utf8mb4'
 })
 
 
@@ -233,9 +230,9 @@ oneOnoneChat.on("connection", (socket) => {
         }
     });
 
-    socket.on("clear_code", async (email, done) => {
+    socket.on("clear_code", async (done) => {
         try {
-            const response = await axios.post(`https://univcert.com/api/v1/clear/${email}`, {
+            const response = await axios.post('https://univcert.com/api/v1/clear', {
                 key: API_KEY,
             });
             console.log("초기화 됨!")
@@ -255,6 +252,7 @@ oneOnoneChat.on("connection", (socket) => {
     })
 
     socket.on("Login", (email, passwd, done) => {
+        
         if (activeUsers[email]) {
             // 이미 로그인된 사용자가 있으면 강제 로그아웃 처리
             activeUsers[email].emit("force_logout", "다른 기기에서 로그인하여 로그아웃되었습니다.");
@@ -563,7 +561,7 @@ oneOnoneChat.on("connection", (socket) => {
         });
     });
     
-
+    
     socket.on("nickname", (nickname) => {
         socket["nickname"] = nickname;
     });
