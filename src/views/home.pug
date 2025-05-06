@@ -9,11 +9,9 @@ html(lang="en")
       @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: translateY(20px);
         }
         to {
           opacity: 1;
-          transform: translateY(0);
         }
       }
 
@@ -72,7 +70,8 @@ html(lang="en")
         background-color: black;
       }
 
-      input[type="text"] {
+      input[type="text"],
+      input[type="password"] {
         padding: 10px;
         width: 100%;
         border: 1px solid #ccc;
@@ -217,7 +216,7 @@ html(lang="en")
       }
 
       #welcome {
-        display: flex;
+
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -273,7 +272,7 @@ html(lang="en")
         position: absolute;
         top: 2px;
         left: 10px;
-        animation: fadeIn 5s ease-in-out;
+        animation: fadeIn 3s ease-in-out;
       }
 
       #SiginButton {
@@ -284,6 +283,12 @@ html(lang="en")
         margin-left: 28px;
       }
       #LogIn{
+        width: 100%;
+        max-width: 330px;
+        border-radius: 10px;
+        animation: fadeIn 1s ease-in-out;
+        background-color: #ffffff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -415,6 +420,16 @@ html(lang="en")
         white-space: nowrap;
       }
 
+      .div-btns {
+        display: flex;
+        justify-content: center; /* 중앙 정렬 */
+        gap: 20px;               /* 버튼 사이 간격 */
+        margin-top: 10px;
+      }
+
+      .div-btns button {
+        padding: 10px 20px;
+      }
 
   body
     header
@@ -440,11 +455,11 @@ html(lang="en")
           input#nicknameInput(placeholder="닉네임을 입력하세요" required type="text")
           button#nicknameButton 저장
 
-      #welcome
-        form#LogIn
-          #emailPasswd
-            input#emailInput(placeholder="학교 이메일을 입력하세요" required type="text")
-            input#passwdInput(placeholder="패스워드를 입력하세요" required type="text")
+      form#LogIn
+        #emailPasswd
+          input#emailInput(placeholder="학교 이메일을 입력하세요" required type="text")
+          input#passwdInput(placeholder="패스워드를 입력하세요" required type="password")
+        .div-btns
           button#LoginButton(type="click") 로그인
           button#SiginButton(type="click") 회원가입
 

@@ -5,7 +5,7 @@ let passwd = null;
 let nickname = null;
 let uni = null;
 
-const welcome = document.querySelector("#welcome");
+//const welcome = document.querySelector("#welcome");
 const rnform = document.querySelector("#roomname");
 const nickform = document.querySelector("#nickname");
 const room = document.querySelector("#room");
@@ -73,7 +73,8 @@ SiginButton.addEventListener("click", handleSignin);
 
 function handleSignin1(event){
     event.preventDefault();
-    welcome.style.display = "none";
+    //welcome.style.display = "none";
+    LogIn.hidden = true;
     SignIn.hidden = false;
     emailform.hidden = true;
     uniSubmit.hidden = false;
@@ -84,7 +85,8 @@ function handleSignin1(event){
 function handleSignin(event) {
     uni = document.querySelector('#uniInput').value;
     event.preventDefault();
-    welcome.style.display = "none";
+    //welcome.style.display = "none";
+    LogIn.hidden = true;
     SignIn.hidden = false;
     emailform.hidden = false;
     uniSubmit.hidden = true;
@@ -111,7 +113,8 @@ function handleLogin(event) {
 
 function handleMainPage() {
     room.style.display = "none";
-    welcome.style.display = "none";
+    //welcome.style.display = "none";
+    LogIn.hidden = true;
     Note.style.display = "none";
     main.hidden = false;
     rnform.hidden = false;
@@ -156,7 +159,8 @@ function handleMainPage() {
 }
 
 function handle_friendChat(friendName){
-    welcome.style.display = "none";
+    //welcome.style.display = "none";
+    LogIn.hidden = true;
     Note.style.display = "flex";
     rnform.hidden = true;
     waiting.hidden = true;
@@ -215,7 +219,7 @@ function handleNickname(passwdInput) {
         event.preventDefault();
         nickform.hidden = true;
         SignIn.hidden = true;
-        welcome.style.display = "flex";
+        //welcome.style.display = "flex";
         LogIn.hidden = false;
         activeSocket.emit("adduser", email, passwdInputs, nicknameinputs, (response) => {
             console.log(response)
@@ -245,7 +249,8 @@ let currentRoomName;
 let Roomcap;
 
 SignIn.hidden = true;
-welcome.style.display = "flex";
+//welcome.style.display = "flex";
+LogIn.hidden = false;
 room.style.display = "none";
 emailform.hidden = true;
 verifyform.hidden = true;
@@ -375,7 +380,8 @@ function handleLeave() {
 
 function showRoom() {
     Note.style.display = "none";
-    welcome.style.display = "none";
+    //welcome.style.display = "none";
+    LogIn.hidden = true;
     room.style.display = "flex";
     // 방 입장 시 메시지 컨테이너 초기화
     const messageContainer = room.querySelector("ul.message-container");
