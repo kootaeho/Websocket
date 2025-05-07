@@ -493,7 +493,7 @@ html(lang="en")
           input#nickInput(placeholder="일회용 닉네임을 입력하세요" required type="text")
           button 상대 찾기        
         #friendBox.friend-container
-          if friends && friends.length > 0
+          if friends && friends.length > 0 
             each friend in friends
               .friend-card
                 img.avatar(src=friend.avatar || 'default-avatar.png' alt="Avatar")
