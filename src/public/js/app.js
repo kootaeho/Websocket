@@ -117,11 +117,11 @@ function handleMainPage() {
     LogIn.hidden = true;
     Note.style.display = "none";
     main.hidden = false;
-    rnform.hidden = false;
+    rnform.style.display = "flex";
     friendBox.style.display = "flex";
     waiting.hidden = true;
     uniSubmit.hidden = true;
-    nick.hidden = true;
+    nick.style.display = "none";
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
         const friends = friendsList;
@@ -162,7 +162,7 @@ function handle_friendChat(friendName){
     //welcome.style.display = "none";
     LogIn.hidden = true;
     Note.style.display = "flex";
-    rnform.hidden = true;
+    rnform.style.display = "none";
     waiting.hidden = true;
 
     activeSocket.emit("FriendChat",friendName,(results,friendEmail)=>{
@@ -254,12 +254,12 @@ LogIn.hidden = false;
 room.style.display = "none";
 emailform.hidden = true;
 verifyform.hidden = true;
-rnform.hidden = true;
+rnform.style.display = "none";
 nickform.hidden = true;
 waiting.hidden = true;
 passwdSubmit.hidden = true;
 friendBox.style.display = "none";
-nick.hidden = true;
+nick.style.display = "none";
 FriendAccept.hidden = true;
 Note.style.display = "none";
 uniSubmit.hidden = true;
@@ -405,14 +405,14 @@ function handleFriendAccept() {
 
 function handleRoomSubmit(event) {
     event.preventDefault();
-    rnform.hidden = true;
-    nick.hidden = false;
+    rnform.style.display = "none";
+    nick.style.display = "flex";
     sub.innerText = "1대1 랜덤 챗";
     Roomcap = 2;
     // 기존의 nick 요소가 폼(form)이라고 가정합니다.
     nick.onsubmit = (event) => {
         event.preventDefault(); // 기본 폼 제출 동작 방지
-        nick.hidden = true;
+        nick.style.display = "none";
         const nickn = nickInput.value;
         activeSocket.emit("nickname", nickn);
         activeSocket.emit("enter_room", null, Roomcap, (roomName, RoomExist) => {

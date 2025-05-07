@@ -258,13 +258,6 @@ html(lang="en")
         margin-bottom: 10px;
       }
 
-      #FriendRequest,
-      #FriendAccept {
-        position: absolute;
-        right: 325px;
-        top: 175px;
-      }
-
       #Logo {
         width: 100px;
         height: auto;
@@ -306,12 +299,9 @@ html(lang="en")
         border: 1px solid #ccc; /* 폼 박스 테두리 (선택 사항) */
         box-sizing: border-box; /* 패딩 포함 계산 */
         animation: fadeIn 1s ease-in-out;
-      }
-      form#roomname button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%); /* 요소의 중심을 기준으로 이동 */
+        display: flex;
+        justify-content: center; /* 가로 중앙 */
+        align-items: center;     /* 세로 중앙 */
       }
       #FriendAccept{
         background-color : white;
@@ -322,6 +312,9 @@ html(lang="en")
       }
       #nick{
         animation: fadeIn 1s ease-in-out;
+        display: flex;
+        flex-direction: column;  /* 세로 정렬 */
+        align-items: center; 
       }
       .friend-container {
         display: flex;
@@ -431,6 +424,36 @@ html(lang="en")
         padding: 10px 20px;
       }
 
+      .chat-buttons {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px;                  /* 버튼 사이 간격 */
+        /*margin-bottom: 5px;*/
+        flex-wrap: wrap;
+      }
+
+      .chat-buttons button {
+        padding: 8px 12px;
+        background-color: white;
+        color: black;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        white-space: nowrap;
+      }
+
+      .chat-buttons button:hover {
+        background-color: #f0f0f0;
+      }
+
+      .room-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
   body
     header
       h1 언노운
@@ -468,7 +491,7 @@ html(lang="en")
           button 1대1 랜덤챗
         form#nick
           input#nickInput(placeholder="일회용 닉네임을 입력하세요" required type="text")
-          button 상대 찾기
+          button 상대 찾기        
         #friendBox.friend-container
           if friends && friends.length > 0
             each friend in friends
@@ -488,11 +511,13 @@ html(lang="en")
               input(placeholder="message" required type="text")
               button 쪽지보내기
       #room
-        h3
+        .room-header
+          h3 방 제목
+          .chat-buttons
+            button#FriendRequest 친구 요청 보내기!
+            button#FriendAccept 친구 요청 수락하기!
         ul.message-container
         button#leave 방 나가기
-        button#FriendRequest 친구 요청 보내기!
-        button#FriendAccept 친구 요청 수락하기!
         #message-input
           form#msg
             input(placeholder="message" required type="text")
