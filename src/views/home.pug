@@ -293,6 +293,7 @@ html(lang="en")
         align-items: center;
       }
       #roomname{
+        background-color:rgb(255, 255, 255);
         position: relative; /* 부모 요소를 상대 위치로 설정 */
         height: 100px;      /* 폼 박스 높이 (예시) */
         width: 310px;       /* 폼 박스 너비 (예시) */
@@ -311,6 +312,8 @@ html(lang="en")
         animation: fadeIn 1s ease-in-out;
       }
       #nick{
+        background-color:rgb(255, 255, 255);
+        border: 1px solid #ccc;
         animation: fadeIn 1s ease-in-out;
         display: flex;
         flex-direction: column;  /* 세로 정렬 */
@@ -397,10 +400,12 @@ html(lang="en")
       }
 
       #note {
-        width: 100vw;
+        width: 100%;
+        gap: 10px;
         display: flex;
         max-width: 1300px;
         justify-content: space-between; /* 입력 필드와 버튼을 정렬 */
+        box-sizing: border-box;
       }
 
       #note input {
@@ -410,6 +415,7 @@ html(lang="en")
 
       #note button {
         padding: 10px 15px;
+        background-color: #f0f0f0;
         white-space: nowrap;
       }
 
@@ -491,7 +497,7 @@ html(lang="en")
           button 1대1 랜덤챗
         form#nick
           input#nickInput(placeholder="일회용 닉네임을 입력하세요" required type="text")
-          button 상대 찾기        
+          button 상대 찾기
         #friendBox.friend-container
           if friends && friends.length > 0 
             each friend in friends

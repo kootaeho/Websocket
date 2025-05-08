@@ -469,7 +469,7 @@ function setupSocketListeners() {
         waiting.hidden = true;
         showRoom();
         const h3 = room.querySelector("h3");
-        h3.innerText = `방에 (${newCount})명 있음.`;
+        h3.innerText = `방에 (${newCount})명 있음`;
     });
 
     activeSocket.on("FriendAdd", () => {
