@@ -55,6 +55,17 @@ instrument(io, {
 const GroupChat = io.of("/group");
 const oneOnoneChat = io.of("/oneonone");
 
+GrouphttpServer.on("error", (error) => {
+    if (error && error.code === "EADDRINUSE") {
+        console.error("\n[server] Port 3001 is already in use.");
+        console.error("[server] Run \"npm run kill\" and then restart with \"npm run dev\".\n");
+        process.exit(1);
+    }
+
+    console.error("[server] Unhandled server error:", error);
+    process.exit(1);
+});
+
 GrouphttpServer.listen(3001,handleListen);
 
 function publicGroupRooms(namespace){
@@ -335,6 +346,22 @@ oneOnoneChat.on("connection", (socket) => {
                 );
             });
         });
+    });
+
+    socket.on("logout", (done) => {
+        try {
+            if (socket.email && activeUsers[socket.email] === socket) {
+                delete activeUsers[socket.email];
+            }
+            socket.email = null;
+            if (typeof done === "function") {
+                done({ success: true });
+            }
+        } catch (error) {
+            if (typeof done === "function") {
+                done({ success: false, error: "logout failed" });
+            }
+        }
     });
 
     socket.on("leave_room", () => {

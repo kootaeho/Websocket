@@ -60,14 +60,19 @@ html(lang="en")
       button {
         font-size: 1rem;
         border: none;
-        background-color: black;
+        background-color: #2563eb;
         color: white;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        border-radius: 8px;
       }
 
       button:hover {
-        background-color: black;
+        background-color: #1d4ed8;
+      }
+
+      button:active {
+        transform: translateY(1px);
       }
 
       input[type="text"],
@@ -232,11 +237,11 @@ html(lang="en")
       #friendBox {
         position: fixed;
         right: 20px;
-        top: 20px;
-        width: 200px;
+        top: 60px;
+        width: 240px;
         height: auto;
         border: 1px solid #ddd;
-        padding: 10px;
+        padding: 12px;
         background-color: #ffffff;
         border-radius: 8px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -274,6 +279,79 @@ html(lang="en")
 
       #LoginButton {
         margin-left: 28px;
+      }
+      #logoutButton {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: 1100;
+        padding: 8px 12px;
+        border-radius: 8px;
+        display: none;
+        background-color: #ef4444;
+      }
+      #logoutButton:hover {
+        background-color: #dc2626;
+      }
+      #statusBadge {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1100;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 0.86rem;
+        font-weight: 600;
+        background-color: #e5e7eb;
+        color: #111827;
+        border: 1px solid #d1d5db;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      #statusBadge::before {
+        content: '';
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: currentColor;
+        opacity: 0.7;
+        flex-shrink: 0;
+      }
+      #statusBadge.online {
+        background-color: #dcfce7;
+        color: #166534;
+        border-color: #86efac;
+      }
+      #statusBadge.offline {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border-color: #fca5a5;
+      }
+      #statusBadge.error {
+        background-color: #fee2e2;
+        color: #991b1b;
+        border-color: #fca5a5;
+      }
+      #statusBadge.lobby {
+        background-color: #dbeafe;
+        color: #1e40af;
+        border-color: #93c5fd;
+      }
+      #statusBadge.waiting {
+        background-color: #fef3c7;
+        color: #92400e;
+        border-color: #fcd34d;
+      }
+      #statusBadge.random {
+        background-color: #ede9fe;
+        color: #5b21b6;
+        border-color: #c4b5fd;
+      }
+      #statusBadge.friend {
+        background-color: #d1fae5;
+        color: #065f46;
+        border-color: #6ee7b7;
       }
       #LogIn{
         width: 100%;
@@ -492,45 +570,48 @@ html(lang="en")
           button#LoginButton(type="click") 로그인
           button#SiginButton(type="click") 회원가입
 
-      #main
-        form#roomname
-          button 1대1 랜덤챗
-        form#nick
-          input#nickInput(placeholder="일회용 닉네임을 입력하세요" required type="text")
-          button 상대 찾기
-        #friendBox.friend-container
-          if friends && friends.length > 0 
-            each friend in friends
-              .friend-card
-                img.avatar(src=friend.avatar || 'default-avatar.png' alt="Avatar")
-                .friend-info
-                  h4.friend-name= friend.name
-                  p.friend-status= friend.status
-                button.chat-button(data-friend=friend.name) 채팅
-          else
-            p 친구 목록이 없습니다.
-        #Note
-          h3
-          ul#NoteContainer.message-container
-          #note-input
-            form#note
-              input(placeholder="message" required type="text")
-              button 쪽지 보내기
-      #room
-        .room-header
-          h3 방 제목
-          .chat-buttons
-            button#FriendRequest 친구 요청 보내기!
-            button#FriendAccept 친구 요청 수락하기!
-        ul.message-container
-        button#leave 방 나가기
-        #message-input
-          form#msg
-            input(placeholder="message" required type="text")
-            button Send
+      button#logoutButton(type="button") 로그아웃
+      #statusBadge.offline 연결 상태: 확인 중...
 
-      #waiting
-        h2 상대방 찾는중 ...
+    #main
+      form#roomname
+        button 1대1 랜덤챗
+      form#nick
+        input#nickInput(placeholder="일회용 닉네임을 입력하세요" required type="text")
+        button 상대 찾기
+      #friendBox.friend-container
+        if friends && friends.length > 0 
+          each friend in friends
+            .friend-card
+              img.avatar(src=friend.avatar || 'default-avatar.png' alt="Avatar")
+              .friend-info
+                h4.friend-name= friend.name
+                p.friend-status= friend.status
+              button.chat-button(data-friend=friend.name) 채팅
+        else
+          p 친구 목록이 없습니다.
+      #Note
+        h3
+        ul#NoteContainer.message-container
+        #note-input
+          form#note
+            input(placeholder="message" required type="text")
+            button 쪽지 보내기
+    #room
+      .room-header
+        h3 방 제목
+        .chat-buttons
+          button#FriendRequest 친구 요청 보내기!
+          button#FriendAccept 친구 요청 수락하기!
+      ul.message-container
+      button#leave 방 나가기
+      #message-input
+        form#msg
+          input(placeholder="message" required type="text")
+          button Send
+
+    #waiting
+      h2 상대방 찾는중 ...
 
     script(src="/socket.io/socket.io.js")
     script(src="/public/js/app.js")

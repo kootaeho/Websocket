@@ -39,6 +39,92 @@ const noteInput = noteForm.querySelector('input');
 const uniSubmit = document.querySelector("#uniSubmit");
 const uniInput = document.querySelector("#uniInput");
 const uniButton = document.querySelector("#uniButton");
+const logoutButton = document.querySelector("#logoutButton");
+const statusBadge = document.querySelector("#statusBadge");
+
+const STATUS_CONFIG = {
+    disconnected: { label: "연결 끊김",     cls: "offline"  },
+    error:        { label: "연결 오류",     cls: "error"    },
+    connected:    { label: "연결됨",        cls: "online"   },
+    lobby:        { label: "로비",          cls: "lobby"    },
+    waiting:      { label: "상대 찾는 중",  cls: "waiting"  },
+    random_chat:  { label: "랜덤 채팅 중",  cls: "random"   },
+    friend_chat:  { label: "친구와 채팅",   cls: "friend"   },
+};
+
+function setAppStatus(status) {
+    if (!statusBadge) return;
+    const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.connected;
+    statusBadge.className = "";
+    statusBadge.classList.add(cfg.cls);
+    statusBadge.textContent = cfg.label;
+}
+
+function setView(view) {
+    LogIn.hidden = true;
+    SignIn.hidden = true;
+    main.hidden = true;
+    room.style.display = "none";
+    waiting.hidden = true;
+    Note.style.display = "none";
+    friendBox.style.display = "none";
+    rnform.style.display = "none";
+    nick.style.display = "none";
+
+    if (logoutButton) {
+        logoutButton.style.display = "none";
+    }
+
+    if (view === "login") {
+        LogIn.hidden = false;
+        sub.innerText = "Join and chat with new people!";
+        return;
+    }
+
+    if (view === "signup") {
+        SignIn.hidden = false;
+        sub.innerText = "회원가입을 진행하세요";
+        return;
+    }
+
+    if (view === "main") {
+        main.hidden = false;
+        rnform.style.display = "flex";
+        friendBox.style.display = "flex";
+        if (logoutButton) {
+            logoutButton.style.display = "inline-block";
+        }
+        sub.innerText = "Join and chat with new people!";
+        return;
+    }
+
+    if (view === "note") {
+        main.hidden = false;
+        Note.style.display = "flex";
+        if (logoutButton) {
+            logoutButton.style.display = "inline-block";
+        }
+        sub.innerText = "쪽지";
+        return;
+    }
+
+    if (view === "waiting") {
+        waiting.hidden = false;
+        if (logoutButton) {
+            logoutButton.style.display = "inline-block";
+        }
+        sub.innerText = "상대를 찾는 중";
+        return;
+    }
+
+    if (view === "room") {
+        room.style.display = "flex";
+        if (logoutButton) {
+            logoutButton.style.display = "inline-block";
+        }
+        sub.innerText = "1대1 랜덤 챗";
+    }
+}
 
 // 전역 이벤트 위임을 설정하는 함수
 function setupGlobalChatButtonListener() {
@@ -55,6 +141,11 @@ function setupGlobalChatButtonListener() {
 
 // 애플리케이션 초기화 시 호출
 setupGlobalChatButtonListener();
+setAppStatus(activeSocket.connected ? "connected" : "disconnected");
+
+activeSocket.on("connect", () => setAppStatus(email ? "lobby" : "connected"));
+activeSocket.on("disconnect", () => setAppStatus("disconnected"));
+activeSocket.on("connect_error", () => setAppStatus("error"));
 
 Logo.addEventListener("click", () => {
     activeSocket.emit("isLogin",email,(response)=>{
@@ -69,32 +160,32 @@ Logo.addEventListener("click", () => {
 })
 
 LoginButton.addEventListener("click", handleLogin);
-SiginButton.addEventListener("click", handleSignin);
+SiginButton.addEventListener("click", handleSignin1);
+logoutButton?.addEventListener("click", handleLogout);
 
 function handleSignin1(event){
     event.preventDefault();
-    //welcome.style.display = "none";
-    LogIn.hidden = true;
-    SignIn.hidden = false;
+    setView("signup");
     emailform.hidden = true;
+    verifyform.hidden = true;
+    passwdSubmit.hidden = true;
+    nickform.hidden = true;
     uniSubmit.hidden = false;
     uniInput.hidden = false;
-    uniButton.addEventListener("click", handleSignin);
+    uniSubmit.onsubmit = handleSignin;
 }
 
 function handleSignin(event) {
     uni = document.querySelector('#uniInput').value;
     event.preventDefault();
-    //welcome.style.display = "none";
-    LogIn.hidden = true;
-    SignIn.hidden = false;
+    setView("signup");
     emailform.hidden = false;
     uniSubmit.hidden = true;
     uniInput.hidden = true;
-    emailCodeButton.addEventListener("click", (event) => {
+    emailform.onsubmit = (event) => {
         event.preventDefault();
         handleEmail();
-    })
+    };
 }
 
 function handleLogin(event) {
@@ -112,16 +203,9 @@ function handleLogin(event) {
 }
 
 function handleMainPage() {
-    room.style.display = "none";
-    //welcome.style.display = "none";
-    LogIn.hidden = true;
-    Note.style.display = "none";
-    main.hidden = false;
-    rnform.style.display = "flex";
-    friendBox.style.display = "flex";
-    waiting.hidden = true;
+    setView("main");
+    setAppStatus("lobby");
     uniSubmit.hidden = true;
-    nick.style.display = "none";
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
         const friends = friendsList;
@@ -158,12 +242,28 @@ function handleMainPage() {
       
 }
 
+function handleLogout() {
+    if (email) {
+        activeSocket.emit("logout", (response) => {
+            if (response && response.success === false) {
+                console.warn("로그아웃 서버 응답 실패:", response.error);
+            }
+        });
+    }
+
+    email = null;
+    passwd = null;
+    nickname = null;
+    uni = null;
+    currentRoomName = null;
+
+    setAppStatus("connected");
+    setView("login");
+}
+
 function handle_friendChat(friendName){
-    //welcome.style.display = "none";
-    LogIn.hidden = true;
-    Note.style.display = "flex";
-    rnform.style.display = "none";
-    waiting.hidden = true;
+    setView("note");
+    setAppStatus("friend_chat");
 
     activeSocket.emit("FriendChat",friendName,(results,friendEmail)=>{
         const friends_message_content = results;
@@ -197,7 +297,7 @@ function handleVerify(event) {
         if (response.success) {
             verifyform.hidden = true;
             passwdSubmit.hidden = false;
-            passwdButton.addEventListener("click", handlePasswd)
+            passwdSubmit.onsubmit = handlePasswd;
         } else {
             alert("인증 코드가 유효하지 않습니다. 다시 시도해주세요.");
         }
@@ -214,7 +314,7 @@ function handleNickname(passwdInput) {
     const passwdInputs = passwdInput
     passwdSubmit.hidden = true
     nickform.hidden = false;
-    nicknameButton.addEventListener("click", (event) => {
+    nickform.onsubmit = (event) => {
         const nicknameinputs = document.querySelector("#nicknameInput").value;
         event.preventDefault();
         nickform.hidden = true;
@@ -224,7 +324,7 @@ function handleNickname(passwdInput) {
         activeSocket.emit("adduser", email, passwdInputs, nicknameinputs, (response) => {
             console.log(response)
         })
-    });
+    };
 }
 
 function handleEmail(event) {
@@ -235,7 +335,7 @@ function handleEmail(event) {
         if (response.success) {
             emailform.hidden = true;
             verifyform.hidden = false;
-            verifyButton.addEventListener("click", handleVerify);
+            verifyform.onsubmit = handleVerify;
         } else if (response.error.message == "이미 완료된 요청입니다.") {
             console.log(response.error.message);
             alert("이미 인증이 끝난 이메일!");
@@ -250,18 +350,12 @@ let Roomcap;
 
 SignIn.hidden = true;
 //welcome.style.display = "flex";
-LogIn.hidden = false;
-room.style.display = "none";
+setView("login");
 emailform.hidden = true;
 verifyform.hidden = true;
-rnform.style.display = "none";
 nickform.hidden = true;
-waiting.hidden = true;
 passwdSubmit.hidden = true;
-friendBox.style.display = "none";
-nick.style.display = "none";
 FriendAccept.hidden = true;
-Note.style.display = "none";
 uniSubmit.hidden = true;
 
 function formatDateTime(isoString) {
@@ -379,10 +473,8 @@ function handleLeave() {
 }
 
 function showRoom() {
-    Note.style.display = "none";
-    //welcome.style.display = "none";
-    LogIn.hidden = true;
-    room.style.display = "flex";
+    setView("room");
+    setAppStatus("random_chat");
     // 방 입장 시 메시지 컨테이너 초기화
     const messageContainer = room.querySelector("ul.message-container");
     if (messageContainer) {
@@ -405,6 +497,7 @@ function handleFriendAccept() {
 
 function handleRoomSubmit(event) {
     event.preventDefault();
+    setView("main");
     rnform.style.display = "none";
     nick.style.display = "flex";
     sub.innerText = "1대1 랜덤 챗";
@@ -418,7 +511,8 @@ function handleRoomSubmit(event) {
         activeSocket.emit("enter_room", null, Roomcap, (roomName, RoomExist) => {
             if (RoomExist === "방 없음") {
                 currentRoomName = roomName;
-                waiting.hidden = false;
+                setView("waiting");
+                setAppStatus("waiting");
                 setupSocketListeners();
             } else {
                 currentRoomName = roomName;
@@ -462,7 +556,7 @@ function setupSocketListeners() {
         FriendAccept.hidden = false;
         FriendRequest.hidden = true;
         addMessage(`상대방이 친구요청을 보냈습니다!`);
-        FriendAccept.addEventListener("click", handleFriendAccept);
+        FriendAccept.onclick = handleFriendAccept;
     })
 
     activeSocket.on("join", (newCount) => {
@@ -476,11 +570,8 @@ function setupSocketListeners() {
         alert("친구가 추가되었습니다!");
     })
 
-    activeSocket.on("room_change", (rooms) => {
-        const roomList = welcome.querySelector("ul");
-        if (rooms.length === 0) {
-            return;
-        }
+    activeSocket.on("room_change", () => {
+        // room list display not implemented in current UI
     });
 
     activeSocket.on("room_closed", (message) => {

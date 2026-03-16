@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon"
+    "predev": "node cleanup-port.js",
+    "dev": "nodemon",
+    "kill": "node cleanup-port.js"
   },
   "author": "",
   "license": "ISC",
