@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>언노운 — 다른 대학생과 가볍게 대화하기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./unknown-chat.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-img">
+      <!-- Inline OLO logo SVG -->
+      <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="200" height="200" fill="#D93C2A"/>
+        <rect x="28" y="62" width="144" height="90" rx="20" ry="20" fill="white" stroke="#111" stroke-width="4"/>
+        <polygon points="80,152 100,152 88,180" fill="white" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+        <!-- O L O letters -->
+        <circle cx="65" cy="107" r="16" fill="none" stroke="#111" stroke-width="9"/>
+        <line x1="100" y1="90" x2="100" y2="124" stroke="#111" stroke-width="9" stroke-linecap="round"/>
+        <line x1="100" y1="124" x2="118" y2="124" stroke="#111" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="146" cy="107" r="16" fill="none" stroke="#111" stroke-width="9"/>
+        <!-- eye dots -->
+        <circle cx="59" cy="101" r="4" fill="#111"/>
+        <circle cx="140" cy="101" r="4" fill="#111"/>
+      </svg>
+    </div>
+    <span class="nav-logo-text">언노운</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">기능</a></li>
+    <li><a href="#chat-modes">채팅 방식</a></li>
+    <li><a href="#topics">대화 주제</a></li>
+    <li><a href="#how">이용 방법</a></li>
+  </ul>
+  <button class="nav-cta" onclick="scrollTo({top:document.getElementById('cta').offsetTop,behavior:'smooth'})">지금 시작하기</button>
+  <div class="hamburger" onclick="toggleMenu()" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features" onclick="closeMenu()">기능</a>
+  <a href="#chat-modes" onclick="closeMenu()">채팅 방식</a>
+  <a href="#topics" onclick="closeMenu()">대화 주제</a>
+  <a href="#how" onclick="closeMenu()">이용 방법</a>
+  <button class="nav-cta" onclick="closeMenu()">지금 시작하기</button>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-blob blob1"></div>
+  <div class="hero-bg-blob blob2"></div>
+
+  <div class="hero-badge">
+    <span class="dot"></span>
+    지금 <strong id="onlineCount">1,243</strong>명 접속 중
+  </div>
+
+  <h1 class="hero-title">
+    낯선 대학생과<br>
+    <span class="line2">가볍게 이야기해요</span>
+  </h1>
+  <p class="hero-sub">다른 대학교 학생과 제한 시간 채팅으로 새로운 연결을 경험하세요</p>
+
+  <div class="hero-btns">
+    <button class="btn-white" onclick="openChatFlow()">채팅 시작하기 →</button>
+    <button class="btn-outline" onclick="scrollTo({top:document.getElementById('how').offsetTop-70,behavior:'smooth'})">이용 방법 보기</button>
+  </div>
+
+  <div class="hero-chat-preview">
+    <div class="chat-card">
+      <div class="chat-avatar">연</div>
+      <div class="chat-bubble">
+        <div class="chat-school">연세대학교</div>
+        안녕하세요! 요즘 취업 준비 어떻게 하고 계세요? 😊
+      </div>
+    </div>
+    <div class="chat-card right">
+      <div class="chat-avatar" style="background:#fde8e6;color:#D93C2A;">고</div>
+      <div class="chat-bubble">
+        <div class="chat-school">고려대학교</div>
+        저는 스터디 모임 다니고 있어요! 같이 얘기해봐요 🙌
+      </div>
+    </div>
+    <div class="chat-timer-bar">
+      <span class="timer-label">남은 시간</span>
+      <span class="timer-value" id="heroTimer">08:47</span>
+      <div class="timer-progress"><div class="timer-fill" id="heroFill"></div></div>
+      <span style="font-size:0.75rem;color:var(--gray3);">15분 채팅</span>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stat-item reveal">
+    <div class="stat-num" data-target="128">0</div>
+    <div class="stat-label">참여 대학교</div>
+  </div>
+  <div class="stat-item reveal" style="transition-delay:0.15s">
+    <div class="stat-num" data-target="84200">0</div>
+    <div class="stat-label">누적 채팅 횟수</div>
+  </div>
+  <div class="stat-item reveal" style="transition-delay:0.3s">
+    <div class="stat-num" data-target="4.7">0</div>
+    <div class="stat-label">평균 사용자 만족도 ★</div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div style="max-width:1100px;margin:0 auto;">
+    <p class="section-label reveal">서비스 특징</p>
+    <h2 class="section-title reveal">새로운 대화, 새로운 연결</h2>
+    <p class="section-sub reveal">언노운은 대학생들을 위한 안전하고 재미있는 랜덤 채팅 플랫폼입니다</p>
+
+    <div class="features-grid">
+      <div class="feature-card reveal" style="transition-delay:0s">
+        <div class="feature-icon">🏫</div>
+        <h3>대학교 인증</h3>
+        <p>학교 이메일로 인증된 사용자끼리만 채팅합니다. 어느 학교 학생인지 확인할 수 있어요.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.1s">
+        <div class="feature-icon">⏱️</div>
+        <h3>시간 제한 채팅</h3>
+        <p>5분부터 25분까지 선택 가능한 제한 시간이 부담 없는 대화를 만들어줍니다.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.2s">
+        <div class="feature-icon">⭐</div>
+        <h3>별점 연장 시스템</h3>
+        <p>1:1 채팅에서 서로 별점 4점 이상을 주면 대화를 연장할 수 있어요.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.3s">
+        <div class="feature-icon">👥</div>
+        <h3>N:N 그룹 채팅</h3>
+        <p>여러 명이 함께 하는 랜덤 채팅으로 더 다양한 만남을 경험하세요.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.4s">
+        <div class="feature-icon">💬</div>
+        <h3>주제 추천 시스템</h3>
+        <p>스와이프로 당일 이슈나 카테고리별 주제를 골라 대화를 시작하세요.</p>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.5s">
+        <div class="feature-icon">🛡️</div>
+        <h3>안전한 환경</h3>
+        <p>AI 필터링과 신고 시스템으로 건강한 대화 문화를 만들어갑니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT MODES -->
+<section id="chat-modes">
+  <div class="modes-container">
+    <p class="section-label reveal">채팅 방식</p>
+    <h2 class="section-title reveal">나에게 맞는 방식으로</h2>
+    <p class="section-sub reveal">1:1 집중 대화와 여러 명이 함께하는 그룹 채팅 중 선택하세요</p>
+
+    <div class="modes-tabs reveal">
+      <button class="mode-tab active" onclick="switchMode('one')">1 : 1 랜덤 채팅</button>
+      <button class="mode-tab" onclick="switchMode('group')">N : N 그룹 채팅</button>
+    </div>
+
+    <!-- 1:1 -->
+    <div class="mode-content active" id="mode-one">
+      <div class="mode-info reveal-left">
+        <h3>단 둘만의 대화</h3>
+        <p>랜덤으로 매칭된 다른 대학교 학생과 1:1로 대화해보세요. 제한 시간이 끝나면 연장 여부를 결정합니다.</p>
+        <div class="mode-time-options">
+          <div class="time-pill" onclick="selectTime(this)">5분</div>
+          <div class="time-pill active" onclick="selectTime(this)">15분</div>
+          <div class="time-pill" onclick="selectTime(this)">25분</div>
+        </div>
+        <ul class="mode-feature-list">
+          <li><span class="check">✓</span>서로 별점 4/5 이상 → 자동 연장</li>
+          <li><span class="check">✓</span>Yes/No 스와이프로 추가 대화 결정</li>
+          <li><span class="check">✓</span>학교 인증 배지 표시</li>
+          <li><span class="check">✓</span>대화 주제 카드 제공</li>
+        </ul>
+      </div>
+      <div class="reveal-right" style="position:relative">
+        <div class="chat-mock">
+          <div class="chat-mock-header">
+            <span class="title">🎲 랜덤 매칭 완료</span>
+            <span class="timer-badge" id="mockTimer1">12:33</span>
+          </div>
+          <div class="chat-mock-body">
+            <div class="mock-msg">
+              <div class="school-tag">🏫 서울대학교</div>
+              <div class="bubble">안녕하세요! 전공이 뭐예요? 😄</div>
+            </div>
+            <div class="mock-msg me">
+              <div class="school-tag">🏫 연세대학교</div>
+              <div class="bubble">경영학이요! 요즘 교환학생 준비 중이에요 ✈️</div>
+            </div>
+            <div class="mock-msg">
+              <div class="school-tag">🏫 서울대학교</div>
+              <div class="bubble">오 어디로요? 저도 해외 나가고 싶은데 ㅎㅎ</div>
+            </div>
+          </div>
+          <div class="chat-mock-footer">
+            <input class="mock-input" placeholder="메시지 입력..." />
+            <button class="mock-send">↑</button>
+          </div>
+        </div>
+        <!-- Extension overlay toggle -->
+        <div class="extension-overlay" id="extOverlay" style="display:none">
+          <div class="extension-card">
+            <h4>⏰ 시간이 끝났어요!</h4>
+            <p>대화를 연장하시겠어요?<br>별점을 남겨주세요</p>
+            <div class="star-row">
+              <span class="star" onclick="rateStar(1)">☆</span>
+              <span class="star" onclick="rateStar(2)">☆</span>
+              <span class="star" onclick="rateStar(3)">☆</span>
+              <span class="star" onclick="rateStar(4)">☆</span>
+              <span class="star" onclick="rateStar(5)">☆</span>
+            </div>
+            <div class="ext-btns">
+              <button class="ext-btn no" onclick="hideExt()">그만할게요</button>
+              <button class="ext-btn yes" onclick="hideExt()">연장하기 ✨</button>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px">
+          <button onclick="document.getElementById('extOverlay').style.display='flex'" style="background:none;border:1px solid var(--gray2);border-radius:50px;padding:8px 20px;font-size:0.8rem;cursor:pointer;font-family:var(--font-sans);color:var(--gray3);">⏱ 종료 화면 미리보기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- N:N -->
+    <div class="mode-content" id="mode-group">
+      <div class="mode-info reveal-left">
+        <h3>여러 명이 함께</h3>
+        <p>3~6명이 함께하는 그룹 채팅으로 다양한 학교 학생들과 교류하세요. 시간 후 Yes인 사람끼리 모여 추가 대화!</p>
+        <div class="mode-time-options">
+          <div class="time-pill" onclick="selectTime(this)">10분</div>
+          <div class="time-pill active" onclick="selectTime(this)">20분</div>
+          <div class="time-pill" onclick="selectTime(this)">30분</div>
+        </div>
+        <ul class="mode-feature-list">
+          <li><span class="check">✓</span>3~6명 랜덤 그룹 매칭</li>
+          <li><span class="check">✓</span>Yes 스와이프한 사람끼리 재매칭</li>
+          <li><span class="check">✓</span>각자의 학교 배지 표시</li>
+          <li><span class="check">✓</span>그룹 토픽 투표 기능</li>
+        </ul>
+      </div>
+      <div class="reveal-right">
+        <div class="swipe-mock">
+          <h4 style="font-size:1rem;font-weight:700;margin-bottom:6px;">대화 연장할까요?</h4>
+          <p style="font-size:0.82rem;color:var(--gray3);margin-bottom:20px;">Yes 스와이프한 사람끼리 모여요 👆</p>
+          <div class="swipe-card-stack">
+            <div class="swipe-item" id="swipeCard">🏫 이화여대 · 국문학과<br><span style="color:var(--gray3);font-size:0.82rem;">같이 계속 얘기해요!</span></div>
+            <div class="swipe-item">🏫 한양대 · 기계공학과</div>
+            <div class="swipe-item">🏫 성균관대 · 경제학과</div>
+          </div>
+          <p class="swipe-hint">← No &nbsp;&nbsp;&nbsp; Yes →</p>
+          <div class="swipe-btns">
+            <div class="swipe-btn no-btn" onclick="swipeCard('no')">✕</div>
+            <div class="swipe-btn yes-btn" onclick="swipeCard('yes')">♥</div>
+          </div>
+          <p style="font-size:0.78rem;color:var(--gray3);margin-top:16px;">현재 이 방에 <strong>4명</strong>이 있어요</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOPICS -->
+<section id="topics">
+  <div class="topics-inner">
+    <p class="section-label reveal">대화 주제</p>
+    <h2 class="section-title reveal">무슨 말 해야 할지 모르겠다면?</h2>
+    <p class="section-sub reveal">스와이프로 오늘의 이슈와 카테고리별 주제를 골라보세요</p>
+  </div>
+
+  <div class="topic-scroll-area" style="margin-top:40px;overflow:hidden;">
+    <div class="topic-track" id="topicTrack">
+      <div class="topic-chip"><span class="emoji">🔥</span>요즘 핫한 드라마 추천</div>
+      <div class="topic-chip"><span class="emoji">💼</span>인턴십 경험 공유</div>
+      <div class="topic-chip"><span class="emoji">🍕</span>학식 맛집 어디?</div>
+      <div class="topic-chip"><span class="emoji">📚</span>전공 선택 후회하나요?</div>
+      <div class="topic-chip"><span class="emoji">✈️</span>교환학생 꿀팁</div>
+      <div class="topic-chip"><span class="emoji">🎮</span>요즘 즐기는 게임</div>
+      <div class="topic-chip"><span class="emoji">💰</span>대학생 재테크 방법</div>
+      <div class="topic-chip"><span class="emoji">🏃</span>운동 루틴 공유</div>
+      <div class="topic-chip"><span class="emoji">🎵</span>요즘 듣는 플레이리스트</div>
+      <div class="topic-chip"><span class="emoji">🤔</span>졸업 후 진로 고민</div>
+      <div class="topic-chip"><span class="emoji">🌙</span>밤새 공부 꿀팁</div>
+      <div class="topic-chip"><span class="emoji">☕</span>스터디카페 추천</div>
+      <!-- duplicate for seamless loop -->
+      <div class="topic-chip"><span class="emoji">🔥</span>요즘 핫한 드라마 추천</div>
+      <div class="topic-chip"><span class="emoji">💼</span>인턴십 경험 공유</div>
+      <div class="topic-chip"><span class="emoji">🍕</span>학식 맛집 어디?</div>
+      <div class="topic-chip"><span class="emoji">📚</span>전공 선택 후회하나요?</div>
+      <div class="topic-chip"><span class="emoji">✈️</span>교환학생 꿀팁</div>
+      <div class="topic-chip"><span class="emoji">🎮</span>요즘 즐기는 게임</div>
+      <div class="topic-chip"><span class="emoji">💰</span>대학생 재테크 방법</div>
+      <div class="topic-chip"><span class="emoji">🏃</span>운동 루틴 공유</div>
+      <div class="topic-chip"><span class="emoji">🎵</span>요즘 듣는 플레이리스트</div>
+      <div class="topic-chip"><span class="emoji">🤔</span>졸업 후 진로 고민</div>
+      <div class="topic-chip"><span class="emoji">🌙</span>밤새 공부 꿀팁</div>
+      <div class="topic-chip"><span class="emoji">☕</span>스터디카페 추천</div>
+    </div>
+  </div>
+
+  <div class="topics-inner">
+    <div class="topic-categories reveal">
+      <div class="topic-cat" onclick="pickCategory(this)">
+        <span class="cat-emoji">📰</span>
+        <div class="cat-name">오늘의 이슈</div>
+        <div class="cat-count">12개 주제</div>
+      </div>
+      <div class="topic-cat" onclick="pickCategory(this)">
+        <span class="cat-emoji">🎓</span>
+        <div class="cat-name">학교 생활</div>
+        <div class="cat-count">24개 주제</div>
+      </div>
+      <div class="topic-cat" onclick="pickCategory(this)">
+        <span class="cat-emoji">🌏</span>
+        <div class="cat-name">미래와 진로</div>
+        <div class="cat-count">18개 주제</div>
+      </div>
+      <div class="topic-cat" onclick="pickCategory(this)">
+        <span class="cat-emoji">🎉</span>
+        <div class="cat-name">취미와 일상</div>
+        <div class="cat-count">31개 주제</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="how-inner">
+    <p class="section-label reveal" style="color:var(--red)">이용 방법</p>
+    <h2 class="section-title reveal" style="color:white">3분이면 시작할 수 있어요</h2>
+
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-content">
+          <h3>학교 이메일로 가입</h3>
+          <p>대학교 이메일(@ac.kr, @edu 등)로 인증하면 학교 배지가 생성됩니다. 재학생만 이용 가능해요.</p>
+        </div>
+        <div class="step-icon">🏫</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.1s">
+        <div class="step-num">02</div>
+        <div class="step-content">
+          <h3>채팅 방식과 시간 선택</h3>
+          <p>1:1 또는 N:N 중 원하는 방식을 고르고, 5분~30분 사이에서 대화 시간을 설정하세요.</p>
+        </div>
+        <div class="step-icon">⚙️</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.2s">
+        <div class="step-num">03</div>
+        <div class="step-content">
+          <h3>주제 카드 스와이프</h3>
+          <p>오늘의 이슈나 관심 주제를 스와이프로 선택하면 대화가 훨씬 자연스러워져요.</p>
+        </div>
+        <div class="step-icon">🃏</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.3s">
+        <div class="step-num">04</div>
+        <div class="step-content">
+          <h3>랜덤 매칭 & 대화 시작!</h3>
+          <p>매칭이 완료되면 바로 채팅이 시작돼요. 시간이 끝나면 연장 여부를 결정하세요.</p>
+        </div>
+        <div class="step-icon">🎲</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety">
+  <div class="safety-inner">
+    <div>
+      <p class="section-label reveal">안전&amp;보안</p>
+      <h2 class="section-title reveal">믿고 대화할 수 있는<br>공간을 만들어요</h2>
+      <div class="safety-badges">
+        <div class="safety-badge reveal" style="transition-delay:0.1s">
+          <span class="badge-icon">🔐</span>
+          <div class="badge-text">
+            <h4>학교 이메일 인증</h4>
+            <p>재학생만 이용 가능, 신뢰할 수 있는 사용자끼리</p>
+          </div>
+        </div>
+        <div class="safety-badge reveal" style="transition-delay:0.2s">
+          <span class="badge-icon">🤖</span>
+          <div class="badge-text">
+            <h4>AI 욕설 자동 필터</h4>
+            <p>부적절한 언어를 실시간으로 감지하고 차단</p>
+          </div>
+        </div>
+        <div class="safety-badge reveal" style="transition-delay:0.3s">
+          <span class="badge-icon">🚨</span>
+          <div class="badge-text">
+            <h4>빠른 신고 & 차단</h4>
+            <p>불편한 상황 발생 시 즉시 신고 및 차단 가능</p>
+          </div>
+        </div>
+        <div class="safety-badge reveal" style="transition-delay:0.4s">
+          <span class="badge-icon">🕵️</span>
+          <div class="badge-text">
+            <h4>익명성 보장</h4>
+            <p>개인 정보 없이 학교 배지만으로 대화 가능</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="safety-visual reveal-right">
+      <span class="big-icon">🛡️</span>
+      <h3>안심하고 대화하세요</h3>
+      <p>모든 채팅은 암호화되며<br>대화 기록은 저장하지 않습니다.<br>오직 지금 이 순간의 대화만이 존재해요.</p>
+      <div style="margin-top:24px;background:var(--gray);border-radius:12px;padding:16px;font-size:0.82rem;color:var(--gray3);line-height:1.6;">
+        💡 대화 내용은 서버에 저장되지 않으며,<br>채팅 종료 즉시 완전히 삭제됩니다.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-bg">
+    <div class="cta-circle" style="width:400px;height:400px;top:-150px;left:-100px;"></div>
+    <div class="cta-circle" style="width:300px;height:300px;bottom:-100px;right:50px;"></div>
+    <div class="cta-circle" style="width:200px;height:200px;top:50px;right:200px;"></div>
+  </div>
+  <h2>지금 바로 시작해볼까요? 💬</h2>
+  <p>전국 대학생 <strong>84,000+</strong>명과 새로운 대화를 시작하세요</p>
+  <button class="btn-white">무료로 시작하기 →</button>
+  <div class="app-links">
+    <a href="#" class="app-link">📱 App Store</a>
+    <a href="#" class="app-link">🤖 Google Play</a>
+    <a href="#" class="app-link">🌐 웹으로 시작</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CHAT FLOW OVERLAY
+══════════════════════════════════════════ -->
+<div id="chatFlow" class="cf-overlay" style="display:none">
+  <div class="cf-wrap">
+
+    <!-- ── STEP 0: 설정 ── -->
+    <div class="cf-screen" id="cf-s0">
+      <button class="cf-close" onclick="closeChatFlow()">✕</button>
+      <div class="cf-logo">💬</div>
+      <h2 class="cf-title">채팅 설정</h2>
+      <p class="cf-sub">방식과 시간을 골라주세요</p>
+
+      <div class="cf-mode-row">
+        <div class="cf-mode-btn active" id="cfMode1v1" onclick="setCfMode('1v1')">
+          <span class="cf-mode-icon">👤</span>
+          <span class="cf-mode-label">1 : 1</span>
+        </div>
+        <div class="cf-mode-btn" id="cfModeNvN" onclick="setCfMode('nvn')">
+          <span class="cf-mode-icon">👥</span>
+          <span class="cf-mode-label">N : N</span>
+        </div>
+      </div>
+
+      <p class="cf-field-label">대화 시간</p>
+      <div class="cf-time-row" id="cfTimeRow">
+        <div class="cf-time-btn" onclick="setCfTime(this,5)">5분</div>
+        <div class="cf-time-btn active" onclick="setCfTime(this,15)">15분 <span class="cf-default">기본</span></div>
+        <div class="cf-time-btn" onclick="setCfTime(this,25)">25분</div>
+      </div>
+
+      <p class="cf-field-label" style="margin-top:20px">내 학교</p>
+      <div class="cf-school-input-wrap">
+        <span class="cf-school-ico">🏫</span>
+        <input id="cfSchoolInput" class="cf-school-input" placeholder="학교명 검색..." oninput="filterSchools(this.value)" autocomplete="off"/>
+      </div>
+      <div class="cf-school-dropdown" id="cfSchoolDropdown"></div>
+      <div class="cf-school-badge" id="cfSchoolBadge" style="display:none"></div>
+
+      <button class="cf-btn-main" onclick="goCfStep(1)" id="cfStartBtn" disabled>매칭 시작하기 →</button>
+    </div>
+
+    <!-- ── STEP 1: 탐색 중 ── -->
+    <div class="cf-screen" id="cf-s1" style="display:none">
+      <div class="cf-search-anim">
+        <div class="cf-radar">
+          <div class="cf-radar-ring r1"></div>
+          <div class="cf-radar-ring r2"></div>
+          <div class="cf-radar-ring r3"></div>
+          <div class="cf-radar-center">📡</div>
+          <div class="cf-radar-dot" id="radarDot"></div>
+        </div>
+      </div>
+      <h2 class="cf-title">대화 상대를 찾고 있어요</h2>
+      <p class="cf-sub cf-count-text">전국 <strong id="cfSearchCount">0</strong>명 탐색 중...</p>
+
+      <!-- 오늘의 이슈 카드 -->
+      <p class="cf-field-label" style="margin-top:28px;text-align:center">기다리는 동안 오늘의 이슈에 답해보세요 ✏️</p>
+      <div class="cf-issue-card" id="cfIssueCard">
+        <div class="cf-issue-tag">🔥 오늘의 이슈</div>
+        <p class="cf-issue-q" id="cfIssueQ">최근 취업 시장이 어렵다는 느낌을 받고 있나요?</p>
+        <div class="cf-issue-opts" id="cfIssueOpts">
+          <button class="cf-issue-opt" onclick="pickIssue(this)">😓 많이 느껴요</button>
+          <button class="cf-issue-opt" onclick="pickIssue(this)">🤔 그럭저럭요</button>
+          <button class="cf-issue-opt" onclick="pickIssue(this)">😤 별로요</button>
+        </div>
+        <div class="cf-issue-result" id="cfIssueResult" style="display:none"></div>
+        <button class="cf-issue-next" onclick="nextIssue()" id="cfIssueNextBtn" style="display:none">다음 질문 →</button>
+      </div>
+
+      <button class="cf-btn-cancel" onclick="cancelSearch()">탐색 취소</button>
+    </div>
+
+    <!-- ── STEP 2: 매칭 완료 ── -->
+    <div class="cf-screen" id="cf-s2" style="display:none">
+      <div class="cf-match-burst" id="cfMatchBurst">🎉</div>
+      <h2 class="cf-title">매칭됐어요!</h2>
+      <p class="cf-sub">상대방과 연결됐습니다</p>
+
+      <div class="cf-match-card">
+        <div class="cf-match-avatar" id="cfMatchAvatar">?</div>
+        <div class="cf-match-info">
+          <div class="cf-match-school" id="cfMatchSchool">🏫 로딩 중...</div>
+          <div class="cf-match-dept" id="cfMatchDept">학과 정보 확인 중</div>
+          <div class="cf-match-badges">
+            <span class="cf-badge green">✓ 학교 인증</span>
+            <span class="cf-badge gray" id="cfMatchTime">⏱ 15분 채팅</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cf-topic-preview">
+        <span class="cf-topic-ico">💬</span>
+        <span id="cfMatchTopic">오늘의 이슈로 대화를 시작해보세요!</span>
+      </div>
+
+      <button class="cf-btn-main" onclick="goCfStep(3)">채팅 시작하기 🚀</button>
+      <button class="cf-btn-ghost" onclick="goCfStep(1)">다른 사람 찾기</button>
+    </div>
+
+    <!-- ── STEP 3: 채팅 ── -->
+    <div class="cf-screen cf-chat-screen" id="cf-s3" style="display:none">
+      <!-- Header -->
+      <div class="cf-chat-header">
+        <div class="cf-chat-header-left">
+          <div class="cf-chat-avatar-sm" id="cfChatAvatarSm">?</div>
+          <div>
+            <div class="cf-chat-partner" id="cfChatPartner">상대방</div>
+            <div class="cf-chat-school-sm" id="cfChatSchoolSm">🏫 대학교</div>
+          </div>
+        </div>
+        <div class="cf-chat-timer-wrap">
+          <div class="cf-chat-timer" id="cfChatTimer">15:00</div>
+          <div class="cf-chat-timer-bar-wrap"><div class="cf-chat-timer-bar" id="cfChatTimerBar"></div></div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="cf-chat-body" id="cfChatBody">
+        <div class="cf-chat-date">오늘</div>
+        <div class="cf-msg-system">채팅이 시작됐어요 👋 먼저 인사해보세요!</div>
+      </div>
+
+      <!-- Topic suggestion -->
+      <div class="cf-topic-bar" id="cfTopicBar">
+        <span class="cf-topic-bar-ico">💡</span>
+        <span id="cfTopicBarText">오늘의 이슈: 취업 시장에 대한 생각을 나눠보세요</span>
+        <button class="cf-topic-bar-close" onclick="document.getElementById('cfTopicBar').style.display='none'">✕</button>
+      </div>
+
+      <!-- Input -->
+      <div class="cf-chat-footer">
+        <button class="cf-emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+        <input class="cf-chat-input" id="cfChatInput" placeholder="메시지를 입력하세요..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}"/>
+        <button class="cf-send-btn" onclick="sendChatMsg()">↑</button>
+      </div>
+      <div class="cf-emoji-picker" id="cfEmojiPicker" style="display:none">
+        😄 😂 🥹 😍 🤔 😅 🙌 👍 ❤️ 🔥 😭 🎉
+      </div>
+    </div>
+
+    <!-- ── STEP 4: 연장 여부 ── -->
+    <div class="cf-screen" id="cf-s4" style="display:none">
+      <div class="cf-extend-emoji">⏰</div>
+      <h2 class="cf-title">시간이 끝났어요!</h2>
+      <p class="cf-sub">대화가 어떠셨나요? 별점을 남겨주세요</p>
+
+      <div class="cf-star-row" id="cfStarRow">
+        <span class="cf-star" data-v="1" onclick="setCfStar(1)">☆</span>
+        <span class="cf-star" data-v="2" onclick="setCfStar(2)">☆</span>
+        <span class="cf-star" data-v="3" onclick="setCfStar(3)">☆</span>
+        <span class="cf-star" data-v="4" onclick="setCfStar(4)">☆</span>
+        <span class="cf-star" data-v="5" onclick="setCfStar(5)">☆</span>
+      </div>
+      <p class="cf-star-label" id="cfStarLabel">별점을 선택해주세요</p>
+
+      <div class="cf-extend-info" id="cfExtendInfo" style="display:none">
+        <span class="cf-badge green">✨ 4점 이상! 연장 가능해요</span>
+        <p style="font-size:0.82rem;color:var(--gray3);margin-top:8px">상대방도 4점 이상이면 자동으로 연장됩니다</p>
+      </div>
+
+      <p class="cf-field-label" style="margin-top:24px;text-align:center">계속 대화하고 싶으세요?</p>
+      <div class="cf-swipe-row">
+        <div class="cf-swipe-no" onclick="setCfExtend('no')">
+          <span>✕</span><small>그만할게요</small>
+        </div>
+        <div class="cf-swipe-mid" id="cfExtendStatus">?</div>
+        <div class="cf-swipe-yes" onclick="setCfExtend('yes')">
+          <span>♥</span><small>더 얘기해요</small>
+        </div>
+      </div>
+
+      <button class="cf-btn-main" id="cfExtendConfirmBtn" onclick="confirmExtend()" disabled>확인</button>
+    </div>
+
+    <!-- ── STEP 5: 종료 ── -->
+    <div class="cf-screen" id="cf-s5" style="display:none">
+      <div class="cf-end-emoji" id="cfEndEmoji">👋</div>
+      <h2 class="cf-title" id="cfEndTitle">대화가 끝났어요</h2>
+      <p class="cf-sub" id="cfEndSub">오늘도 새로운 인연과 이야기 나눴어요!</p>
+
+      <div class="cf-end-summary">
+        <div class="cf-end-stat"><span class="cf-end-stat-num" id="cfEndTime">0분</span><span class="cf-end-stat-label">대화 시간</span></div>
+        <div class="cf-end-stat"><span class="cf-end-stat-num" id="cfEndMsgs">0개</span><span class="cf-end-stat-label">주고받은 메시지</span></div>
+        <div class="cf-end-stat"><span class="cf-end-stat-num" id="cfEndRating">-</span><span class="cf-end-stat-label">내가 준 별점</span></div>
+      </div>
+
+      <button class="cf-btn-main" onclick="goCfStep(0)">다시 채팅하기 🎲</button>
+      <button class="cf-btn-ghost" onclick="closeChatFlow()">홈으로 돌아가기</button>
+    </div>
+
+  </div><!-- /cf-wrap -->
+</div><!-- /chatFlow -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">언노운</div>
+  <div class="footer-links">
+    <a href="#">이용약관</a>
+    <a href="#">개인정보처리방침</a>
+    <a href="#">공지사항</a>
+    <a href="#">고객센터</a>
+  </div>
+  <div class="copy">© 2025 언노운. All rights reserved.</div>
+</footer>
+
+<script src="./unknown-chat.js"></script>
+</body>
+</html>

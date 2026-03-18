@@ -10,13 +10,12 @@ const axios = require('axios');
 const path = require('path')
 const activeUsers = {};
 const bcrypt = require("bcrypt");
-const saltRounds = 5;
+const saltRounds = 10;
 
 
 const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
 console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
-app.set("views", __dirname + "/views");
 app.set('views', path.join(__dirname, 'views'));
 app.use("/public", express.static(__dirname + "/public"));
 app.use(express.urlencoded({extended:true}));
@@ -324,9 +323,7 @@ oneOnoneChat.on("connection", (socket) => {
     
             pool.getConnection((err, conn) => {
                 if (err) {
-                    conn.release();
-                    console.log("MySQL 연결 오류. 중단됨.");
-                    done({ success: false });
+
                     return;
                 }
     
@@ -499,7 +496,7 @@ oneOnoneChat.on("connection", (socket) => {
         pool.getConnection((err, connection) => {
             if (err) {
                 console.error('DB 연결 오류:', err);
-                return callback(err);
+                return callback([]);
             }
     
             const query = 'SELECT * FROM friends WHERE user_email = ? OR friend_email = ?';
@@ -507,7 +504,7 @@ oneOnoneChat.on("connection", (socket) => {
                 if (error) {
                     connection.release();
                     console.error('친구 목록 조회 중 오류 발생:', error);
-                    return callback(error);
+                    return callback([]);
                 }
     
                 const friendList = results.map(row => {
@@ -526,7 +523,7 @@ oneOnoneChat.on("connection", (socket) => {
     
                     if (error) {
                         console.error('닉네임 조회 중 오류 발생:', error);
-                        return callback(error);
+                        return callback([]);
                     }
     
                     // 친구들의 닉네임을 배열로 반환

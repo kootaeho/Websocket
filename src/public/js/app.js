@@ -64,6 +64,7 @@ function setView(view) {
     LogIn.hidden = true;
     SignIn.hidden = true;
     main.hidden = true;
+    main.classList.remove("note-layout");
     room.style.display = "none";
     waiting.hidden = true;
     Note.style.display = "none";
@@ -100,6 +101,7 @@ function setView(view) {
 
     if (view === "note") {
         main.hidden = false;
+        main.classList.add("note-layout");
         Note.style.display = "flex";
         if (logoutButton) {
             logoutButton.style.display = "inline-block";
@@ -205,6 +207,8 @@ function handleLogin(event) {
 function handleMainPage() {
     setView("main");
     setAppStatus("lobby");
+    FriendAccept.hidden = true;
+    FriendRequest.hidden = false;
     uniSubmit.hidden = true;
     // 친구 목록을 동적으로 추가하는 부분
     activeSocket.emit("ShowFriend", (friendsList) => {
@@ -475,6 +479,8 @@ function handleLeave() {
 function showRoom() {
     setView("room");
     setAppStatus("random_chat");
+    FriendAccept.hidden = true;
+    FriendRequest.hidden = false;
     // 방 입장 시 메시지 컨테이너 초기화
     const messageContainer = room.querySelector("ul.message-container");
     if (messageContainer) {
