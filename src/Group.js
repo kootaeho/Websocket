@@ -6,7 +6,7 @@ const {instrument} = require("@socket.io/admin-ui");
 const app = express();
 const now = new Date();
 const mysql = require("mysql");
-const dbconfig = require('./config/dbconfig.json');
+const fs = require('fs');
 const axios = require('axios');
 const path = require('path')
 const crypto = require('crypto');
@@ -23,6 +23,29 @@ if (!API_KEY) {
     console.error('[server] Missing required environment variable: UNIVCERT_API_KEY');
     process.exit(1);
 }
+
+let dbconfig = {};
+try {
+    dbconfig = require('./config/dbconfig.json');
+} catch {
+    dbconfig = {};
+}
+
+const PORT = Number(process.env.PORT) || 3001;
+const DB_HOST = process.env.DB_HOST || dbconfig.host;
+const DB_USER = process.env.DB_USER || dbconfig.user;
+const DB_PASSWORD = process.env.DB_PASSWORD || dbconfig.password;
+const DB_NAME = process.env.DB_NAME || dbconfig.database;
+const DB_SSL = (process.env.DB_SSL || 'false').toLowerCase() === 'true';
+const DB_SSL_REJECT_UNAUTHORIZED = (process.env.DB_SSL_REJECT_UNAUTHORIZED || 'true').toLowerCase() === 'true';
+const DB_SSL_CA_PATH = process.env.DB_SSL_CA_PATH;
+const DB_SSL_CA = process.env.DB_SSL_CA;
+
+if (!DB_HOST || !DB_USER || !DB_NAME) {
+    console.error('[server] Missing required DB environment values. Check DB_HOST, DB_USER, DB_PASSWORD, DB_NAME');
+    process.exit(1);
+}
+
 console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
 app.set('views', path.join(__dirname, 'views'));
@@ -175,19 +198,38 @@ app.post('/api/auth/logout', (req, res) => {
 app.get("/*", (req,res) => res.render("home"));
 
 
-const pool = mysql.createPool({
+const mysqlPoolConfig = {
     connectionLimit : 10,
-    host: dbconfig.host,
-    user: dbconfig.user,
-    password: dbconfig.password,
-    database: dbconfig.database,
+    host: DB_HOST,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
     debug:false,
     charset: 'utf8mb4'
-})
+};
+
+if (DB_SSL) {
+    mysqlPoolConfig.ssl = {
+        rejectUnauthorized: DB_SSL_REJECT_UNAUTHORIZED,
+    };
+
+    if (DB_SSL_CA) {
+        mysqlPoolConfig.ssl.ca = DB_SSL_CA;
+    } else if (DB_SSL_CA_PATH) {
+        try {
+            mysqlPoolConfig.ssl.ca = fs.readFileSync(DB_SSL_CA_PATH, 'utf8');
+        } catch (error) {
+            console.error('[server] Failed to read DB_SSL_CA_PATH file:', error.message);
+            process.exit(1);
+        }
+    }
+}
+
+const pool = mysql.createPool(mysqlPoolConfig);
 
 
 console.log("Group.js 실행됨!");
-const handleListen = () => console.log('Listening on http://localhost:3001');
+const handleListen = () => console.log(`Listening on http://localhost:${PORT}`);
 
 const GrouphttpServer = http.createServer(app);  //express 서버랑 http 합치기
 const io = new Server(GrouphttpServer, {
@@ -206,7 +248,7 @@ const oneOnoneChat = io.of("/oneonone");
 
 GrouphttpServer.on("error", (error) => {
     if (error && error.code === "EADDRINUSE") {
-        console.error("\n[server] Port 3001 is already in use.");
+        console.error(`\n[server] Port ${PORT} is already in use.`);
         console.error("[server] Run \"npm run kill\" and then restart with \"npm run dev\".\n");
         process.exit(1);
     }
@@ -215,7 +257,7 @@ GrouphttpServer.on("error", (error) => {
     process.exit(1);
 });
 
-GrouphttpServer.listen(3001,handleListen);
+GrouphttpServer.listen(PORT,handleListen);
 
 function publicGroupRooms(namespace){
     if (!namespace.adapter || !namespace.adapter.rooms) {

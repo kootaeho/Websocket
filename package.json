@@ -6,6 +6,7 @@
   "scripts": {
     "predev": "node cleanup-port.js",
     "dev": "nodemon",
+    "start": "node src/Group.js",
     "kill": "node cleanup-port.js"
   },
   "author": "",

@@ -1,2 +1,7 @@
 /node_modules
 src/config/dbconfig.json
+
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
