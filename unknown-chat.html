@@ -68,7 +68,7 @@
   <p class="hero-sub">다른 대학교 학생과 제한 시간 채팅으로 새로운 연결을 경험하세요</p>
 
   <div class="hero-btns">
-    <button class="btn-white" onclick="openChatFlow()">채팅 시작하기 →</button>
+    <button class="btn-white" onclick="location.href='/login'">채팅 시작하기 →</button>
     <button class="btn-outline" onclick="scrollTo({top:document.getElementById('how').offsetTop-70,behavior:'smooth'})">이용 방법 보기</button>
   </div>
 
@@ -434,7 +434,7 @@
   </div>
   <h2>지금 바로 시작해볼까요? 💬</h2>
   <p>전국 대학생 <strong>84,000+</strong>명과 새로운 대화를 시작하세요</p>
-  <button class="btn-white">무료로 시작하기 →</button>
+  <button class="btn-white" onclick="location.href='/login'">무료로 시작하기 →</button>
   <div class="app-links">
     <a href="#" class="app-link">📱 App Store</a>
     <a href="#" class="app-link">🤖 Google Play</a>
@@ -636,6 +636,155 @@
   </div><!-- /cf-wrap -->
 </div><!-- /chatFlow -->
 
+  <!-- ══════════════════════════════════════════
+       REAL APP SHELL (Functional UI)
+  ══════════════════════════════════════════ -->
+  <div id="appShell" class="app-shell" aria-live="polite">
+    <div class="app-shell-bg"></div>
+    <div class="app-panel">
+      <div class="app-panel-head">
+        <button id="Logo" type="button" class="app-logo-btn">언노운 실시간 채팅</button>
+        <div class="app-status-wrap">
+          <span class="status-label">상태</span>
+          <span id="statusBadge" class="status-pill offline">연결 끊김</span>
+        </div>
+      </div>
+
+      <h2 id="SubTitle" class="app-subtitle">Join and chat with new people!</h2>
+
+      <!-- Login -->
+      <section id="LogIn" class="app-screen">
+        <div class="app-card">
+          <h3>로그인</h3>
+          <p>학교 인증 기반 익명 채팅을 시작하세요</p>
+          <div class="app-field">
+            <label for="emailInput">이메일</label>
+            <input id="emailInput" type="email" placeholder="you@school.ac.kr" autocomplete="username" />
+          </div>
+          <div class="app-field">
+            <label for="passwdInput">비밀번호</label>
+            <input id="passwdInput" type="password" placeholder="비밀번호 입력" autocomplete="current-password" />
+          </div>
+          <div class="app-row">
+            <button id="LoginButton" type="button" class="app-btn primary">로그인</button>
+            <button id="SiginButton" type="button" class="app-btn ghost">회원가입</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SignUp -->
+      <section id="SignIn" class="app-screen" hidden>
+        <div class="app-card">
+          <h3>회원가입</h3>
+          <p>학교 이메일 인증 후 가입할 수 있어요</p>
+
+          <form id="uniSubmit" class="app-form" hidden>
+            <div class="app-field">
+              <label for="uniInput">학교명</label>
+              <input id="uniInput" type="text" placeholder="예: 한국외국어대학교" />
+            </div>
+            <button id="uniButton" type="submit" class="app-btn primary">다음</button>
+          </form>
+
+          <form id="emailSubmit" class="app-form" hidden>
+            <div class="app-field">
+              <label for="emailVerify">학교 이메일</label>
+              <input id="emailVerify" type="email" placeholder="학내 이메일 입력" />
+            </div>
+            <button id="emailCodeButton" type="submit" class="app-btn primary">인증코드 받기</button>
+          </form>
+
+          <form id="verifySubmit" class="app-form" hidden>
+            <div class="app-field">
+              <label for="codeInput">인증코드</label>
+              <input id="codeInput" type="text" placeholder="메일로 받은 코드" />
+            </div>
+            <button id="verifyButton" type="submit" class="app-btn primary">코드 확인</button>
+          </form>
+
+          <form id="passwdSubmit" class="app-form" hidden>
+            <div class="app-field">
+              <label for="passwd">비밀번호</label>
+              <input id="passwd" type="password" placeholder="새 비밀번호" />
+            </div>
+            <button id="passwdButton" type="submit" class="app-btn primary">비밀번호 저장</button>
+          </form>
+
+          <form id="nickname" class="app-form" hidden>
+            <div class="app-field">
+              <label for="nicknameInput">닉네임</label>
+              <input id="nicknameInput" type="text" placeholder="채팅에서 사용할 닉네임" />
+            </div>
+            <button id="nicknameButton" type="submit" class="app-btn primary">가입 완료</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Main / Friends -->
+      <section id="main" class="app-screen" hidden>
+        <div class="app-toolbar">
+          <button id="logoutButton" type="button" class="app-btn danger">로그아웃</button>
+        </div>
+
+        <form id="roomname" class="app-card app-form app-inline">
+          <div>
+            <h3>랜덤 채팅 시작</h3>
+            <p>닉네임 설정 후 매칭을 시작해요</p>
+          </div>
+          <button type="submit" class="app-btn primary">매칭 준비</button>
+        </form>
+
+        <form id="nick" class="app-card app-form" style="display:none">
+          <div class="app-field">
+            <label for="nickInput">채팅 닉네임</label>
+            <input id="nickInput" type="text" placeholder="닉네임 입력" />
+          </div>
+          <button type="submit" class="app-btn primary">랜덤 매칭 시작</button>
+        </form>
+
+        <div id="friendBox" class="app-friends" style="display:none"></div>
+
+        <div id="Note" class="app-card app-note" style="display:none">
+          <h3>친구와 쪽지</h3>
+          <div id="NoteContainer" class="app-note-container">
+            <ul class="message-container"></ul>
+          </div>
+          <form id="note" class="app-form app-inline">
+            <input type="text" placeholder="쪽지를 입력하세요" />
+            <button type="submit" class="app-btn primary">전송</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Waiting -->
+      <section id="waiting" class="app-screen" hidden>
+        <div class="app-card app-center">
+          <h3>상대를 찾는 중...</h3>
+          <p>잠시만 기다려 주세요. 곧 연결됩니다.</p>
+        </div>
+      </section>
+
+      <!-- Room -->
+      <section id="room" class="app-screen" style="display:none">
+        <div class="app-card app-room-card">
+          <div class="app-room-head">
+            <h3>방에 (1)명 있음.</h3>
+            <div class="app-row">
+              <button id="FriendRequest" type="button" class="app-btn ghost">친구 요청</button>
+              <button id="FriendAccept" type="button" class="app-btn primary" hidden>친구 수락</button>
+              <button id="leave" type="button" class="app-btn danger">나가기</button>
+            </div>
+          </div>
+          <ul class="message-container"></ul>
+          <form id="msg" class="app-form app-inline">
+            <input type="text" placeholder="메시지를 입력하세요" />
+            <button type="submit" class="app-btn primary">전송</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">언노운</div>
@@ -649,5 +798,7 @@
 </footer>
 
 <script src="./unknown-chat.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/public/js/app.js"></script>
 </body>
 </html>

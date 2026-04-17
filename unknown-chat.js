@@ -21,6 +21,28 @@ const CF = {
   issueIdx: 0,
 };
 
+function openAppShell() {
+  const appShell = document.getElementById('appShell');
+  if (!appShell) return;
+  appShell.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAppShell() {
+  try {
+    if (window.__unknownApp?.leaveCurrentRoomSafely) {
+      window.__unknownApp.leaveCurrentRoomSafely();
+    }
+  } catch (err) {
+    console.warn('앱 셸 종료 중 방 정리 실패:', err);
+  }
+
+  const appShell = document.getElementById('appShell');
+  if (!appShell) return;
+  appShell.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
 const SCHOOLS = [
   // 서울
   '서울대학교','연세대학교','고려대학교','성균관대학교','한양대학교','이화여자대학교','서강대학교','중앙대학교','경희대학교','한국외국어대학교',
@@ -448,8 +470,20 @@ document.getElementById('chatFlow').addEventListener('click', (e) => {
 
 // STEP 0 enter key for school
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') closeChatFlow();
+  if (e.key === 'Escape') {
+    closeChatFlow();
+    closeAppShell();
+  }
 });
+
+const appShell = document.getElementById('appShell');
+if (appShell) {
+  appShell.addEventListener('click', (e) => {
+    if (e.target.classList.contains('app-shell-bg')) {
+      closeAppShell();
+    }
+  });
+}
 
 // ── NAV scroll effect ──
 const navbar = document.getElementById('navbar');

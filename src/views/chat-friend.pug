@@ -1,0 +1,40 @@
+doctype html
+html(lang='ko')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title 언노운 | 친구 채팅
+    link(rel='preconnect' href='https://fonts.googleapis.com')
+    link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
+    link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
+    link(rel='stylesheet' href='/public/css/app-pages.css')
+  body.app-body
+    .app-page-wrap
+      .app-topbar
+        a.app-brand(href='/') 언노운
+        .app-nav-links
+          span#friendStatus.status-badge 동기화 중...
+          button#refreshChatBtn(type='button') 새로고침
+          a(href='/lobby') 로비
+
+      .chat-layout
+        .card.chat-sidebar
+          h1.page-title 친구 채팅
+          p.page-sub
+            | 현재 대상: 
+            strong#friendName= friendName
+          p#friendAccount.account-chip 계정 확인 중...
+          p#friendMeta.helper 최근 대화 로딩 중...
+          p#friendMessage.helper
+
+        .card.chat-main
+          ul#friendMessages.chat-box
+            li.msg.sys 메시지를 불러오는 중...
+
+          form#friendChatForm.chat-form
+            input#friendChatInput(type='text' placeholder='쪽지 입력...')
+            button.btn.primary(type='submit') 전송
+
+    script(src='/socket.io/socket.io.js')
+    script(src='/public/js/auth-session.js')
+    script(src='/public/js/chat-friend-page.js')
