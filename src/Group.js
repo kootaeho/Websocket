@@ -33,6 +33,7 @@ try {
 
 const PORT = Number(process.env.PORT) || 3001;
 const DB_HOST = process.env.DB_HOST || dbconfig.host;
+const DB_PORT = Number(process.env.DB_PORT || dbconfig.port || 3306);
 const DB_USER = process.env.DB_USER || dbconfig.user;
 const DB_PASSWORD = process.env.DB_PASSWORD || dbconfig.password;
 const DB_NAME = process.env.DB_NAME || dbconfig.database;
@@ -201,6 +202,7 @@ app.get("/*", (req,res) => res.render("home"));
 const mysqlPoolConfig = {
     connectionLimit : 10,
     host: DB_HOST,
+    port: DB_PORT,
     user: DB_USER,
     password: DB_PASSWORD,
     database: DB_NAME,
