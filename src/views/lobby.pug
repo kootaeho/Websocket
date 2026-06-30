@@ -1,45 +1,46 @@
 doctype html
 html(lang='ko')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title 언노운 | 로비
-    link(rel='preconnect' href='https://fonts.googleapis.com')
-    link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
-    link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
-    link(rel='stylesheet' href='/public/css/app-pages.css')
-  body.app-body
-    .app-page-wrap
-      .app-topbar
-        a.app-brand(href='/') 언노운
-        .app-nav-links
-          span#lobbyStatus.status-badge 연결 중...
-          button#logoutBtn(type='button') 로그아웃
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        title 언노운 | 로비
+        link(rel='preconnect' href='https://fonts.googleapis.com')
+        link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
+        link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
+        link(rel='stylesheet' href='/public/css/app-pages.css')
+    body.app-body
+        .app-page-wrap
+            .app-topbar
+                a.app-brand.app-brand-logo-link(href='/' aria-label='랜딩 홈으로 이동')
+                    img.app-brand-logo(src='/src/Logo.png' alt='언노운 로고')
+                .app-nav-links
+                    span#lobbyStatus.status-badge 연결 중...
+                    button#logoutBtn(type='button') 로그아웃
 
-      .lobby-welcome
-        span 안녕하세요, 
-        strong#lobbyUserName ...
+            .lobby-welcome
+                span 안녕하세요, 
+                strong#lobbyUserName ...
 
-      .lobby-grid
-        .card
-          h2.lobby-card-title 랜덤 채팅 시작
-          p.page-sub 닉네임을 설정하고 새로운 상대와 대화해보세요.
-          .form-grid
-            .field
-              label(for='lobbyNickname') 채팅 닉네임
-              input#lobbyNickname(type='text' placeholder='닉네임 입력' maxlength='20')
-            .row
-              button#startRandomBtn.btn.primary(type='button') 랜덤 채팅 시작 →
-              a.btn.ghost(href='/') 홈으로
-          p#lobbyMessage.helper
+            .lobby-grid
+                .card
+                    h2.lobby-card-title 랜덤 채팅 시작
+                    p.page-sub 닉네임을 설정하고 새로운 상대와 대화해보세요.
+                    .form-grid
+                        .field
+                            label(for='lobbyNickname') 채팅 닉네임
+                            input#lobbyNickname(type='text' placeholder='닉네임 입력' maxlength='20')
+                        .row
+                            button#startRandomBtn.btn.primary(type='button') 랜덤 채팅 시작 →
+                            a.btn.ghost(href='/') 홈으로
+                    p#lobbyMessage.helper
 
-        .card.friend-card
-          h2.lobby-card-title 친구 목록
-          p.page-sub 채팅한 상대를 친구로 추가하면 여기에 표시돼요.
-          ul#friendList.friend-list
-            li.friend-item
-              span.friend-name 불러오는 중...
+                .card.friend-card
+                    h2.lobby-card-title 친구 목록
+                    p.page-sub 채팅한 상대를 친구로 추가하면 여기에 표시돼요.
+                    ul#friendList.friend-list
+                        li.friend-item
+                            span.friend-name 불러오는 중...
 
-    script(src='/socket.io/socket.io.js')
-    script(src='/public/js/auth-session.js')
-    script(src='/public/js/lobby-page.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/public/js/auth-session.js')
+        script(src='/public/js/lobby-page.js')

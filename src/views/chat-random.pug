@@ -1,42 +1,43 @@
 doctype html
 html(lang='ko')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title 언노운 | 랜덤 채팅
-    link(rel='preconnect' href='https://fonts.googleapis.com')
-    link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
-    link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
-    link(rel='stylesheet' href='/public/css/app-pages.css')
-  body.app-body
-    .app-page-wrap
-      .app-topbar
-        a.app-brand(href='/') 언노운
-        .app-nav-links
-          span#chatStatus.status-badge 대기 중
-          a(href='/lobby') 로비
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        title 언노운 | 랜덤 채팅
+        link(rel='preconnect' href='https://fonts.googleapis.com')
+        link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
+        link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
+        link(rel='stylesheet' href='/public/css/app-pages.css')
+    body.app-body
+        .app-page-wrap
+            .app-topbar
+                a.app-brand.app-brand-logo-link(href='/' aria-label='랜딩 홈으로 이동')
+                    img.app-brand-logo(src='/src/Logo.png' alt='언노운 로고')
+                .app-nav-links
+                    span#chatStatus.status-badge 대기 중
+                    a(href='/lobby') 로비
 
-      .chat-layout
-        .card.chat-sidebar
-          h1.page-title 랜덤 채팅방
-          p.page-sub#roomSubtitle 매칭 대기 중입니다.
-          p#chatAccount.account-chip 계정 확인 중...
-          p#chatMeta.helper 로그인 상태 확인 중...
-          .chat-actions
-            button#startMatchBtn.btn.primary(type='button') 매칭 시작
-            button#reconnectBtn.btn.ghost(type='button') 재연결
-            button#friendRequestBtn.btn.ghost(type='button') 친구 요청
-            button#friendAcceptBtn.btn.primary.hidden(type='button') 친구 수락
-            button#leaveBtn.btn.dark(type='button') 나가기
+            .chat-layout
+                .card.chat-sidebar
+                    h1.page-title 랜덤 채팅방
+                    p.page-sub#roomSubtitle 매칭 대기 중입니다.
+                    p#chatAccount.account-chip 계정 확인 중...
+                    p#chatMeta.helper 로그인 상태 확인 중...
+                    .chat-actions
+                        button#startMatchBtn.btn.primary(type='button') 매칭 시작
+                        button#reconnectBtn.btn.ghost(type='button') 재연결
+                        button#friendRequestBtn.btn.ghost(type='button') 친구 요청
+                        button#friendAcceptBtn.btn.primary.hidden(type='button') 친구 수락
+                        button#leaveBtn.btn.dark(type='button') 나가기
 
-        .card.chat-main
-          ul#chatMessages.chat-box
-            li.msg.sys 대화를 시작해보세요.
+                .card.chat-main
+                    ul#chatMessages.chat-box
+                        li.msg.sys 대화를 시작해보세요.
 
-          form#chatForm.chat-form
-            input#chatInput(type='text' placeholder='메시지 입력...')
-            button#chatSendBtn.btn.primary(type='submit') 전송
+                    form#chatForm.chat-form
+                        input#chatInput(type='text' placeholder='메시지 입력...')
+                        button#chatSendBtn.btn.primary(type='submit') 전송
 
-    script(src='/socket.io/socket.io.js')
-    script(src='/public/js/auth-session.js')
-    script(src='/public/js/chat-random-page.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/public/js/auth-session.js')
+        script(src='/public/js/chat-random-page.js')
