@@ -155,7 +155,7 @@ socket.on('force_logout', () => {
   setStatus('로비 이동');
   setHelper('세션 충돌이 감지되어 로비로 이동합니다.', 'error');
   setTimeout(() => {
-    location.href = '/lobby';
+    window.navigateTo('/lobby');
   }, 400);
 });
 

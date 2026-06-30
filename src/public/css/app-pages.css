@@ -1,35 +1,59 @@
 :root {
   --red: #D93C2A;
   --red-dark: #b52e1f;
+  --red-light: #f0503d;
   --black: #111111;
   --white: #ffffff;
   --gray: #f4f4f2;
   --gray2: #e0e0dc;
-  --gray3: #8f8f98;
+  --gray3: #aaaaaa;
   --text: #1a1a1a;
   --font-sans: 'Noto Sans KR', sans-serif;
 }
 
-* { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@keyframes appFadeIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes appFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes msgSlideIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 body.app-body {
-  margin: 0;
   font-family: var(--font-sans);
   color: var(--text);
-  background: radial-gradient(circle at top right, #fde8e6 0%, #fff 45%);
+  background: var(--white);
   min-height: 100vh;
 }
 
+/* ── 탑바 ── */
 .app-page-wrap {
-  width: min(1400px, 94vw);
-  margin: 34px auto;
+  width: min(1400px, 92vw);
+  margin: 0 auto;
+  padding-top: 28px;
+  padding-bottom: 40px;
+  animation: appFadeIn 0.38s ease both;
+}
+
+.app-page-wrap.app-fade-out {
+  animation: appFadeOut 0.22s ease forwards;
 }
 
 .app-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1.5px solid var(--gray2);
 }
 
 .app-brand {
@@ -53,7 +77,6 @@ body.app-body {
   display: block;
   object-fit: contain;
   object-position: left center;
-  /* PNG 내부 투명 여백을 음수 마진으로 상쇄 */
   margin-left: -12%;
 }
 
@@ -61,61 +84,95 @@ body.app-body {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .app-nav-links a,
 .app-nav-links button {
   border: 1.5px solid var(--gray2);
   background: white;
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: 50px;
+  padding: 8px 18px;
   font-size: 0.82rem;
   font-family: var(--font-sans);
-  color: #333;
+  color: #555;
   cursor: pointer;
   text-decoration: none;
+  font-weight: 500;
+  transition: border-color 0.2s, color 0.2s;
 }
 
+.app-nav-links a:hover,
+.app-nav-links button:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+/* ── 카드 ── */
 .card {
   background: white;
   border: 1.5px solid var(--gray2);
-  border-radius: 18px;
-  box-shadow: 0 10px 26px rgba(17, 17, 17, 0.08);
-  padding: 18px;
-  margin-bottom: 12px;
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgba(17, 17, 17, 0.06);
+  padding: 28px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.card:hover {
+  box-shadow: 0 10px 40px rgba(17, 17, 17, 0.11);
+  transform: translateY(-2px);
 }
 
 h1, h2, h3, p { margin: 0; }
-.page-title { font-size: 1.35rem; font-weight: 900; margin-bottom: 6px; }
-.page-sub { color: var(--gray3); font-size: 0.9rem; margin-bottom: 14px; line-height: 1.6; }
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 6px;
+}
+.page-sub {
+  color: var(--gray3);
+  font-size: 0.88rem;
+  margin-bottom: 20px;
+  line-height: 1.65;
+}
 
-.form-grid { display: grid; gap: 10px; }
-.field { display: grid; gap: 6px; }
-.field label { font-size: 0.76rem; color: var(--gray3); font-weight: 700; }
+/* ── 폼 ── */
+.form-grid { display: grid; gap: 14px; }
+.field { display: grid; gap: 7px; }
+.field label {
+  font-size: 0.74rem;
+  color: var(--gray3);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 .field input {
   border: 1.5px solid var(--gray2);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 0.92rem;
+  border-radius: 14px;
+  padding: 13px 16px;
+  font-size: 0.93rem;
   font-family: var(--font-sans);
+  background: var(--gray);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.field input::placeholder { color: var(--gray3); }
+.field input:focus {
+  outline: none;
+  border-color: var(--red);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(217, 60, 42, 0.1);
 }
 
-.password-field {
-  position: relative;
-}
-
+/* ── 비밀번호 토글 ── */
+.password-field { position: relative; }
 .password-field input {
   width: 100%;
-  padding-right: 42px;
+  padding-right: 48px;
 }
-
-/* 브라우저 기본 비밀번호 보기 아이콘(Edge/IE 계열) 숨김 */
 .password-field input::-ms-reveal,
-.password-field input::-ms-clear {
-  display: none;
-}
-
-/* 일부 WebKit 계열 내장 컨트롤 숨김 */
+.password-field input::-ms-clear { display: none; }
 .password-field input::-webkit-credentials-auto-fill-button,
 .password-field input::-webkit-textfield-decoration-container {
   visibility: hidden;
@@ -123,144 +180,179 @@ h1, h2, h3, p { margin: 0; }
   position: absolute;
   right: 0;
 }
-
 .password-toggle {
   position: absolute;
   top: 50%;
-  right: 8px;
+  right: 10px;
   transform: translateY(-50%);
   border: none;
   background: transparent;
   cursor: pointer;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   font-size: 0.95rem;
-  color: #6b7280;
+  color: var(--gray3);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.15s, color 0.15s;
 }
-
-.password-toggle:hover {
-  background: #f4f4f2;
-}
-
+.password-toggle:hover { background: var(--gray2); color: var(--text); }
+.password-toggle.is-visible { color: var(--red); }
 .password-toggle:focus-visible {
   outline: 2px solid rgba(217, 60, 42, 0.35);
   outline-offset: 1px;
 }
 
-.password-toggle.is-visible {
-  color: var(--red);
-}
-
-.field input:focus {
-  outline: none;
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px rgba(217, 60, 42, 0.12);
-}
-
-.row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.chat-controls {
-  margin-bottom: 10px;
-}
-
-.chat-controls .btn {
-  flex: 1 1 130px;
-}
-
-/* ── Lobby ── */
-.lobby-welcome {
-  font-size: 0.88rem;
-  color: var(--gray3);
-  margin-bottom: 12px;
-  padding: 0 2px;
-}
-
-.lobby-welcome strong {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.lobby-grid {
-  display: grid;
-  grid-template-columns: 3fr 1fr;
-  gap: 16px;
-  align-items: start;
-}
-
-.lobby-card-title {
-  font-size: 1rem;
-  font-weight: 900;
-  margin-bottom: 6px;
-}
-
-.friend-card {
-  position: sticky;
-  top: 20px;
-}
-
-@media (max-width: 640px) {
-  .lobby-grid {
-    grid-template-columns: 1fr;
-  }
-  .friend-card {
-    position: static;
-  }
-}
+/* ── 버튼 ── */
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
 
 .btn {
   border: none;
-  border-radius: 12px;
-  padding: 10px 14px;
+  border-radius: 50px;
+  padding: 11px 22px;
   font-weight: 700;
+  font-size: 0.88rem;
   font-family: var(--font-sans);
   cursor: pointer;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
-.btn.primary { background: var(--red); color: white; }
-.btn.primary:hover { background: var(--red-dark); }
-.btn.ghost { background: var(--gray); color: #333; border: 1.5px solid var(--gray2); }
-.btn.dark { background: var(--black); color: white; }
+.btn:active { transform: translateY(1px); }
+.btn.primary {
+  background: var(--red);
+  color: white;
+  box-shadow: 0 4px 16px rgba(217, 60, 42, 0.3);
+}
+.btn.primary:hover {
+  background: var(--red-dark);
+  box-shadow: 0 6px 20px rgba(217, 60, 42, 0.4);
+  transform: translateY(-1px);
+}
+.btn.ghost {
+  background: white;
+  color: #555;
+  border: 1.5px solid var(--gray2);
+}
+.btn.ghost:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+.btn.dark {
+  background: var(--black);
+  color: white;
+}
+.btn.dark:hover { background: #333; transform: translateY(-1px); }
 .btn:disabled {
-  opacity: 0.55;
+  opacity: 0.45;
   cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
+/* ── 상태 뱃지 ── */
 .status-badge {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   border-radius: 999px;
-  padding: 6px 10px;
+  padding: 6px 14px;
   font-size: 0.78rem;
   font-weight: 700;
-  border: 1px solid var(--gray2);
-  background: #f7f7f5;
-  color: #666;
+  border: 1.5px solid var(--gray2);
+  background: var(--gray);
+  color: #777;
 }
-
 .status-badge.status-ok {
   background: #ecfdf5;
   color: #047857;
   border-color: #a7f3d0;
 }
-
 .status-badge.status-warn {
-  background: #fff7ed;
-  color: #c2410c;
-  border-color: #fed7aa;
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
 }
-
 .status-badge.status-error {
   background: #fff1f2;
   color: #be123c;
   border-color: #fecdd3;
 }
 
+/* ── 헬퍼 텍스트 ── */
+.helper {
+  font-size: 0.8rem;
+  color: var(--gray3);
+  margin-top: 2px;
+  min-height: 1.2em;
+}
+.helper-success { color: #047857; }
+.helper-error { color: #be123c; }
+
+/* ── 어카운트 칩 ── */
+.account-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  margin-bottom: 10px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--gray2);
+  background: var(--gray);
+  color: #555;
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.hidden { display: none !important; }
+
+/* ── 인증 레이아웃 ── */
+.auth-center {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+.auth-card {
+  width: min(480px, 100%);
+}
+
+/* ── 로비 ── */
+.lobby-welcome {
+  font-size: 0.88rem;
+  color: var(--gray3);
+  margin-bottom: 20px;
+  padding: 0 2px;
+}
+.lobby-welcome strong {
+  color: var(--text);
+  font-weight: 700;
+}
+.lobby-grid {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.lobby-card-title {
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+.friend-card {
+  position: sticky;
+  top: 20px;
+}
+@media (max-width: 640px) {
+  .lobby-grid { grid-template-columns: 1fr; }
+  .friend-card { position: static; }
+}
+
+/* ── 친구 목록 ── */
 .friend-list {
   list-style: none;
-  margin: 0;
   padding: 0;
   display: grid;
   gap: 8px;
@@ -270,145 +362,130 @@ h1, h2, h3, p { margin: 0; }
   justify-content: space-between;
   align-items: center;
   border: 1.5px solid var(--gray2);
-  border-radius: 12px;
-  padding: 10px 12px;
-}
-
-.chat-box {
-  border: 1.5px solid var(--gray2);
-  border-radius: 12px;
-  background: #fcfcfb;
-  min-height: 420px;
-  max-height: 68vh;
-  overflow: auto;
-  list-style: none;
-  margin: 0;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.msg {
-  max-width: 76%;
   border-radius: 14px;
-  padding: 8px 12px;
-  line-height: 1.5;
-  font-size: 0.88rem;
+  padding: 11px 14px;
+  transition: border-color 0.2s;
 }
-.msg.me { margin-left: auto; background: var(--red); color: white; }
-.msg.them { margin-right: auto; background: #efefec; color: #1f1f24; }
-.msg.sys { margin: 0 auto; background: #f6f6f4; color: #666; font-size: 0.8rem; }
-.msg .msg-time {
-  margin-top: 4px;
-  font-size: 0.68rem;
-  opacity: 0.7;
-}
+.friend-item:hover { border-color: var(--red); }
 
-.chat-form { display: flex; gap: 8px; margin-top: 10px; }
-.chat-form input {
-  flex: 1;
-  border: 1.5px solid var(--gray2);
-  border-radius: 12px;
-  padding: 10px 12px;
-}
+/* ── 채팅 레이아웃 ── */
+.chat-controls { margin-bottom: 12px; }
+.chat-controls .btn { flex: 1 1 130px; }
 
-.chat-form input:disabled {
-  background: #f6f6f4;
-  color: #8a8a92;
-}
-
-.helper {
-  font-size: 0.8rem;
-  color: var(--gray3);
-}
-
-.account-chip {
-  display: inline-flex;
-  align-items: center;
-  max-width: 100%;
-  margin-bottom: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--gray2);
-  background: #f7f7f5;
-  color: #4b5563;
-  font-size: 0.76rem;
-  font-weight: 700;
-  line-height: 1.3;
-  word-break: break-all;
-}
-
-.helper-success { color: #047857; }
-.helper-error { color: #be123c; }
-
-.hidden { display: none !important; }
-
-/* ── Auth centered layout ── */
-.auth-center {
-  display: flex;
-  justify-content: center;
-  padding: 10px 0;
-}
-
-.auth-card {
-  width: min(520px, 100%);
-}
-
-/* ── Chat 2-column layout ── */
 .chat-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: 16px;
+  gap: 20px;
   align-items: start;
 }
-
 .chat-sidebar {
   position: sticky;
   top: 20px;
 }
-
-.chat-sidebar .page-sub {
-  margin-bottom: 8px;
-}
-
-.chat-main {
-  min-width: 0;
-}
-
-.chat-main .chat-box {
-  min-height: 520px;
-  max-height: 75vh;
-}
-
+.chat-sidebar .page-sub { margin-bottom: 10px; }
+.chat-main { min-width: 0; }
 .chat-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 16px;
+  margin-top: 18px;
 }
-
 .chat-actions .btn {
   width: 100%;
   text-align: center;
 }
 
+/* ── 채팅 박스 ── */
+.chat-box {
+  border: 1.5px solid var(--gray2);
+  border-radius: 18px;
+  background: var(--gray);
+  min-height: 420px;
+  max-height: 68vh;
+  overflow: auto;
+  list-style: none;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.chat-main .chat-box {
+  min-height: 520px;
+  max-height: 75vh;
+}
+
+.msg {
+  max-width: 76%;
+  border-radius: 18px;
+  padding: 10px 14px;
+  line-height: 1.55;
+  font-size: 0.88rem;
+  animation: msgSlideIn 0.18s ease both;
+}
+.msg.me {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  border-bottom-right-radius: 6px;
+}
+.msg.them {
+  margin-right: auto;
+  background: white;
+  color: var(--text);
+  border: 1.5px solid var(--gray2);
+  border-bottom-left-radius: 6px;
+}
+.msg.sys {
+  margin: 0 auto;
+  background: transparent;
+  color: var(--gray3);
+  font-size: 0.78rem;
+  text-align: center;
+  border: none;
+  padding: 4px 0;
+}
+.msg .msg-time {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  opacity: 0.65;
+}
+
+/* ── 채팅 입력 폼 ── */
+.chat-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.chat-form input {
+  flex: 1;
+  border: 1.5px solid var(--gray2);
+  border-radius: 50px;
+  padding: 11px 18px;
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  background: var(--gray);
+  transition: border-color 0.2s, background 0.2s;
+}
+.chat-form input:focus {
+  outline: none;
+  border-color: var(--red);
+  background: white;
+}
+.chat-form input:disabled {
+  background: var(--gray2);
+  color: var(--gray3);
+}
+
+/* ── 반응형 ── */
 @media (max-width: 768px) {
-  .chat-layout {
-    grid-template-columns: 1fr;
-  }
-  .chat-sidebar {
-    position: static;
-  }
+  .chat-layout { grid-template-columns: 1fr; }
+  .chat-sidebar { position: static; }
 }
-
 @media (max-width: 700px) {
-  .app-page-wrap { width: 96vw; margin: 18px auto; }
+  .app-page-wrap { width: 96vw; }
   .chat-box { max-height: 52vh; }
+  .card { padding: 18px; }
 }
-
 @media (min-width: 1200px) {
-  .card {
-    padding: 24px;
-  }
+  .card { padding: 32px; }
 }

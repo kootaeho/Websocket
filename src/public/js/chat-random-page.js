@@ -121,7 +121,7 @@ function leaveRoomAndGoLobby() {
   }
   resetRoomState();
   socket.disconnect();
-  location.href = '/lobby';
+  window.navigateTo('/lobby');
 }
 
 function startMatch() {
@@ -218,7 +218,7 @@ socket.on('room_closed', () => {
   resetRoomState();
   setTimeout(() => {
     socket.disconnect();
-    location.href = '/lobby';
+    window.navigateTo('/lobby');
   }, 900);
 });
 
@@ -291,7 +291,7 @@ document.querySelector('.app-brand-logo-link')?.addEventListener('click', (e) =>
   }
   resetRoomState();
   socket.disconnect();
-  location.href = '/';
+  window.navigateTo('/');
 });
 
 chatForm?.addEventListener('submit', (event) => {

@@ -147,7 +147,7 @@ signupForm?.addEventListener('submit', (event) => {
           window.AuthSession?.setNickname(nickname);
           setMessage('가입이 완료되었습니다. 로비로 이동합니다.', 'success');
           setTimeout(() => {
-            location.href = '/lobby';
+            window.navigateTo('/lobby');
           }, 400);
           return;
         }

@@ -146,3 +146,14 @@
     logout,
   };
 })();
+
+// 페이지 이동 시 fade-out 후 navigate
+window.navigateTo = function (url) {
+  const wrap = document.querySelector('.app-page-wrap');
+  if (wrap) {
+    wrap.classList.add('app-fade-out');
+    setTimeout(() => { location.href = url; }, 220);
+  } else {
+    location.href = url;
+  }
+};

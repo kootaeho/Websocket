@@ -102,7 +102,7 @@ startRandomBtn?.addEventListener('click', () => {
   }
 
   window.AuthSession?.setNickname(nickname);
-  location.href = '/chat/random';
+  window.navigateTo('/chat/random');
 });
 
 logoutBtn?.addEventListener('click', () => {
@@ -110,7 +110,7 @@ logoutBtn?.addEventListener('click', () => {
 
   const goLogin = async () => {
     await window.AuthSession?.logout();
-    location.href = '/login';
+    window.navigateTo('/login');
   };
 
   if (email) {

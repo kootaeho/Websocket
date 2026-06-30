@@ -45,7 +45,7 @@ loginForm?.addEventListener('submit', (event) => {
     .then((response) => {
       if (response?.success) {
         loginMessage.textContent = '로그인 성공! 로비로 이동합니다.';
-        location.href = '/lobby';
+        window.navigateTo('/lobby');
         return;
       }
 
