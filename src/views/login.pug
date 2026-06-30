@@ -1,38 +1,37 @@
 doctype html
 html(lang='ko')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title 언노운 | 로그인
-    link(rel='preconnect' href='https://fonts.googleapis.com')
-    link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
-    link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
-    link(rel='stylesheet' href='/public/css/app-pages.css')
-  body.app-body
-    .app-page-wrap
-      .app-topbar
-        a.app-brand(href='/') 언노운
-        .app-nav-links
-          a(href='/') 랜딩
-      .auth-center
-        .card.auth-card
-          h1.page-title 로그인
-          p.page-sub 학교 인증 기반 채팅을 이용하려면 로그인하세요.
-          form#loginForm.form-grid
-            .field
-              label(for='loginEmail') 이메일
-              input#loginEmail(type='email' placeholder='you@school.ac.kr', required)
-            .field
-              label(for='loginPassword') 비밀번호
-              .password-field
-                input#loginPassword(type='password' placeholder='비밀번호', required)
-                button.password-toggle(type='button' data-password-toggle='loginPassword' aria-label='비밀번호 보기' aria-pressed='false') 👁
-            .row
-              button.btn.primary(type='submit') 로그인
-              a.btn.ghost(href='/signup') 회원가입
-              a.btn.ghost(href='/') 돌아가기
-          p#loginMessage.helper
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        title 언노운 | 로그인
+        link(rel='preconnect' href='https://fonts.googleapis.com')
+        link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
+        link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
+        link(rel='stylesheet' href='/public/css/app-pages.css')
+    body.app-body
+        .app-page-wrap
+            .app-topbar
+                a.app-brand.app-brand-logo-link(href='/' aria-label='랜딩 홈으로 이동')
+                    img.app-brand-logo(src='/src/Logo.png' alt='언노운 로고')
+            .auth-center
+                .card.auth-card
+                    h1.page-title 로그인
+                    p.page-sub 학교 인증 기반 채팅을 이용하려면 로그인하세요.
+                    form#loginForm.form-grid
+                        .field
+                            label(for='loginEmail') 이메일
+                            input#loginEmail(type='email' placeholder='you@school.ac.kr', required)
+                        .field
+                            label(for='loginPassword') 비밀번호
+                            .password-field
+                                input#loginPassword(type='password' placeholder='비밀번호', required)
+                                button.password-toggle(type='button' data-password-toggle='loginPassword' aria-label='비밀번호 보기' aria-pressed='false') 👁
+                        .row
+                            button.btn.primary(type='submit') 로그인
+                            a.btn.ghost(href='/signup') 회원가입
+                            a.btn.ghost(href='/') 돌아가기
+                    p#loginMessage.helper
 
-    script(src='/socket.io/socket.io.js')
-    script(src='/public/js/auth-session.js')
-    script(src='/public/js/login-page.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/public/js/auth-session.js')
+        script(src='/public/js/login-page.js')

@@ -40,6 +40,23 @@ body.app-body {
   font-size: 1.2rem;
 }
 
+.app-brand-logo-link {
+  display: inline-flex;
+  align-items: center;
+  margin-left: calc(-8vw - 40px);
+  margin-top: -18px;
+}
+
+.app-brand-logo {
+  height: 104px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  object-position: left center;
+  /* PNG 내부 투명 여백을 음수 마진으로 상쇄 */
+  margin-left: -12%;
+}
+
 .app-nav-links {
   display: flex;
   gap: 8px;
