@@ -466,6 +466,7 @@ GroupChat.on("connection", (socket) => {
 oneOnoneChat.on("connection", (socket) => {
     //io.sockets.emit("room_change", publicRooms());
     socket["nickname"] = "Anonymous";
+    socket._roomLeft = false;
     bootstrapSocketSession(socket);
 
     if (socket.email) {
@@ -630,6 +631,7 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("leave_room", () => {
+        socket._roomLeft = true;
         // socket.rooms에는 해당 소켓의 모든 방(ID 포함)이 들어있으므로,
         // 기본 socket.id는 제외하고 실제 채팅방들에 대해서만 처리합니다.
         socket.rooms.forEach((room) => {
@@ -665,6 +667,28 @@ oneOnoneChat.on("connection", (socket) => {
         socket.emit("room_change", publicGroupRooms(oneOnoneChat));
         socket.leave(roomName); 
     });*/
+
+    socket.on("disconnecting", () => {
+        // leave_room 이벤트가 처리되지 않은 채 연결이 끊긴 경우(브라우저 이탈 등)
+        // 방에 남은 상대방에게 알림을 보냅니다.
+        if (socket._roomLeft) return;
+        socket.rooms.forEach((room) => {
+            if (room === socket.id) return;
+            const currentCount = countRoom(oneOnoneChat, room) || 0;
+            if (currentCount >= 2) {
+                socket.to(room).emit("bye", "상대방이 연결을 종료했습니다.");
+                setTimeout(async () => {
+                    const sockets = await oneOnoneChat.in(room).fetchSockets();
+                    sockets.forEach((s) => {
+                        if (s.id !== socket.id) {
+                            s.leave(room);
+                            s.emit("room_closed", "상대방이 나가 방이 종료되었습니다.");
+                        }
+                    });
+                }, 1000);
+            }
+        });
+    });
 
     socket.on("disconnect", () => {
         if (socket.email && activeUsers[socket.email] === socket) {

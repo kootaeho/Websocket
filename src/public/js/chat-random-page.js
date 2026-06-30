@@ -283,6 +283,17 @@ friendAcceptBtn?.addEventListener('click', () => {
 
 leaveBtn?.addEventListener('click', leaveRoomAndGoLobby);
 
+// 로고 클릭 시 beforeunload 보다 신뢰성 있는 명시적 처리
+document.querySelector('.app-brand-logo-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (currentRoomName) {
+    socket.emit('leave_room', currentRoomName);
+  }
+  resetRoomState();
+  socket.disconnect();
+  location.href = '/';
+});
+
 chatForm?.addEventListener('submit', (event) => {
   event.preventDefault();
   const text = chatInput?.value?.trim();
