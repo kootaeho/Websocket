@@ -14,6 +14,28 @@ const accountStep = document.getElementById('accountStep');
 
 let isCodeVerified = false;
 
+function setupPasswordToggle() {
+  const toggles = document.querySelectorAll('[data-password-toggle]');
+  toggles.forEach((toggleBtn) => {
+    const inputId = toggleBtn.getAttribute('data-password-toggle');
+    const passwordInput = document.getElementById(inputId);
+    if (!passwordInput) return;
+
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleBtn.classList.toggle('is-visible', isPassword);
+      toggleBtn.textContent = isPassword ? '🙈' : '👁';
+      toggleBtn.setAttribute('aria-pressed', String(isPassword));
+      toggleBtn.setAttribute('aria-label', isPassword ? '비밀번호 숨기기' : '비밀번호 보기');
+      passwordInput.focus();
+      passwordInput.setSelectionRange(passwordInput.value.length, passwordInput.value.length);
+    });
+  });
+}
+
+setupPasswordToggle();
+
 function setMessage(text, type = 'info') {
   if (!signupMessage) return;
   signupMessage.textContent = text;

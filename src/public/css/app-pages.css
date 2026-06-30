@@ -82,6 +82,62 @@ h1, h2, h3, p { margin: 0; }
   font-size: 0.92rem;
   font-family: var(--font-sans);
 }
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+/* 브라우저 기본 비밀번호 보기 아이콘(Edge/IE 계열) 숨김 */
+.password-field input::-ms-reveal,
+.password-field input::-ms-clear {
+  display: none;
+}
+
+/* 일부 WebKit 계열 내장 컨트롤 숨김 */
+.password-field input::-webkit-credentials-auto-fill-button,
+.password-field input::-webkit-textfield-decoration-container {
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #6b7280;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  background: #f4f4f2;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid rgba(217, 60, 42, 0.35);
+  outline-offset: 1px;
+}
+
+.password-toggle.is-visible {
+  color: var(--red);
+}
+
 .field input:focus {
   outline: none;
   border-color: var(--red);

@@ -24,7 +24,9 @@ html(lang='ko')
               input#loginEmail(type='email' placeholder='you@school.ac.kr', required)
             .field
               label(for='loginPassword') 비밀번호
-              input#loginPassword(type='password' placeholder='비밀번호', required)
+              .password-field
+                input#loginPassword(type='password' placeholder='비밀번호', required)
+                button.password-toggle(type='button' data-password-toggle='loginPassword' aria-label='비밀번호 보기' aria-pressed='false') 👁
             .row
               button.btn.primary(type='submit') 로그인
               a.btn.ghost(href='/signup') 회원가입

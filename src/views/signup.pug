@@ -40,7 +40,9 @@ html(lang='ko')
             #accountStep.hidden
               .field
                 label(for='signupPassword') 비밀번호
-                input#signupPassword(type='password' placeholder='비밀번호 (4자 이상)' minlength='4' required)
+                .password-field
+                  input#signupPassword(type='password' placeholder='비밀번호 (4자 이상)' minlength='4' required)
+                  button.password-toggle(type='button' data-password-toggle='signupPassword' aria-label='비밀번호 보기' aria-pressed='false') 👁
               .field
                 label(for='signupNickname') 닉네임
                 input#signupNickname(type='text' placeholder='채팅에서 보일 닉네임' required)
