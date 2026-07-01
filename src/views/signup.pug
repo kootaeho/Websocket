@@ -1,58 +1,59 @@
 doctype html
 html(lang='ko')
-  head
-    meta(charset='UTF-8')
-    meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title 언노운 | 회원가입
-    link(rel='preconnect' href='https://fonts.googleapis.com')
-    link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
-    link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
-    link(rel='stylesheet' href='/public/css/app-pages.css')
-  body.app-body
-    .app-page-wrap
-      .app-topbar
-        a.app-brand(href='/') 언노운
-        .app-nav-links
-          a(href='/login') 로그인
+    head
+        meta(charset='UTF-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1.0')
+        title 언노운 | 회원가입
+        link(rel='preconnect' href='https://fonts.googleapis.com')
+        link(rel='preconnect' href='https://fonts.gstatic.com' crossorigin='')
+        link(href='https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap' rel='stylesheet')
+        link(rel='stylesheet' href='/public/css/app-pages.css')
+    body.app-body
+        .app-page-wrap
+            .app-topbar
+                a.app-brand.app-brand-logo-link(href='/' aria-label='랜딩 홈으로 이동')
+                    img.app-brand-logo(src='/src/Logo.png' alt='언노운 로고')
+                .app-nav-links
+                    a(href='/login') 로그인
 
-      .auth-center
-        .card.auth-card
-          h1.page-title 회원가입
-          p.page-sub 학교 이메일 인증을 완료하면 가입할 수 있어요.
+            .auth-center
+                .card.auth-card
+                    h1.page-title 회원가입
+                    p.page-sub 학교 이메일 인증을 완료하면 가입할 수 있어요.
 
-          form#signupForm.form-grid
-            .field
-              label(for='signupSchool') 학교명
-              input#signupSchool(type='text' placeholder='예: 한국외국어대학교' required)
-            .field
-              label(for='signupEmail') 학교 이메일
-              input#signupEmail(type='email' placeholder='you@hufs.ac.kr' required)
-            .row
-              button#sendCodeBtn.btn.ghost(type='button') 인증코드 발송
+                    form#signupForm.form-grid
+                        .field
+                            label(for='signupSchool') 학교명
+                            input#signupSchool(type='text' placeholder='예: 한국외국어대학교' required)
+                        .field
+                            label(for='signupEmail') 학교 이메일
+                            input#signupEmail(type='email' placeholder='you@hufs.ac.kr' required)
+                        .row
+                            button#sendCodeBtn.btn.ghost(type='button') 인증코드 발송
 
-            #codeStep.hidden
-              .field
-                label(for='signupCode') 인증코드
-                input#signupCode(type='text' placeholder='메일로 받은 코드 입력')
-              .row
-                button#verifyCodeBtn.btn.ghost(type='button') 코드 확인
+                        #codeStep.hidden
+                            .field
+                                label(for='signupCode') 인증코드
+                                input#signupCode(type='text' placeholder='메일로 받은 코드 입력')
+                            .row
+                                button#verifyCodeBtn.btn.ghost(type='button') 코드 확인
 
-            #accountStep.hidden
-              .field
-                label(for='signupPassword') 비밀번호
-                .password-field
-                  input#signupPassword(type='password' placeholder='비밀번호 (4자 이상)' minlength='4' required)
-                  button.password-toggle(type='button' data-password-toggle='signupPassword' aria-label='비밀번호 보기' aria-pressed='false') 👁
-              .field
-                label(for='signupNickname') 닉네임
-                input#signupNickname(type='text' placeholder='채팅에서 보일 닉네임' required)
+                        #accountStep.hidden
+                            .field
+                                label(for='signupPassword') 비밀번호
+                                .password-field
+                                    input#signupPassword(type='password' placeholder='비밀번호 (4자 이상)' minlength='4' required)
+                                    button.password-toggle(type='button' data-password-toggle='signupPassword' aria-label='비밀번호 보기' aria-pressed='false') 👁
+                            .field
+                                label(for='signupNickname') 닉네임
+                                input#signupNickname(type='text' placeholder='채팅에서 보일 닉네임' required)
 
-              .row
-                button.btn.primary(type='submit') 가입 완료
-                a.btn.ghost(href='/login') 로그인으로
+                            .row
+                                button.btn.primary(type='submit') 가입 완료
+                                a.btn.ghost(href='/login') 로그인으로
 
-          p#signupMessage.helper
+                    p#signupMessage.helper
 
-    script(src='/socket.io/socket.io.js')
-    script(src='/public/js/auth-session.js')
-    script(src='/public/js/signup-page.js')
+        script(src='/socket.io/socket.io.js')
+        script(src='/public/js/auth-session.js')
+        script(src='/public/js/signup-page.js')

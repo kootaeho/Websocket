@@ -29,7 +29,10 @@
 body.app-body {
   font-family: var(--font-sans);
   color: var(--text);
-  background: var(--white);
+  background:
+    radial-gradient(ellipse at top right, rgba(255, 185, 100, 0.38) 0%, transparent 58%),
+    radial-gradient(ellipse at bottom left, rgba(217, 60, 42, 0.1) 0%, transparent 50%),
+    #ffffff;
   min-height: 100vh;
 }
 
@@ -410,8 +413,9 @@ h1, h2, h3, p { margin: 0; }
   gap: 10px;
 }
 .chat-main .chat-box {
-  min-height: 520px;
-  max-height: 75vh;
+  min-height: 0;
+  height: calc(100vh - 360px);
+  max-height: calc(100vh - 360px);
 }
 
 .msg {
@@ -484,6 +488,7 @@ h1, h2, h3, p { margin: 0; }
 @media (max-width: 700px) {
   .app-page-wrap { width: 96vw; }
   .chat-box { max-height: 52vh; }
+  .chat-main .chat-box { height: auto; max-height: 52vh; }
   .card { padding: 18px; }
 }
 @media (min-width: 1200px) {
