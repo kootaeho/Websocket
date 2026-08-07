@@ -8,13 +8,16 @@ import { connect } from "http2";
 
 const app = express();
 const now = new Date();
+
+
+
+
 const mysql = require("mysql");
 const dbconfig = require('./config/dbconfig.json');
 const axios = require('axios');
 const path = require('path')
 
 const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
-console.log(now.toLocaleTimeString()); 
 app.set('view engine', "pug");
 app.set("views", __dirname + "/views");
 app.set('views', path.join(__dirname, 'views'));
@@ -51,7 +54,7 @@ instrument(io, {
     auth: false,
     mode: "development",
 });
-const GroupChat = io.of("/group");
+//const GroupChat = io.of("/group");
 const oneOnoneChat = io.of("/oneonone");
 
 GrouphttpServer.listen(3001,handleListen);
