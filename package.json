@@ -5,7 +5,10 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon"
+    "predev": "node cleanup-port.js",
+    "dev": "nodemon",
+    "start": "node src/Group.js",
+    "kill": "node cleanup-port.js"
   },
   "author": "",
   "license": "ISC",
@@ -17,9 +20,18 @@
     "nodemon": "^3.1.4"
   },
   "dependencies": {
+<<<<<<< HEAD
     "axios": "^1.7.9",
     "concurrently": "^8.2.2",
     "express": "^4.21.2",
+=======
+    "@socket.io/admin-ui": "^0.5.1",
+    "axios": "^1.7.5",
+    "bcryptjs": "^3.0.3",
+    "concurrently": "^8.2.2",
+    "dotenv": "^17.3.1",
+    "express": "^4.19.2",
+>>>>>>> 3849e2bf67882a364eb8920f074f8d2b5a2330eb
     "mysql": "^2.18.1",
     "mysql2": "^3.12.0",
     "pug": "^3.0.3",
