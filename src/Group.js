@@ -302,45 +302,38 @@ function countRoom(namespace,roomName){
 }
 
 function getRoomUserEmails(roomName, namespace, callback) {
-    console.log("방의 유저 이메일 조회 시도 중...");
-
-    // 현재 룸에 있는 소켓 ID들을 가져옴
     const room = namespace.adapter.rooms.get(roomName);
     if (!room) {
-        console.log("룸이 존재하지 않음.");
-        return callback([]);  // 빈 배열을 콜백으로 전달
+        return callback([]);
     }
 
-    const socketIds = Array.from(room); // 소켓 ID를 배열로 변환
-    const emailsToFetch = socketIds.map(socketId => {
-        const socket = namespace.sockets.get(socketId);
-        return socket ? socket.email : null;
-    }).filter(email => email !== null); // null 값 제거
+    const socketIds = Array.from(room); 
+    const emailsToFetch = socketIds
+        .map(socketId => namespace.sockets.get(socketId)?.email)
+        .filter(Boolean)
+        .map(email => normalizeEmail(email));
 
     if (emailsToFetch.length === 0) {
-        console.log("조회할 이메일이 없음.");
-        return callback([]); // 빈 배열을 콜백으로 전달
+        return callback([]);
     }
 
-    // MySQL 연결 풀에서 연결 가져오기
+    const uniqueEmails = [...new Set(emailsToFetch)];
+
     pool.getConnection((err, connection) => {
         if (err) {
             console.error('DB 연결 오류:', err);
             return callback([]);
         }
 
-        // 소켓 ID를 통해 이메일을 조회하기 위한 SQL 쿼리
-        const query = 'SELECT user_email FROM users WHERE user_email IN (?)';
-        connection.query(query, [emailsToFetch], (err, results) => {
+        const query = 'SELECT user_email FROM users WHERE LOWER(user_email) IN (?)';
+        connection.query(query, [uniqueEmails], (err, results) => {
             connection.release();
             if (err) {
                 console.error('이메일 조회 중 오류 발생:', err);
                 return callback([]);
             }
 
-            const userEmails = results.map(row => row.user_email);
-            //console.log("조회된 이메일:", userEmails);
-            callback(userEmails);
+            callback(results.map(row => normalizeEmail(row.user_email)));
         });
     });
 }
@@ -657,29 +650,29 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("leave_room", () => {
         socket._roomLeft = true;
-        // socket.rooms에는 해당 소켓의 모든 방(ID 포함)이 들어있으므로,
-        // 기본 socket.id는 제외하고 실제 채팅방들에 대해서만 처리합니다.
-        socket.rooms.forEach((room) => {
-            if (room === socket.id) return; // 기본 룸은 건너뛰기
 
-            // 현재 방에 속한 소켓의 수 (disconnecting 이벤트 시 소켓은 아직 포함되어 있음)
+        socket.rooms.forEach((room) => {
+            if (room === socket.id) return;
+
             const currentCount = countRoom(oneOnoneChat, room) || 0;
-            
-            // 1대1 채팅에서는 currentCount가 2라면, 나가는 후 남은 사용자는 1명이 됨
+            if (currentCount <= 1) {
+                socket.leave(room);
+                return;
+            }
+
             if (currentCount === 2) {
-                // 남은 소켓에게 'bye' 이벤트를 보내 메시지를 전달
                 socket.to(room).emit("bye", "상대방이 퇴장하였습니다.");
-                // 1초 후에 남은 소켓을 강제로 방에서 탈출시키고, 'room_closed' 이벤트를 전송
                 setTimeout(async () => {
                     const sockets = await oneOnoneChat.in(room).fetchSockets();
-                    sockets.forEach(s => {
-                        s.leave(room);
-                        s.emit("room_closed", "방이 종료되었습니다.");
+                    sockets.forEach((s) => {
+                        if (s.id !== socket.id) {
+                            s.leave(room);
+                            s.emit("room_closed", "방이 종료되었습니다.");
+                        }
                     });
                 }, 1000);
             } else {
-                // 2명 이상의 경우 (혹은 기타 상황) 기존 로직 그대로 처리
-                socket.to(room).emit("bye", socket.nickname, currentCount - 1);
+                socket.to(room).emit("bye", socket.nickname, Math.max(currentCount - 1, 0));
             }
         });
     });
@@ -694,9 +687,8 @@ oneOnoneChat.on("connection", (socket) => {
     });*/
 
     socket.on("disconnecting", () => {
-        // leave_room 이벤트가 처리되지 않은 채 연결이 끊긴 경우(브라우저 이탈 등)
-        // 방에 남은 상대방에게 알림을 보냅니다.
         if (socket._roomLeft) return;
+
         socket.rooms.forEach((room) => {
             if (room === socket.id) return;
             const currentCount = countRoom(oneOnoneChat, room) || 0;
@@ -803,8 +795,15 @@ oneOnoneChat.on("connection", (socket) => {
                 return;
             }
 
-            const requesterEmail = socket.email;
-            const friendEmail = emails.find((email) => email !== requesterEmail);
+            const requesterEmail = normalizeEmail(socket.email);
+            const friendEmail = emails.find((email) => normalizeEmail(email) !== requesterEmail);
+
+            if (!friendEmail) {
+                if (typeof done === 'function') {
+                    done({ success: false, error: '상대방 정보를 찾을 수 없습니다.' });
+                }
+                return;
+            }
 
             areUsersAlreadyFriends(requesterEmail, friendEmail, (alreadyFriends) => {
                 if (alreadyFriends) {
@@ -823,7 +822,6 @@ oneOnoneChat.on("connection", (socket) => {
     })
 
     socket.on("addFriend", (roomName, done) => {
-        // getRoomUserEmails를 호출할 때 콜백 함수 사용
         getRoomUserEmails(roomName, oneOnoneChat, (emails) => {
             if (emails.length < 2) {
                 console.log("룸에 유저가 충분하지 않습니다.");
@@ -832,11 +830,18 @@ oneOnoneChat.on("connection", (socket) => {
                 }
                 return;
             }
-    
-            // 배열 구조 분해를 사용하여 이메일을 가져옴
-            const [userEmail, friendEmail] = emails;
 
-            areUsersAlreadyFriends(userEmail, friendEmail, (alreadyFriends) => {
+            const requesterEmail = normalizeEmail(socket.email);
+            const friendEmail = emails.find((email) => normalizeEmail(email) !== requesterEmail);
+
+            if (!friendEmail) {
+                if (typeof done === 'function') {
+                    done({ success: false, error: '상대방 정보를 찾을 수 없습니다.' });
+                }
+                return;
+            }
+
+            areUsersAlreadyFriends(requesterEmail, friendEmail, (alreadyFriends) => {
                 if (alreadyFriends) {
                     if (typeof done === 'function') {
                         done({ success: false, reason: 'already_friends' });
@@ -853,7 +858,8 @@ oneOnoneChat.on("connection", (socket) => {
                         }
                         return;
                     }
-                    connection.query(query, [userEmail, friendEmail], (err, results) => {
+
+                    connection.query(query, [requesterEmail, friendEmail], (err) => {
                         connection.release();
                         if (err) {
                             console.log("친구 추가 중 오류 발생", err);
@@ -862,7 +868,7 @@ oneOnoneChat.on("connection", (socket) => {
                             }
                             return;
                         }
-                        //console.log("친구가 추가되었습니다", results);
+
                         oneOnoneChat.to(roomName).emit("FriendAdd");
                         if (typeof done === 'function') {
                             done({ success: true });
