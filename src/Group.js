@@ -4,10 +4,6 @@ const http = require("http");
 const {Server} = require ("socket.io");
 const {instrument} = require("@socket.io/admin-ui");
 const app = express();
-const now = new Date();
-
-
-
 
 const mysql = require("mysql");
 const fs = require('fs');
@@ -51,11 +47,6 @@ if (!DB_HOST || !DB_USER || !DB_NAME) {
     process.exit(1);
 }
 
-<<<<<<< HEAD
-const API_KEY = '0c4af30e-7bb0-4ddf-aaf0-e8fd77b4df11';
-=======
-console.log(now.toLocaleTimeString()); 
->>>>>>> 3849e2bf67882a364eb8920f074f8d2b5a2330eb
 app.set('view engine', "pug");
 app.set('views', path.join(__dirname, 'views'));
 app.use("/public", express.static(__dirname + "/public"));
