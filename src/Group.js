@@ -64,6 +64,19 @@ function parseCookies(cookieHeader = '') {
     return result;
 }
 
+function normalizeEmail(value) {
+    return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function purgeExpiredSessions() {
+    const now = Date.now();
+    for (const [token, session] of sessionTokens.entries()) {
+        if (!session || !session.issuedAt || now - session.issuedAt > SESSION_MAX_AGE_MS) {
+            sessionTokens.delete(token);
+        }
+    }
+}
+
 function setSessionCookie(res, token) {
     const isSecure = process.env.NODE_ENV === 'production';
     const cookie = `${SESSION_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${Math.floor(SESSION_MAX_AGE_MS / 1000)}${isSecure ? '; Secure' : ''}`;
@@ -77,6 +90,11 @@ function clearSessionCookie(res) {
 }
 
 function verifyUserPassword(email, passwd) {
+    const normalizedEmail = normalizeEmail(email);
+    if (!normalizedEmail || !passwd) {
+        return Promise.resolve({ success: false });
+    }
+
     return new Promise((resolve) => {
         pool.getConnection((err, conn) => {
             if (err) {
@@ -85,8 +103,8 @@ function verifyUserPassword(email, passwd) {
                 return;
             }
 
-            const query = "SELECT user_password FROM users WHERE user_email = ?";
-            conn.query(query, [email], (queryErr, results) => {
+            const query = "SELECT user_password FROM users WHERE LOWER(user_email) = ?";
+            conn.query(query, [normalizedEmail], (queryErr, results) => {
                 conn.release();
                 if (queryErr) {
                     console.log("쿼리 실행 오류:", queryErr);
@@ -137,7 +155,8 @@ app.get("/chat/friend", requireAuth, (req,res) => {
 
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body || {};
-    if (!email || !password) {
+    const normalizedEmail = normalizeEmail(email);
+    if (!normalizedEmail || !password) {
         res.status(400).json({ success: false, error: 'invalid payload' });
         return;
     }
@@ -148,7 +167,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // 동일 브라우저(동일 쿠키)에서 다른 계정으로 덮어 로그인하면
     // 기존 탭/페이지 계정이 뒤바뀌며 강제 로그아웃 연쇄가 발생할 수 있으므로 차단합니다.
-    if (existingSession && existingSession.email !== email) {
+    if (existingSession && existingSession.email !== normalizedEmail) {
         res.status(409).json({
             success: false,
             error: 'session_conflict',
@@ -157,15 +176,15 @@ app.post('/api/auth/login', async (req, res) => {
         return;
     }
 
-    const verified = await verifyUserPassword(email, password);
+    const verified = await verifyUserPassword(normalizedEmail, password);
     if (!verified.success) {
         res.status(401).json({ success: false });
         return;
     }
 
-    const token = issueSessionToken(email);
+    const token = issueSessionToken(normalizedEmail);
     setSessionCookie(res, token);
-    res.json({ success: true, email });
+    res.json({ success: true, email: normalizedEmail });
 });
 
 app.get('/api/auth/session', (req, res) => {
@@ -362,20 +381,26 @@ function areUsersAlreadyFriends(userEmail, friendEmail, callback) {
 }
 
 function issueSessionToken(email) {
+    const normalizedEmail = normalizeEmail(email);
+    if (!normalizedEmail) return null;
+
+    purgeExpiredSessions();
+
     // 기존 이메일 토큰 정리 (단일 세션 정책)
     for (const [token, value] of sessionTokens.entries()) {
-        if (value?.email === email) {
+        if (value?.email === normalizedEmail) {
             sessionTokens.delete(token);
         }
     }
 
     const token = crypto.randomBytes(24).toString('hex');
-    sessionTokens.set(token, { email, issuedAt: Date.now() });
+    sessionTokens.set(token, { email: normalizedEmail, issuedAt: Date.now() });
     return token;
 }
 
 function resolveSessionToken(token) {
     if (!token) return null;
+    purgeExpiredSessions();
     const session = sessionTokens.get(token);
     if (!session) return null;
 
@@ -551,17 +576,18 @@ oneOnoneChat.on("connection", (socket) => {
     })
 
     socket.on("Login", async (email, passwd, done) => {
-        const verified = await verifyUserPassword(email, passwd);
+        const normalizedEmail = normalizeEmail(email);
+        const verified = await verifyUserPassword(normalizedEmail, passwd);
         if (!verified.success) {
             done({ success: false });
             return;
         }
 
-        const token = issueSessionToken(email);
-        bindAuthenticatedSocket(socket, email, token);
-        socket.emit("session_bound", { email });
+        const token = issueSessionToken(normalizedEmail);
+        bindAuthenticatedSocket(socket, normalizedEmail, token);
+        socket.emit("session_bound", { email: normalizedEmail });
         console.log("로그인 성공!");
-        done({ success: true, email, sessionToken: token });
+        done({ success: true, email: normalizedEmail, sessionToken: token });
     });
 
     socket.on("resume_session", (sessionToken, done) => {
