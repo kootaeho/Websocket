@@ -68,6 +68,17 @@ function normalizeEmail(value) {
     return typeof value === 'string' ? value.trim().toLowerCase() : '';
 }
 
+function sanitizeText(value, maxLength = 500) {
+    if (typeof value !== 'string') return '';
+    const trimmed = value.replace(/\r?\n/g, ' ').trim();
+    return trimmed.slice(0, maxLength);
+}
+
+function sanitizeNickname(value) {
+    const sanitized = sanitizeText(value, 30);
+    return sanitized.replace(/[<>]/g, '');
+}
+
 function purgeExpiredSessions() {
     const now = Date.now();
     for (const [token, session] of sessionTokens.entries()) {
@@ -517,11 +528,17 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("certify_email", async (email, univName, done) => {
+        const normalizedEmail = normalizeEmail(email);
+        if (!normalizedEmail) {
+            done({ success: false, error: 'invalid email' });
+            return;
+        }
+
         try {
             const response = await axios.post('https://univcert.com/api/v1/certify', {
                 key: API_KEY,
-                email: email,
-                univName: univName,
+                email: normalizedEmail,
+                univName: sanitizeText(univName, 100),
                 univ_check: true
             });
             done(response.data);
@@ -530,11 +547,17 @@ oneOnoneChat.on("connection", (socket) => {
         }
     });
     socket.on("verify_code", async (email, code, done) => {
+        const normalizedEmail = normalizeEmail(email);
+        if (!normalizedEmail || !code) {
+            done({ success: false, error: 'invalid payload' });
+            return;
+        }
+
         try {
             const response = await axios.post('https://univcert.com/api/v1/certifycode', {
                 key: API_KEY,
-                email: email,
-                code: code
+                email: normalizedEmail,
+                code: String(code).trim()
             });
             done(response.data);
         } catch (error) {
@@ -555,12 +578,12 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("isLogin",(email,done)=>{
-        // 자신의 이메일인 경우에만 로그인 상태 확인 허용
-        if (socket.email && socket.email !== email) {
+        const normalizedEmail = normalizeEmail(email);
+        if (socket.email && socket.email !== normalizedEmail) {
             done(false);
             return;
         }
-        if(activeUsers[email]){
+        if(activeUsers[normalizedEmail]){
             done(true);
         }
         else{
@@ -597,6 +620,14 @@ oneOnoneChat.on("connection", (socket) => {
     
 
     socket.on("adduser", (email, passwd, nickname, done) => {
+        const normalizedEmail = normalizeEmail(email);
+        const safeNickname = sanitizeNickname(nickname);
+
+        if (!normalizedEmail || !passwd || passwd.length < 6 || !safeNickname) {
+            done({ success: false, error: 'invalid payload' });
+            return;
+        }
+
         bcrypt.hash(passwd, saltRounds, (err, hashedPassword) => {
             if (err) {
                 console.error("비밀번호 해싱 중 오류 발생:", err);
@@ -612,12 +643,12 @@ oneOnoneChat.on("connection", (socket) => {
     
                 conn.query(
                     "INSERT INTO users (user_email, user_password, user_nickname, user_active) VALUES (?, ?, ?, ?)",
-                    [email, hashedPassword, nickname, true],
+                    [normalizedEmail, hashedPassword, safeNickname, true],
                     (err, result) => {
                         conn.release();
                         if (err) {
                             console.error("회원가입 중 오류 발생:", err);
-                            done({ success: false });
+                            done({ success: false, error: 'duplicate_or_db_error' });
                             return;
                         }
                         console.log("사용자 추가됨!", result);
@@ -721,9 +752,11 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("new_note", (value, friend, maybeEmailOrDone, maybeDone) => {
         const done = typeof maybeEmailOrDone === 'function' ? maybeEmailOrDone : maybeDone;
-        const senderEmail = socket.email;
+        const senderEmail = normalizeEmail(socket.email);
+        const cleanFriend = normalizeEmail(friend);
+        const cleanValue = sanitizeText(value, 500);
 
-        if (!senderEmail || !friend || !value) {
+        if (!senderEmail || !cleanFriend || !cleanValue) {
             if (typeof done === 'function') done({ success: false, error: 'invalid payload' });
             return;
         }
@@ -735,7 +768,7 @@ oneOnoneChat.on("connection", (socket) => {
                 if (typeof done === 'function') done({ success: false });
                 return;
             }
-            connection.query(query, [senderEmail, friend, value], (error) => {
+            connection.query(query, [senderEmail, cleanFriend, cleanValue], (error) => {
                 connection.release();
                 if(error){
                     console.log("쪽지 저장 쿼리문 실행 중 오류발생", error);
@@ -749,9 +782,10 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("ShowNote", (friendEmail, maybeMyEmailOrDone, maybeDone) => {
         const done = typeof maybeMyEmailOrDone === 'function' ? maybeMyEmailOrDone : maybeDone;
-        const myEmail = socket.email;
+        const myEmail = normalizeEmail(socket.email);
+        const cleanFriendEmail = normalizeEmail(friendEmail);
 
-        if (!myEmail || !friendEmail) {
+        if (!myEmail || !cleanFriendEmail) {
           if (typeof done === 'function') done([]);
           return;
         }
@@ -771,7 +805,7 @@ oneOnoneChat.on("connection", (socket) => {
           }
           connection.query(
             query,
-            [myEmail, friendEmail, friendEmail, myEmail],
+            [myEmail, cleanFriendEmail, cleanFriendEmail, myEmail],
             (error, result) => {
               connection.release();
               if (error) {
@@ -779,7 +813,7 @@ oneOnoneChat.on("connection", (socket) => {
                                 if (typeof done === 'function') done([]);
                 return;
               }
-              const messageContents = result.map(row => row.message_content);
+              const messageContents = result.map(row => sanitizeText(row.message_content, 500));
                             if (typeof done === 'function') done(messageContents);
             }
           );
@@ -923,6 +957,12 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("FriendChat", (friendName, done) => {
+        const safeFriendName = sanitizeNickname(friendName);
+        if (!safeFriendName) {
+            if (typeof done === 'function') done([], null);
+            return;
+        }
+
         pool.getConnection((err, connection) => {
             if (err) {
                 console.log("DB 연결 오류 FriendChat", err);
@@ -930,19 +970,17 @@ oneOnoneChat.on("connection", (socket) => {
                 return;
             }
             
-            // 먼저 friendName에 해당하는 이메일을 가져옵니다.
             const queryEmail = 'SELECT user_email FROM users WHERE user_nickname = ?';
-            connection.query(queryEmail, [friendName], (error, results) => {
+            connection.query(queryEmail, [safeFriendName], (error, results) => {
                 if (error) {
                     console.log("이메일 조회 중 오류발생:", error);
                     connection.release();
+                    if (typeof done === 'function') done([], null);
                     return;
                 }
                 
                 if (results.length > 0) {
-                    const friendEmail = results[0].user_email;
-                    
-                    // 하나의 쿼리문으로 양방향 메시지를 조회합니다.
+                    const friendEmail = normalizeEmail(results[0].user_email);
                     const queryMessages = `
                         SELECT message_content, sent_at, sender_email
                         FROM messages
@@ -950,15 +988,15 @@ oneOnoneChat.on("connection", (socket) => {
                            OR (sender_email = ? AND receiver_email = ?)
                         ORDER BY sent_at ASC
                     `;
-                    connection.query(queryMessages, [socket.email, friendEmail, friendEmail, socket.email], (msgError, msgResults) => {
+                    connection.query(queryMessages, [normalizeEmail(socket.email), friendEmail, friendEmail, normalizeEmail(socket.email)], (msgError, msgResults) => {
                         if (msgError) {
                             console.log("메시지 조회 중 오류 발생:", msgError);
                             connection.release();
+                            if (typeof done === 'function') done([], null);
                             return;
                         }
                         
                         if (msgResults.length > 0) {
-                            // msgResults의 각 항목에는 message_content, sent_at, sender_email이 포함됩니다.
                             done(msgResults, friendEmail);
                         } else {
                             console.log("조회된 메시지가 없습니다.");
@@ -969,6 +1007,7 @@ oneOnoneChat.on("connection", (socket) => {
                 } else {
                     console.log("닉네임에 해당하는 이메일을 찾지 못했습니다.");
                     connection.release();
+                    if (typeof done === 'function') done([], null);
                 }
             });
         });
