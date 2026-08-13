@@ -23,6 +23,26 @@ html(lang='ko')
                     p.page-sub#roomSubtitle 매칭 대기 중입니다.
                     p#chatAccount.account-chip 계정 확인 중...
                     p#chatMeta.helper 로그인 상태 확인 중...
+                    .chat-config
+                        label(for='chatMode') 채팅 방식
+                        select#chatMode
+                            option(value='one') 1:1 채팅
+                            option(value='group') N:N 그룹 채팅
+                        label(for='chatCapacity') 인원
+                        select#chatCapacity
+                            option(value='2') 2명
+                        label(for='chatDuration') 제한 시간
+                        select#chatDuration
+                            option(value='5') 5분
+                            option(value='15' selected) 15분
+                            option(value='25') 25분
+                        label(for='chatTopic') 대화 주제
+                        select#chatTopic
+                            option(value='') 자유 대화
+                            option(value='오늘의 이슈') 오늘의 이슈
+                            option(value='학교 생활') 학교 생활
+                            option(value='미래와 진로') 미래와 진로
+                            option(value='취미와 일상') 취미와 일상
                     .chat-actions
                         button#startMatchBtn.btn.primary(type='button') 매칭 시작
                         button#reconnectBtn.btn.ghost(type='button') 재연결

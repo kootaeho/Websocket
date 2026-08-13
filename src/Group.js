@@ -467,6 +467,7 @@ instrument(io, {
 });
 //const GroupChat = io.of("/group");
 const oneOnoneChat = io.of("/oneonone");
+const roomMetadata = new Map();
 
 GrouphttpServer.on("error", (error) => {
     if (error && error.code === "EADDRINUSE") {
@@ -496,6 +497,47 @@ function publicGroupRooms(namespace){
         }
     }
    return userGroupRooms;
+}
+
+function createRoomName() {
+    return `room_${crypto.randomBytes(8).toString('hex')}`;
+}
+
+function normalizeRoomOptions(maxCap, optionsOrDone, maybeDone) {
+    const done = typeof optionsOrDone === 'function' ? optionsOrDone : maybeDone;
+    const options = typeof optionsOrDone === 'object' && optionsOrDone !== null ? optionsOrDone : {};
+    const mode = options.mode === 'group' ? 'group' : 'one';
+    const defaultCapacity = mode === 'group' ? 4 : 2;
+    const capacity = Number(options.capacity ?? maxCap ?? defaultCapacity);
+    const duration = Number(options.duration ?? (mode === 'group' ? 20 : 15));
+    return {
+        done,
+        mode,
+        capacity: Number.isInteger(capacity) ? capacity : defaultCapacity,
+        duration: Number.isInteger(duration) ? duration : (mode === 'group' ? 20 : 15),
+        topic: sanitizeText(options.topic, 200),
+    };
+}
+
+function isValidRoomOptions(options) {
+    const validCapacity = options.mode === 'one'
+        ? options.capacity === 2
+        : options.capacity >= 3 && options.capacity <= 6;
+    const validDuration = options.mode === 'one'
+        ? [5, 15, 25].includes(options.duration)
+        : [10, 20, 30].includes(options.duration);
+    return validCapacity && validDuration;
+}
+
+function getAvailableRoom(namespace, options) {
+    for (const roomName of publicGroupRooms(namespace)) {
+        const metadata = roomMetadata.get(roomName);
+        const roomSize = countRoom(namespace, roomName) || 0;
+        if (metadata && metadata.mode === options.mode && metadata.capacity === options.capacity && metadata.duration === options.duration && roomSize < metadata.capacity) {
+            return roomName;
+        }
+    }
+    return null;
 }
 
 function countRoom(namespace,roomName){
@@ -710,36 +752,35 @@ oneOnoneChat.on("connection", (socket) => {
         socket.emit("session_bound", { email: socket.email });
     }
 
-    socket.on("enter_room", (roomName, MaxCap , done) => {
+    socket.on("enter_room", (roomName, MaxCap, optionsOrDone, maybeDone) => {
+        const options = normalizeRoomOptions(MaxCap, optionsOrDone, maybeDone);
+        const done = options.done;
         if (!requireSocketAuth(socket, done)) return;
-
-        const roomCapacity = Number(MaxCap);
-        if (!Number.isInteger(roomCapacity) || roomCapacity < 2 || roomCapacity > 10) {
-            done?.(null, 'invalid_room_capacity');
+        if (!isValidRoomOptions(options)) {
+            done?.(null, 'invalid_room_options');
             return;
         }
 
-        const RoomArr = publicGroupRooms(oneOnoneChat);
-        let roomToJoin;
-        let RoomCap = roomCapacity;
-        if (RoomArr.length === 0) {
-            roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
-            socket.join(roomToJoin);
-            done(roomToJoin,"방 없음");
-        } else {
-            roomToJoin = RoomArr[Math.floor(Math.random() * RoomArr.length)];
-            let roomNum = countRoom(oneOnoneChat,roomToJoin)
-            if(roomNum >= RoomCap ){
-                roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
-                socket.join(roomToJoin);
-                done(roomToJoin,"방 없음");
-            }
-            else{
-                socket.join(roomToJoin);
-                done(roomToJoin,"방 있음");
-                oneOnoneChat.to(roomToJoin).emit("join", countRoom(oneOnoneChat,roomToJoin));
-                oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, countRoom(oneOnoneChat,roomToJoin));
-            }
+        let roomToJoin = getAvailableRoom(oneOnoneChat, options);
+        const isNewRoom = !roomToJoin;
+        if (!roomToJoin) {
+            roomToJoin = roomName || createRoomName();
+            roomMetadata.set(roomToJoin, {
+                mode: options.mode,
+                capacity: options.capacity,
+                duration: options.duration,
+                topic: options.topic,
+                createdAt: Date.now(),
+            });
+        }
+
+        socket.join(roomToJoin);
+        const metadata = roomMetadata.get(roomToJoin);
+        const roomSize = countRoom(oneOnoneChat, roomToJoin);
+        done?.(roomToJoin, isNewRoom ? "방 없음" : "방 있음", metadata);
+        if (!isNewRoom) {
+            oneOnoneChat.to(roomToJoin).emit("join", roomSize, metadata);
+            oneOnoneChat.to(roomToJoin).emit("welcome", socket.nickname, roomSize, metadata);
         }
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });
@@ -936,6 +977,7 @@ oneOnoneChat.on("connection", (socket) => {
 
             if (currentCount === 2) {
                 socket.to(room).emit("bye", "상대방이 퇴장하였습니다.");
+                socket.leave(room);
                 setTimeout(async () => {
                     const sockets = await oneOnoneChat.in(room).fetchSockets();
                     sockets.forEach((s) => {
@@ -947,6 +989,7 @@ oneOnoneChat.on("connection", (socket) => {
                 }, 1000);
             } else {
                 socket.to(room).emit("bye", socket.nickname, Math.max(currentCount - 1, 0));
+                socket.leave(room);
             }
         });
     });
@@ -984,6 +1027,11 @@ oneOnoneChat.on("connection", (socket) => {
     socket.on("disconnect", () => {
         if (socket.email && activeUsers[socket.email] === socket) {
             delete activeUsers[socket.email];
+        }
+        for (const roomName of roomMetadata.keys()) {
+            if (!oneOnoneChat.adapter.rooms.has(roomName)) {
+                roomMetadata.delete(roomName);
+            }
         }
         oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
     });

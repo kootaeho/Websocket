@@ -13,10 +13,34 @@ const chatMessages = document.getElementById('chatMessages');
 const chatForm = document.getElementById('chatForm');
 const chatInput = document.getElementById('chatInput');
 const chatSendBtn = document.getElementById('chatSendBtn');
+const chatMode = document.getElementById('chatMode');
+const chatCapacity = document.getElementById('chatCapacity');
+const chatDuration = document.getElementById('chatDuration');
+const chatTopic = document.getElementById('chatTopic');
 
 let currentRoomName = null;
 let isMatching = false;
-const roomCap = 2;
+
+function syncChatConfigOptions() {
+  if (!chatMode || !chatCapacity || !chatDuration) return;
+
+  const isGroup = chatMode.value === 'group';
+  chatCapacity.innerHTML = isGroup
+    ? '<option value="3">3명</option><option value="4" selected>4명</option><option value="5">5명</option><option value="6">6명</option>'
+    : '<option value="2" selected>2명</option>';
+  chatDuration.innerHTML = isGroup
+    ? '<option value="10">10분</option><option value="20" selected>20분</option><option value="30">30분</option>'
+    : '<option value="5">5분</option><option value="15" selected>15분</option><option value="25">25분</option>';
+}
+
+function getChatOptions() {
+  return {
+    mode: chatMode?.value === 'group' ? 'group' : 'one',
+    capacity: Number(chatCapacity?.value || 2),
+    duration: Number(chatDuration?.value || 15),
+    topic: chatTopic?.value || '',
+  };
+}
 
 function enforceBoundSession(serverEmail) {
   const localEmail = window.AuthSession?.getEmail();
@@ -134,6 +158,7 @@ function leaveRoomAndGoLobby() {
 function startMatch() {
   if (isMatching || currentRoomName) return;
 
+  const options = getChatOptions();
   const nickname = window.AuthSession?.getNickname() || 'Anonymous';
   socket.emit('nickname', nickname);
 
@@ -144,14 +169,24 @@ function startMatch() {
   setMeta(`매칭 시작 · ${formatTime()}`);
   addMessage('매칭을 시작했습니다.', 'sys');
 
-  socket.emit('enter_room', null, roomCap, (roomName, roomExist) => {
+  socket.emit('enter_room', null, options.capacity, options, (roomName, roomExist, metadata) => {
+    if (!roomName) {
+      isMatching = false;
+      setStatus('설정 오류', 'error');
+      setMeta('채팅 설정을 확인해주세요.');
+      syncControlState();
+      return;
+    }
+
     currentRoomName = roomName;
+    const modeLabel = metadata?.mode === 'group' ? 'N:N' : '1:1';
+    const topicLabel = metadata?.topic ? ` · ${metadata.topic}` : '';
 
     if (roomExist === '방 없음') {
       isMatching = true;
       setStatus('대기 중', 'warn');
       roomSubtitle.textContent = '아직 상대가 없어요. 잠시 기다려주세요.';
-      setMeta(`대기 중 · 방 ${roomName}`);
+      setMeta(`대기 중 · ${modeLabel} · ${metadata?.duration || options.duration}분${topicLabel}`);
       syncControlState();
       return;
     }
@@ -159,7 +194,7 @@ function startMatch() {
     isMatching = false;
     setStatus('채팅 중', 'ok');
     roomSubtitle.textContent = `연결됨: ${roomName}`;
-    setMeta(`채팅 시작 · ${formatTime()}`);
+    setMeta(`채팅 시작 · ${modeLabel} · ${metadata?.duration || options.duration}분${topicLabel}`);
     syncControlState();
   });
 }
@@ -168,6 +203,9 @@ socket.on('connect', () => {
   setStatus('연결됨', 'ok');
   setMeta(`소켓 연결 완료 · ${formatTime()}`);
 });
+
+chatMode?.addEventListener('change', syncChatConfigOptions);
+syncChatConfigOptions();
 
 socket.on('disconnect', (reason) => {
   setStatus('연결 끊김', 'error');
