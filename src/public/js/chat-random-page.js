@@ -93,7 +93,14 @@ function addMessage(text, kind = 'sys', at = new Date()) {
   if (kind === 'sys') {
     li.textContent = text;
   } else {
-    li.innerHTML = `<div>${text}</div><div class="msg-time">${formatTime(at)}</div>`;
+    const messageText = typeof text === 'object' ? text?.text || '' : text;
+    const messageAt = typeof text === 'object' ? text?.sentAt || at : at;
+    const content = document.createElement('div');
+    const time = document.createElement('div');
+    content.textContent = messageText;
+    time.className = 'msg-time';
+    time.textContent = formatTime(messageAt);
+    li.append(content, time);
   }
 
   const nearBottom = chatMessages.scrollTop + 90 >= chatMessages.scrollHeight - chatMessages.clientHeight;

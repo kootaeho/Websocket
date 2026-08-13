@@ -95,10 +95,12 @@ function renderMessages(messages, myEmail) {
     const isMine = m?.sender_email && m.sender_email === myEmail;
     const li = document.createElement('li');
     li.className = `msg ${isMine ? 'me' : 'them'}`;
-    li.innerHTML = `
-      <div>${m?.message_content || ''}</div>
-      <div class="msg-time">${formatTime(m?.sent_at)}</div>
-    `;
+    const content = document.createElement('div');
+    const time = document.createElement('div');
+    content.textContent = m?.message_content || '';
+    time.className = 'msg-time';
+    time.textContent = formatTime(m?.sent_at);
+    li.append(content, time);
     friendMessages.appendChild(li);
   });
 

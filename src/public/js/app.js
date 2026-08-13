@@ -361,16 +361,20 @@ function handleNickname(passwdInput) {
 
 function handleEmail(event) {
     email = document.querySelector('#emailVerify').value;
-    const univNameInput = "한국외국어대학교"
+    const univNameInput = uni?.trim();
+
+    if (!univNameInput) {
+        alert("학교명을 먼저 입력해주세요.");
+        return;
+    }
 
     activeSocket.emit("certify_email", email, univNameInput, (response) => {
         if (response.success) {
             emailform.hidden = true;
             verifyform.hidden = false;
             verifyform.onsubmit = handleVerify;
-        } else if (response.error.message == "이미 완료된 요청입니다.") {
-            console.log(response.error.message);
-            alert("이미 인증이 끝난 이메일!");
+        } else if (response.error) {
+            alert(response.error);
         } else {
             alert("인증 코드 전송에 실패했습니다. 이메일을 확인해주세요.");
         }
@@ -463,7 +467,7 @@ function addMessage(message, isOwnMessage = false) {
     const messageBox = document.createElement("div");
     messageBox.classList.add("message");
     messageBox.classList.add(isOwnMessage ? "you" : "other");
-    messageBox.innerText = message;
+    messageBox.innerText = typeof message === "object" ? message?.text || "" : message;
 
     const messageTime = document.createElement("div");
     messageTime.classList.add("message-time");

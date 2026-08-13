@@ -624,6 +624,24 @@ function bindAuthenticatedSocket(socket, email, sessionToken = null) {
     socket.sessionToken = sessionToken;
 }
 
+function requireSocketAuth(socket, done) {
+    if (socket.email) return true;
+    if (typeof done === 'function') {
+        done({ success: false, error: 'authentication_required' });
+    }
+    return false;
+}
+
+function isSocketInRoom(socket, roomName, done) {
+    if (!roomName || !socket.rooms.has(roomName)) {
+        if (typeof done === 'function') {
+            done({ success: false, error: 'unauthorized_room' });
+        }
+        return false;
+    }
+    return true;
+}
+
 function bootstrapSocketSession(socket) {
     const cookies = parseCookies(socket.handshake?.headers?.cookie || '');
     const token = cookies[SESSION_COOKIE_NAME];
@@ -693,9 +711,17 @@ oneOnoneChat.on("connection", (socket) => {
     }
 
     socket.on("enter_room", (roomName, MaxCap , done) => {
+        if (!requireSocketAuth(socket, done)) return;
+
+        const roomCapacity = Number(MaxCap);
+        if (!Number.isInteger(roomCapacity) || roomCapacity < 2 || roomCapacity > 10) {
+            done?.(null, 'invalid_room_capacity');
+            return;
+        }
+
         const RoomArr = publicGroupRooms(oneOnoneChat);
         let roomToJoin;
-        let RoomCap = MaxCap;
+        let RoomCap = roomCapacity;
         if (RoomArr.length === 0) {
             roomToJoin = roomName || `room_${Math.floor(Math.random() * 1000)}`;
             socket.join(roomToJoin);
@@ -963,8 +989,19 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("new_message", (msg, room, done) => {
-        socket.to(room).emit("new_message", `${socket.nickname}: ${msg}`);
-        done();
+        if (!requireSocketAuth(socket, done) || !isSocketInRoom(socket, room, done)) return;
+
+        const cleanMessage = sanitizeText(msg, 500);
+        if (!cleanMessage) {
+            done?.({ success: false, error: 'invalid_message' });
+            return;
+        }
+
+        socket.to(room).emit("new_message", {
+            nickname: sanitizeNickname(socket.nickname) || 'Anonymous',
+            text: cleanMessage,
+        });
+        done?.({ success: true });
     });
 
     socket.on("new_note", (value, friend, maybeEmailOrDone, maybeDone) => {
@@ -973,7 +1010,7 @@ oneOnoneChat.on("connection", (socket) => {
         const cleanFriend = normalizeEmail(friend);
         const cleanValue = sanitizeText(value, 500);
 
-        if (!senderEmail || !cleanFriend || !cleanValue) {
+        if (!requireSocketAuth(socket, done) || !senderEmail || !cleanFriend || !cleanValue) {
             if (typeof done === 'function') done({ success: false, error: 'invalid payload' });
             return;
         }
@@ -1002,7 +1039,7 @@ oneOnoneChat.on("connection", (socket) => {
         const myEmail = normalizeEmail(socket.email);
         const cleanFriendEmail = normalizeEmail(friendEmail);
 
-        if (!myEmail || !cleanFriendEmail) {
+        if (!requireSocketAuth(socket, done) || !myEmail || !cleanFriendEmail) {
           if (typeof done === 'function') done([]);
           return;
         }
@@ -1038,6 +1075,8 @@ oneOnoneChat.on("connection", (socket) => {
       });
 
     socket.on("friendRequest", (room, done) => {
+        if (!requireSocketAuth(socket, done) || !isSocketInRoom(socket, room, done)) return;
+
         getRoomUserEmails(room, oneOnoneChat, (emails) => {
             if (emails.length < 2) {
                 if (typeof done === 'function') {
@@ -1073,6 +1112,8 @@ oneOnoneChat.on("connection", (socket) => {
     })
 
     socket.on("addFriend", (roomName, done) => {
+        if (!requireSocketAuth(socket, done) || !isSocketInRoom(socket, roomName, done)) return;
+
         getRoomUserEmails(roomName, oneOnoneChat, (emails) => {
             if (emails.length < 2) {
                 console.log("룸에 유저가 충분하지 않습니다.");
@@ -1131,6 +1172,8 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("ShowFriend", (callback) => {
+        if (!requireSocketAuth(socket, callback)) return;
+
         const email = socket.email;
         pool.getConnection((err, connection) => {
             if (err) {
@@ -1174,6 +1217,8 @@ oneOnoneChat.on("connection", (socket) => {
     });
 
     socket.on("FriendChat", (friendName, done) => {
+        if (!requireSocketAuth(socket, done)) return;
+
         const safeFriendName = sanitizeNickname(friendName);
         if (!safeFriendName) {
             if (typeof done === 'function') done([], null);
