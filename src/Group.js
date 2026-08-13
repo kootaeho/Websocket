@@ -32,14 +32,114 @@ const verificationChallenges = new Map();
 const verifiedEmails = new Map();
 const verificationRequestsByIp = new Map();
 const DEFAULT_UNIVERSITY_DOMAINS = {
-    '한국외국어대학교': ['hufs.ac.kr', 'e-mail.hufs.ac.kr'],
-    '홍익대학교': ['hongik.ac.kr', 'g.hongik.ac.kr'],
-    '동국대학교': ['dgu.ac.kr'],
-    '연세대학교': ['yonsei.ac.kr', 'o365.yonsei.ac.kr'],
-    '고려대학교': ['korea.ac.kr'],
-    '서울대학교': ['snu.ac.kr'],
-    '성균관대학교': ['skku.edu', 'skku.ac.kr'],
-    '한양대학교': ['hanyang.ac.kr'],
+  // 서울·수도권
+  '한국외국어대학교': ['hufs.ac.kr'],
+  '홍익대학교': ['mail.hongik.ac.kr', 'g.hongik.ac.kr'],
+  '동국대학교': ['dgu.ac.kr'],
+  '연세대학교': ['o365.yonsei.ac.kr', 'yonsei.ac.kr'],
+  '고려대학교': ['korea.ac.kr'],
+  '서울대학교': ['snu.ac.kr'],
+  '성균관대학교': ['skku.edu', 'g.skku.edu'],
+  '한양대학교': ['hanyang.ac.kr'],
+  '서강대학교': ['u.sogang.ac.kr'],
+  '경희대학교': ['khu.ac.kr'],
+  '서울시립대학교': ['uos.ac.kr'],
+  '건국대학교': ['konkuk.ac.kr'],
+  '이화여자대학교': ['ewha.ac.kr', 'ewhain.net'],
+  '숙명여자대학교': ['sookmyung.ac.kr'],
+  '국민대학교': ['kookmin.ac.kr', 'kookmin.kr'],
+  '숭실대학교': ['soongsil.ac.kr'],
+  '세종대학교': ['sju.ac.kr'],
+  '광운대학교': ['kw.ac.kr'],
+  '아주대학교': ['ajou.ac.kr'],
+  '인하대학교': ['inha.edu'],
+  '가천대학교': ['gc.gachon.ac.kr'],
+  '명지대학교': ['mju.ac.kr'],
+  '성신여자대학교': [
+    'sungshin.ac.kr',
+    'student.sungshin.ac.kr',
+  ],
+  '중앙대학교': ['cau.ac.kr'],
+
+  // 지역 국립대·사립대
+  '부산대학교': ['pusan.ac.kr'],
+  '경북대학교': ['knu.ac.kr'],
+  '전남대학교': ['jnu.ac.kr'],
+  '전북대학교': ['jbnu.ac.kr'],
+  '충남대학교': ['o.cnu.ac.kr', 'g.cnu.ac.kr'],
+  '강원대학교': ['kangwon.ac.kr'],
+  '제주대학교': ['stu.jejunu.ac.kr'],
+  '국립부경대학교': ['pukyong.ac.kr'],
+  '인천대학교': ['inu.ac.kr'],
+  '충북대학교': ['chungbuk.ac.kr'],
+  '국립공주대학교': ['smail.kongju.ac.kr'],
+  '경상국립대학교': ['gnu.ac.kr'],
+  '계명대학교': ['stu.kmu.ac.kr'],
+  '영남대학교': ['yu.ac.kr', 'ynu.ac.kr'],
+  '동아대학교': ['donga.ac.kr'],
+  '울산대학교': ['mail.ulsan.ac.kr'],
+  '조선대학교': ['chosun.ac.kr', 'chosun.kr'],
+
+  // 과학기술특성화대학
+  '한국과학기술원': ['kaist.ac.kr'],
+  '포항공과대학교': ['postech.ac.kr'],
+  '울산과학기술원': ['unist.ac.kr'],
+  '광주과학기술원': ['gm.gist.ac.kr'],
+  '대구경북과학기술원': ['dgist.ac.kr'],
+
+  // 전문대·기타
+  '동양미래대학교': ['dongyang.ac.kr'],
+  '경기과학기술대학교': ['office.gtec.ac.kr'],
+  '대림대학교': ['email.daelim.ac.kr'],
+  '성공회대학교': ['office.skhu.ac.kr'],
+  '동명대학교': ['g.tu.ac.kr', 'o365.tu.ac.kr'],
+
+    '단국대학교': ['dankook.ac.kr'],
+    '가톨릭대학교': ['catholic.ac.kr'],
+    '덕성여자대학교': ['duksung.ac.kr'],
+    '동덕여자대학교': ['dongduk.ac.kr'],
+    '삼육대학교': ['syuin.ac.kr'],
+
+    // Google 메일과 Microsoft 365 주소가 다름
+    '한성대학교': ['hansung.ac.kr', 'hansung.edu'],
+
+    '서울과학기술대학교': ['seoultech.ac.kr'],
+
+    // Google Workspace / Microsoft 365
+    '한밭대학교': ['edu.hanbat.ac.kr', 'o365.hanbat.ac.kr'],
+
+    '국립창원대학교': ['gs.cwnu.ac.kr'],
+    '국립한국해양대학교': ['g.kmou.ac.kr'],
+    '국립목포대학교': ['365.mokpo.ac.kr'],
+    '국립순천대학교': ['s.scnu.ac.kr'],
+
+    '국립군산대학교': [
+        'kunsan.ac.kr',
+        'office365.kunsan.ac.kr',
+    ],
+
+    '한림대학교': [
+        'hallym.ac.kr',
+        'microsoft.hallym.ac.kr',
+    ],
+
+    '강남대학교': ['kangnam.ac.kr'],
+    '안양대학교': ['gs.anyang.ac.kr'],
+    '호서대학교': ['vision.hoseo.edu'],
+    '한남대학교': ['m365.hnu.ac.kr'],
+    '목원대학교': ['mokwon.ac.kr'],
+    '동서대학교': ['office.dongseo.ac.kr'],
+    '동의대학교': ['office.deu.ac.kr', 'g.deu.ac.kr'],
+    '신라대학교': ['sillain.ac.kr'],
+    '원광대학교': ['wku.ac.kr'],
+    '호남대학교': ['honam.ac.kr'],
+
+    '경기대학교': ['kyonggi.ac.kr'],
+    '서울여자대학교': ['swu.ac.kr'],
+    '수원대학교': ['suwon.ac.kr'],
+    '국립금오공과대학교': ['kumoh.ac.kr'],
+    '순천향대학교': ['sch.ac.kr'],
+    '한국기술교육대학교': ['koreatech.ac.kr'],
 };
 
 let universityDomains = DEFAULT_UNIVERSITY_DOMAINS;
