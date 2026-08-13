@@ -469,6 +469,7 @@ instrument(io, {
 const oneOnoneChat = io.of("/oneonone");
 const roomMetadata = new Map();
 const roomTimers = new Map();
+const roomExtensionStates = new Map();
 
 GrouphttpServer.on("error", (error) => {
     if (error && error.code === "EADDRINUSE") {
@@ -549,17 +550,47 @@ function clearRoomTimer(roomName) {
     }
 }
 
+function clearRoomExtensionState(roomName) {
+    const extensionState = roomExtensionStates.get(roomName);
+    if (!extensionState) return;
+    clearTimeout(extensionState.closeTimer);
+    roomExtensionStates.delete(roomName);
+}
+
 async function expireRoom(roomName) {
     const metadata = roomMetadata.get(roomName);
     if (!metadata) return;
 
     clearRoomTimer(roomName);
     const sockets = await oneOnoneChat.in(roomName).fetchSockets();
+    if (sockets.length === 0) {
+        roomMetadata.delete(roomName);
+        return;
+    }
+
+    metadata.status = 'extension';
+    metadata.startedAt = null;
+    metadata.expiresAt = null;
+    roomExtensionStates.set(roomName, {
+        ratings: new Map(),
+        wantsExtension: new Map(),
+        closeTimer: setTimeout(() => closeRoom(roomName, 'extension_timeout'), 60 * 1000),
+    });
     sockets.forEach((roomSocket) => {
         roomSocket.emit('chat_expired', {
             room: roomName,
             duration: metadata.duration,
         });
+    });
+}
+
+async function closeRoom(roomName, reason = 'room_closed') {
+    clearRoomExtensionState(roomName);
+    clearRoomTimer(roomName);
+
+    const sockets = await oneOnoneChat.in(roomName).fetchSockets();
+    sockets.forEach((roomSocket) => {
+        roomSocket.emit('room_closed', { room: roomName, reason });
         roomSocket.leave(roomName);
     });
     roomMetadata.delete(roomName);
@@ -569,8 +600,9 @@ async function expireRoom(roomName) {
 function startRoomTimerIfReady(roomName) {
     const metadata = roomMetadata.get(roomName);
     const roomSize = countRoom(oneOnoneChat, roomName) || 0;
-    if (!metadata || metadata.startedAt || roomSize < metadata.capacity) return;
+    if (!metadata || metadata.status === 'extension' || metadata.startedAt || roomSize < metadata.capacity) return;
 
+    metadata.status = 'active';
     metadata.startedAt = Date.now();
     metadata.expiresAt = metadata.startedAt + metadata.duration * 60 * 1000;
     oneOnoneChat.to(roomName).emit('room_started', {
@@ -589,6 +621,53 @@ function startRoomTimerIfReady(roomName) {
             console.error('[server] Failed to expire room:', error);
         });
     }, delay));
+}
+
+function submitRoomRating(socket, roomName, rating, wantsExtension, done) {
+    if (!socket.email || !roomName || !socket.rooms.has(roomName)) {
+        done?.({ success: false, error: 'unauthorized_room' });
+        return;
+    }
+
+    const metadata = roomMetadata.get(roomName);
+    const extensionState = roomExtensionStates.get(roomName);
+    const numericRating = Number(rating);
+    if (!metadata || metadata.status !== 'extension' || !extensionState || !Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5 || typeof wantsExtension !== 'boolean') {
+        done?.({ success: false, error: 'invalid_extension_request' });
+        return;
+    }
+
+    extensionState.ratings.set(socket.email, numericRating);
+    extensionState.wantsExtension.set(socket.email, wantsExtension);
+    done?.({ success: true });
+
+    oneOnoneChat.to(roomName).emit('rating_progress', {
+        submitted: extensionState.ratings.size,
+        total: countRoom(oneOnoneChat, roomName) || 0,
+    });
+
+    const sockets = oneOnoneChat.adapter.rooms.get(roomName);
+    const participantEmails = sockets
+        ? [...sockets].map((socketId) => oneOnoneChat.sockets.get(socketId)?.email).filter(Boolean)
+        : [];
+    const allSubmitted = participantEmails.length > 0 && participantEmails.every((email) => extensionState.ratings.has(email));
+    if (!allSubmitted) return;
+
+    const canExtend = participantEmails.every((email) => extensionState.ratings.get(email) >= 4 && extensionState.wantsExtension.get(email));
+    if (!canExtend) {
+        closeRoom(roomName, 'extension_declined').catch((error) => console.error('[server] Failed to close room:', error));
+        return;
+    }
+
+    clearTimeout(extensionState.closeTimer);
+    roomExtensionStates.delete(roomName);
+    metadata.status = 'active';
+    startRoomTimerIfReady(roomName);
+    oneOnoneChat.to(roomName).emit('chat_extended', {
+        room: roomName,
+        duration: metadata.duration,
+        expiresAt: metadata.expiresAt,
+    });
 }
 
 function countRoom(namespace,roomName){
@@ -877,6 +956,10 @@ oneOnoneChat.on("connection", (socket) => {
         }
     });
 
+    socket.on("submit_rating", (roomName, rating, wantsExtension, done) => {
+        submitRoomRating(socket, roomName, rating, wantsExtension, done);
+    });
+
     socket.on("verify_code", (email, code, done) => {
         const normalizedEmail = normalizeEmail(email);
         const challenge = verificationChallenges.get(normalizedEmail);
@@ -1030,6 +1113,7 @@ oneOnoneChat.on("connection", (socket) => {
             if (currentCount === 2) {
                 socket.to(room).emit("bye", "상대방이 퇴장하였습니다.");
                 clearRoomTimer(room);
+                clearRoomExtensionState(room);
                 roomMetadata.delete(room);
                 socket.leave(room);
                 setTimeout(async () => {
@@ -1066,6 +1150,7 @@ oneOnoneChat.on("connection", (socket) => {
             if (currentCount >= 2) {
                 socket.to(room).emit("bye", "상대방이 연결을 종료했습니다.");
                 clearRoomTimer(room);
+                clearRoomExtensionState(room);
                 roomMetadata.delete(room);
                 setTimeout(async () => {
                     const sockets = await oneOnoneChat.in(room).fetchSockets();
@@ -1087,6 +1172,7 @@ oneOnoneChat.on("connection", (socket) => {
         for (const roomName of roomMetadata.keys()) {
             if (!oneOnoneChat.adapter.rooms.has(roomName)) {
                 clearRoomTimer(roomName);
+                clearRoomExtensionState(roomName);
                 roomMetadata.delete(roomName);
             }
         }

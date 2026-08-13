@@ -17,10 +17,18 @@ const chatMode = document.getElementById('chatMode');
 const chatCapacity = document.getElementById('chatCapacity');
 const chatDuration = document.getElementById('chatDuration');
 const chatTopic = document.getElementById('chatTopic');
+const extensionPanel = document.getElementById('extensionPanel');
+const ratingButtons = document.querySelectorAll('.rating-btn');
+const extendYesBtn = document.getElementById('extendYesBtn');
+const extendNoBtn = document.getElementById('extendNoBtn');
+const submitRatingBtn = document.getElementById('submitRatingBtn');
 
 let currentRoomName = null;
 let isMatching = false;
 let roomTimerInterval = null;
+let selectedRating = 0;
+let wantsExtension = null;
+let ratingSubmitted = false;
 
 function syncChatConfigOptions() {
   if (!chatMode || !chatCapacity || !chatDuration) return;
@@ -157,6 +165,7 @@ function resetRoomState() {
   isMatching = false;
   clearInterval(roomTimerInterval);
   roomTimerInterval = null;
+  extensionPanel?.classList.add('hidden');
   friendAcceptBtn?.classList.add('hidden');
   friendRequestBtn?.classList.remove('hidden');
   syncControlState();
@@ -233,9 +242,35 @@ socket.on('room_started', (metadata) => {
 
 socket.on('chat_expired', () => {
   addMessage('채팅 시간이 종료되었습니다.', 'sys');
-  resetRoomState();
+  selectedRating = 0;
+  wantsExtension = null;
+  ratingSubmitted = false;
+  ratingButtons.forEach((button) => { button.textContent = '☆'; button.classList.remove('selected'); });
+  submitRatingBtn && (submitRatingBtn.disabled = true);
+  extensionPanel?.classList.remove('hidden');
+  chatInput && (chatInput.disabled = true);
+  chatSendBtn && (chatSendBtn.disabled = true);
   setStatus('종료됨', 'warn');
-  setMeta('채팅 시간이 종료되었습니다. 로비로 돌아가 새 채팅을 시작하세요.');
+  setMeta('별점과 연장 여부를 선택해주세요.');
+});
+
+socket.on('chat_extended', (metadata) => {
+  extensionPanel?.classList.add('hidden');
+  ratingSubmitted = false;
+  setRoomDeadline(metadata?.expiresAt);
+  chatInput && (chatInput.disabled = false);
+  chatSendBtn && (chatSendBtn.disabled = false);
+  setStatus('채팅 연장', 'ok');
+  setMeta(`대화가 ${metadata?.duration || 5}분 연장되었습니다.`);
+});
+
+socket.on('room_closed', (payload) => {
+  if (payload?.reason === 'extension_declined' || payload?.reason === 'extension_timeout') {
+    extensionPanel?.classList.add('hidden');
+    resetRoomState();
+    setStatus('종료됨', 'warn');
+    setMeta('대화가 종료되었습니다.');
+  }
 });
 
 chatMode?.addEventListener('change', syncChatConfigOptions);
@@ -312,6 +347,46 @@ socket.on('force_logout', () => {
 });
 
 startMatchBtn?.addEventListener('click', startMatch);
+
+ratingButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    selectedRating = Number(button.dataset.rating);
+    ratingButtons.forEach((item) => {
+      item.textContent = Number(item.dataset.rating) <= selectedRating ? '★' : '☆';
+      item.classList.toggle('selected', Number(item.dataset.rating) <= selectedRating);
+    });
+    if (submitRatingBtn) submitRatingBtn.disabled = !selectedRating || wantsExtension === null;
+  });
+});
+
+extendYesBtn?.addEventListener('click', () => {
+  wantsExtension = true;
+  extendYesBtn.classList.add('selected');
+  extendNoBtn?.classList.remove('selected');
+  if (submitRatingBtn) submitRatingBtn.disabled = !selectedRating;
+});
+
+extendNoBtn?.addEventListener('click', () => {
+  wantsExtension = false;
+  extendNoBtn.classList.add('selected');
+  extendYesBtn?.classList.remove('selected');
+  if (submitRatingBtn) submitRatingBtn.disabled = !selectedRating;
+});
+
+submitRatingBtn?.addEventListener('click', () => {
+  if (!currentRoomName || !selectedRating || wantsExtension === null || ratingSubmitted) return;
+  ratingSubmitted = true;
+  submitRatingBtn.disabled = true;
+  socket.emit('submit_rating', currentRoomName, selectedRating, wantsExtension, (result) => {
+    if (result?.success === false) {
+      ratingSubmitted = false;
+      submitRatingBtn.disabled = false;
+      setMeta(result.error || '별점 제출에 실패했습니다.');
+      return;
+    }
+    setMeta('상대방의 선택을 기다리는 중입니다.');
+  });
+});
 
 reconnectBtn?.addEventListener('click', async () => {
   setStatus('재연결 중', 'warn');
