@@ -20,6 +20,7 @@ const chatTopic = document.getElementById('chatTopic');
 
 let currentRoomName = null;
 let isMatching = false;
+let roomTimerInterval = null;
 
 function syncChatConfigOptions() {
   if (!chatMode || !chatCapacity || !chatDuration) return;
@@ -40,6 +41,23 @@ function getChatOptions() {
     duration: Number(chatDuration?.value || 15),
     topic: chatTopic?.value || '',
   };
+}
+
+function setRoomDeadline(expiresAt) {
+  clearInterval(roomTimerInterval);
+  if (!expiresAt) return;
+
+  const update = () => {
+    const remaining = Math.max(0, expiresAt - Date.now());
+    const totalSeconds = Math.ceil(remaining / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+    setMeta(`채팅 남은 시간 · ${minutes}:${seconds}`);
+    if (remaining <= 0) clearInterval(roomTimerInterval);
+  };
+
+  update();
+  roomTimerInterval = setInterval(update, 1000);
 }
 
 function enforceBoundSession(serverEmail) {
@@ -137,6 +155,8 @@ function addMessage(text, kind = 'sys', at = new Date()) {
 function resetRoomState() {
   currentRoomName = null;
   isMatching = false;
+  clearInterval(roomTimerInterval);
+  roomTimerInterval = null;
   friendAcceptBtn?.classList.add('hidden');
   friendRequestBtn?.classList.remove('hidden');
   syncControlState();
@@ -179,6 +199,7 @@ function startMatch() {
     }
 
     currentRoomName = roomName;
+    setRoomDeadline(metadata?.expiresAt);
     const modeLabel = metadata?.mode === 'group' ? 'N:N' : '1:1';
     const topicLabel = metadata?.topic ? ` · ${metadata.topic}` : '';
 
@@ -202,6 +223,19 @@ function startMatch() {
 socket.on('connect', () => {
   setStatus('연결됨', 'ok');
   setMeta(`소켓 연결 완료 · ${formatTime()}`);
+});
+
+socket.on('room_started', (metadata) => {
+  setRoomDeadline(metadata?.expiresAt);
+  setStatus('채팅 중', 'ok');
+  setMeta(metadata?.topic ? `주제 · ${metadata.topic}` : '채팅이 시작되었습니다.');
+});
+
+socket.on('chat_expired', () => {
+  addMessage('채팅 시간이 종료되었습니다.', 'sys');
+  resetRoomState();
+  setStatus('종료됨', 'warn');
+  setMeta('채팅 시간이 종료되었습니다. 로비로 돌아가 새 채팅을 시작하세요.');
 });
 
 chatMode?.addEventListener('change', syncChatConfigOptions);

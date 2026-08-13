@@ -468,6 +468,7 @@ instrument(io, {
 //const GroupChat = io.of("/group");
 const oneOnoneChat = io.of("/oneonone");
 const roomMetadata = new Map();
+const roomTimers = new Map();
 
 GrouphttpServer.on("error", (error) => {
     if (error && error.code === "EADDRINUSE") {
@@ -538,6 +539,56 @@ function getAvailableRoom(namespace, options) {
         }
     }
     return null;
+}
+
+function clearRoomTimer(roomName) {
+    const timer = roomTimers.get(roomName);
+    if (timer) {
+        clearTimeout(timer);
+        roomTimers.delete(roomName);
+    }
+}
+
+async function expireRoom(roomName) {
+    const metadata = roomMetadata.get(roomName);
+    if (!metadata) return;
+
+    clearRoomTimer(roomName);
+    const sockets = await oneOnoneChat.in(roomName).fetchSockets();
+    sockets.forEach((roomSocket) => {
+        roomSocket.emit('chat_expired', {
+            room: roomName,
+            duration: metadata.duration,
+        });
+        roomSocket.leave(roomName);
+    });
+    roomMetadata.delete(roomName);
+    oneOnoneChat.emit("room_change", publicGroupRooms(oneOnoneChat));
+}
+
+function startRoomTimerIfReady(roomName) {
+    const metadata = roomMetadata.get(roomName);
+    const roomSize = countRoom(oneOnoneChat, roomName) || 0;
+    if (!metadata || metadata.startedAt || roomSize < metadata.capacity) return;
+
+    metadata.startedAt = Date.now();
+    metadata.expiresAt = metadata.startedAt + metadata.duration * 60 * 1000;
+    oneOnoneChat.to(roomName).emit('room_started', {
+        room: roomName,
+        mode: metadata.mode,
+        capacity: metadata.capacity,
+        duration: metadata.duration,
+        startedAt: metadata.startedAt,
+        expiresAt: metadata.expiresAt,
+        topic: metadata.topic,
+    });
+
+    const delay = metadata.expiresAt - Date.now();
+    roomTimers.set(roomName, setTimeout(() => {
+        expireRoom(roomName).catch((error) => {
+            console.error('[server] Failed to expire room:', error);
+        });
+    }, delay));
 }
 
 function countRoom(namespace,roomName){
@@ -775,6 +826,7 @@ oneOnoneChat.on("connection", (socket) => {
         }
 
         socket.join(roomToJoin);
+        startRoomTimerIfReady(roomToJoin);
         const metadata = roomMetadata.get(roomToJoin);
         const roomSize = countRoom(oneOnoneChat, roomToJoin);
         done?.(roomToJoin, isNewRoom ? "방 없음" : "방 있음", metadata);
@@ -977,6 +1029,8 @@ oneOnoneChat.on("connection", (socket) => {
 
             if (currentCount === 2) {
                 socket.to(room).emit("bye", "상대방이 퇴장하였습니다.");
+                clearRoomTimer(room);
+                roomMetadata.delete(room);
                 socket.leave(room);
                 setTimeout(async () => {
                     const sockets = await oneOnoneChat.in(room).fetchSockets();
@@ -1011,6 +1065,8 @@ oneOnoneChat.on("connection", (socket) => {
             const currentCount = countRoom(oneOnoneChat, room) || 0;
             if (currentCount >= 2) {
                 socket.to(room).emit("bye", "상대방이 연결을 종료했습니다.");
+                clearRoomTimer(room);
+                roomMetadata.delete(room);
                 setTimeout(async () => {
                     const sockets = await oneOnoneChat.in(room).fetchSockets();
                     sockets.forEach((s) => {
@@ -1030,6 +1086,7 @@ oneOnoneChat.on("connection", (socket) => {
         }
         for (const roomName of roomMetadata.keys()) {
             if (!oneOnoneChat.adapter.rooms.has(roomName)) {
+                clearRoomTimer(roomName);
                 roomMetadata.delete(roomName);
             }
         }
@@ -1038,6 +1095,12 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("new_message", (msg, room, done) => {
         if (!requireSocketAuth(socket, done) || !isSocketInRoom(socket, room, done)) return;
+
+        const metadata = roomMetadata.get(room);
+        if (!metadata || (metadata.expiresAt && metadata.expiresAt <= Date.now())) {
+            done?.({ success: false, error: 'chat_expired' });
+            return;
+        }
 
         const cleanMessage = sanitizeText(msg, 500);
         if (!cleanMessage) {
