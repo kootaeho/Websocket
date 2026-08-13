@@ -18,10 +18,38 @@ const saltRounds = 10;
 const SESSION_COOKIE_NAME = 'uc_sid';
 const SESSION_MAX_AGE_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 
-const API_KEY = process.env.UNIVCERT_API_KEY;
-if (!API_KEY) {
-    console.error('[server] Missing required environment variable: UNIVCERT_API_KEY');
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
+if (!RESEND_API_KEY || !RESEND_FROM_EMAIL) {
+    console.error('[server] Missing required environment variables: RESEND_API_KEY and RESEND_FROM_EMAIL');
     process.exit(1);
+}
+
+const VERIFICATION_TTL_MS = 5 * 60 * 1000;
+const VERIFICATION_RESEND_COOLDOWN_MS = 60 * 1000;
+const VERIFICATION_MAX_ATTEMPTS = 5;
+const verificationChallenges = new Map();
+const verifiedEmails = new Map();
+const verificationRequestsByIp = new Map();
+const DEFAULT_UNIVERSITY_DOMAINS = {
+    '한국외국어대학교': ['hufs.ac.kr', 'e-mail.hufs.ac.kr'],
+    '홍익대학교': ['hongik.ac.kr', 'g.hongik.ac.kr'],
+    '동국대학교': ['dgu.ac.kr'],
+    '연세대학교': ['yonsei.ac.kr', 'o365.yonsei.ac.kr'],
+    '고려대학교': ['korea.ac.kr'],
+    '서울대학교': ['snu.ac.kr'],
+    '성균관대학교': ['skku.edu', 'skku.ac.kr'],
+    '한양대학교': ['hanyang.ac.kr'],
+};
+
+let universityDomains = DEFAULT_UNIVERSITY_DOMAINS;
+if (process.env.UNIVERSITY_DOMAINS) {
+    try {
+        universityDomains = JSON.parse(process.env.UNIVERSITY_DOMAINS);
+    } catch (error) {
+        console.error('[server] UNIVERSITY_DOMAINS must be valid JSON:', error.message);
+        process.exit(1);
+    }
 }
 
 let dbconfig = {};
@@ -77,6 +105,69 @@ function sanitizeText(value, maxLength = 500) {
 function sanitizeNickname(value) {
     const sanitized = sanitizeText(value, 30);
     return sanitized.replace(/[<>]/g, '');
+}
+
+function getEmailDomain(email) {
+    const parts = normalizeEmail(email).split('@');
+    return parts.length === 2 ? parts[1] : '';
+}
+
+function isUniversityEmail(email, universityName) {
+    const domains = universityDomains[sanitizeText(universityName, 100)];
+    const emailDomain = getEmailDomain(email);
+    return Array.isArray(domains) && domains.some((domain) => {
+        const normalizedDomain = String(domain).trim().toLowerCase();
+        return emailDomain === normalizedDomain;
+    });
+}
+
+function getSocketIp(socket) {
+    return socket.handshake?.address || 'unknown';
+}
+
+function createVerificationCode() {
+    return String(crypto.randomInt(100000, 1000000));
+}
+
+function hashVerificationCode(email, code) {
+    return crypto
+        .createHmac('sha256', RESEND_API_KEY)
+        .update(`${normalizeEmail(email)}:${code}`)
+        .digest('hex');
+}
+
+function cleanupVerificationState() {
+    const now = Date.now();
+    for (const [email, challenge] of verificationChallenges.entries()) {
+        if (!challenge || challenge.expiresAt <= now) {
+            verificationChallenges.delete(email);
+        }
+    }
+    for (const [ip, requestedAt] of verificationRequestsByIp.entries()) {
+        if (requestedAt <= now - VERIFICATION_RESEND_COOLDOWN_MS) {
+            verificationRequestsByIp.delete(ip);
+        }
+    }
+    for (const [email, verifiedAt] of verifiedEmails.entries()) {
+        if (verifiedAt <= now - VERIFICATION_TTL_MS) {
+            verifiedEmails.delete(email);
+        }
+    }
+}
+
+async function sendVerificationEmail(email, code, universityName) {
+    return axios.post('https://api.resend.com/emails', {
+        from: RESEND_FROM_EMAIL,
+        to: [email],
+        subject: `[언노운] ${universityName} 이메일 인증번호`,
+        html: `<p>인증번호는 <strong>${code}</strong>입니다.</p><p>인증번호는 5분 동안 유효합니다.</p>`,
+    }, {
+        headers: {
+            Authorization: `Bearer ${RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        timeout: 10000,
+    });
 }
 
 function purgeExpiredSessions() {
@@ -529,52 +620,76 @@ oneOnoneChat.on("connection", (socket) => {
 
     socket.on("certify_email", async (email, univName, done) => {
         const normalizedEmail = normalizeEmail(email);
-        if (!normalizedEmail) {
-            done({ success: false, error: 'invalid email' });
+        const universityName = sanitizeText(univName, 100);
+        const ip = getSocketIp(socket);
+        cleanupVerificationState();
+
+        if (!normalizedEmail || !universityName || !isUniversityEmail(normalizedEmail, universityName)) {
+            done({ success: false, error: '학교 이메일 도메인이 학교와 일치하지 않습니다.' });
             return;
         }
 
+        const existingChallenge = verificationChallenges.get(normalizedEmail);
+        const now = Date.now();
+        if (existingChallenge && existingChallenge.requestedAt > now - VERIFICATION_RESEND_COOLDOWN_MS) {
+            done({ success: false, error: '인증번호는 60초 후 다시 요청할 수 있습니다.' });
+            return;
+        }
+        if (verificationRequestsByIp.get(ip) > now - VERIFICATION_RESEND_COOLDOWN_MS) {
+            done({ success: false, error: '잠시 후 다시 시도해주세요.' });
+            return;
+        }
+
+        const code = createVerificationCode();
         try {
-            const response = await axios.post('https://univcert.com/api/v1/certify', {
-                key: API_KEY,
-                email: normalizedEmail,
-                univName: sanitizeText(univName, 100),
-                univ_check: true
+            await sendVerificationEmail(normalizedEmail, code, universityName);
+            verificationChallenges.set(normalizedEmail, {
+                codeHash: hashVerificationCode(normalizedEmail, code),
+                universityName,
+                requestedAt: now,
+                expiresAt: now + VERIFICATION_TTL_MS,
+                attempts: 0,
             });
-            done(response.data);
+            verificationRequestsByIp.set(ip, now);
+            done({ success: true });
         } catch (error) {
-            done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
+            console.error('[server] Resend email failed:', error.response?.data || error.message);
+            done({ success: false, error: '인증메일 발송에 실패했습니다.' });
         }
     });
-    socket.on("verify_code", async (email, code, done) => {
+
+    socket.on("verify_code", (email, code, done) => {
         const normalizedEmail = normalizeEmail(email);
-        if (!normalizedEmail || !code) {
-            done({ success: false, error: 'invalid payload' });
+        const challenge = verificationChallenges.get(normalizedEmail);
+        const submittedCode = typeof code === 'string' ? code.trim() : '';
+
+        if (!challenge || challenge.expiresAt <= Date.now()) {
+            verificationChallenges.delete(normalizedEmail);
+            done({ success: false, error: '인증번호가 만료되었습니다.' });
+            return;
+        }
+        if (!/^\d{6}$/.test(submittedCode)) {
+            done({ success: false, error: '인증번호 형식이 올바르지 않습니다.' });
             return;
         }
 
-        try {
-            const response = await axios.post('https://univcert.com/api/v1/certifycode', {
-                key: API_KEY,
-                email: normalizedEmail,
-                code: String(code).trim()
-            });
-            done(response.data);
-        } catch (error) {
-            done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
+        challenge.attempts += 1;
+        const submittedHash = hashVerificationCode(normalizedEmail, submittedCode);
+        const isValid = crypto.timingSafeEqual(
+            Buffer.from(challenge.codeHash, 'hex'),
+            Buffer.from(submittedHash, 'hex')
+        );
+        if (!isValid) {
+            if (challenge.attempts >= VERIFICATION_MAX_ATTEMPTS) {
+                verificationChallenges.delete(normalizedEmail);
+            }
+            done({ success: false, error: '인증번호가 유효하지 않습니다.' });
+            return;
         }
-    });
 
-    socket.on("clear_code", async (done) => {
-        try {
-            const response = await axios.post('https://univcert.com/api/v1/clear', {
-                key: API_KEY,
-            });
-            console.log("초기화 됨!")
-            done(response.data);
-        } catch (error) {
-            done({ success: false, error: error.response ? error.response.data : 'Error occurred' });
-        }
+        verificationChallenges.delete(normalizedEmail);
+        verifiedEmails.set(normalizedEmail, Date.now());
+        done({ success: true });
     });
 
     socket.on("isLogin",(email,done)=>{
@@ -622,8 +737,9 @@ oneOnoneChat.on("connection", (socket) => {
     socket.on("adduser", (email, passwd, nickname, done) => {
         const normalizedEmail = normalizeEmail(email);
         const safeNickname = sanitizeNickname(nickname);
+        cleanupVerificationState();
 
-        if (!normalizedEmail || !passwd || passwd.length < 6 || !safeNickname) {
+        if (!normalizedEmail || !verifiedEmails.has(normalizedEmail) || !passwd || passwd.length < 6 || !safeNickname) {
             done({ success: false, error: 'invalid payload' });
             return;
         }
@@ -651,6 +767,7 @@ oneOnoneChat.on("connection", (socket) => {
                             done({ success: false, error: 'duplicate_or_db_error' });
                             return;
                         }
+                        verifiedEmails.delete(normalizedEmail);
                         console.log("사용자 추가됨!", result);
                         done({ success: true });
                     }
