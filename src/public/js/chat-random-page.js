@@ -280,8 +280,7 @@ socket.on('disconnect', (reason) => {
   setStatus('연결 끊김', 'error');
   const reasonText = reason ? ` (${reason})` : '';
   setMeta(`연결이 끊겼습니다${reasonText}. 재연결 버튼을 눌러주세요.`);
-  isMatching = false;
-  syncControlState();
+  resetRoomState();
 });
 
 socket.on('connect_error', () => {

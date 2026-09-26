@@ -784,11 +784,7 @@ function bindAuthenticatedSocket(socket, email, sessionToken = null) {
 
     if (activeUsers[email] && activeUsers[email] !== socket) {
         const previousSocket = activeUsers[email];
-        const sameSession = !!sessionToken && previousSocket.sessionToken === sessionToken;
-
-        if (!sameSession) {
-            previousSocket.disconnect(true);
-        }
+        previousSocket.disconnect(true);
     }
 
     activeUsers[email] = socket;
